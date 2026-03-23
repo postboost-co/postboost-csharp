@@ -1,0 +1,2896 @@
+openapi: 3.1.0
+info:
+  contact:
+    email: hi@postboost.co
+    name: PostBoost Support
+    url: https://postboost.co
+  description: |
+    The PostBoost REST API lets you publish, schedule, and analyze social media posts
+    across 8+ platforms from a single integration. No OAuth apps to maintain —
+    PostBoost handles platform authorization for you.
+
+    ## Base URL
+    All workspace-scoped endpoints are prefixed with `/{workspaceUuid}`.
+    Panel/admin endpoints are prefixed with `/panel`.
+
+    ## Authentication
+    All requests require a Bearer token in the `Authorization` header.
+    Generate tokens in your PostBoost dashboard under **Settings → Access Tokens**.
+
+    ```
+    Authorization: Bearer YOUR_API_TOKEN
+    ```
+  license:
+    name: Commercial
+    url: https://postboost.co/pages/terms
+  title: PostBoost API
+  version: 1.0.0
+servers:
+- description: Production
+  url: https://postboost.co/app/api
+security:
+- bearerAuth: []
+tags:
+- description: Social media accounts connected to a workspace.
+  name: Accounts
+- description: Upload and manage media assets in the workspace library.
+  name: Media
+- description: Organize posts with color-coded tags.
+  name: Tags
+- description: "Create, schedule, and publish posts across platforms."
+  name: Posts
+- description: Manage workspaces (admin only).
+  name: Workspaces
+- description: Manage workspace subscriptions and billing (admin only).
+  name: Subscriptions
+- description: Manage users across the platform (admin only).
+  name: Users
+- description: Manage billing receipts (admin only).
+  name: Receipts
+paths:
+  /{workspaceUuid}/accounts:
+    get:
+      description: Returns all social media accounts connected to the workspace.
+      operationId: listAccounts
+      parameters:
+      - $ref: '#/components/parameters/workspaceUuid'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/listAccounts_200_response'
+          description: List of accounts
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      summary: List accounts
+      tags:
+      - Accounts
+  /{workspaceUuid}/accounts/{accountUuid}:
+    get:
+      description: Returns a single social media account.
+      operationId: getAccount
+      parameters:
+      - $ref: '#/components/parameters/workspaceUuid'
+      - $ref: '#/components/parameters/accountUuid'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+          description: Account details
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+        "404":
+          $ref: '#/components/responses/NotFound'
+      summary: Get account
+      tags:
+      - Accounts
+  /{workspaceUuid}/media:
+    delete:
+      description: Delete one or more media items by their IDs.
+      operationId: deleteMediaBulk
+      parameters:
+      - $ref: '#/components/parameters/workspaceUuid'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/deleteMediaBulk_request'
+        required: true
+      responses:
+        "200":
+          $ref: '#/components/responses/SuccessResponse'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+      summary: Delete media (bulk)
+      tags:
+      - Media
+    get:
+      description: Returns a paginated list of media assets in the workspace library.
+      operationId: listMedia
+      parameters:
+      - $ref: '#/components/parameters/workspaceUuid'
+      - description: Page number (20 items per page).
+        explode: true
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          type: integer
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/listMedia_200_response'
+          description: Paginated list of media
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+      summary: List media
+      tags:
+      - Media
+    post:
+      description: Upload a file directly as multipart form data.
+      operationId: uploadMedia
+      parameters:
+      - $ref: '#/components/parameters/workspaceUuid'
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/uploadMedia_request'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Media'
+          description: Uploaded media object
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "422":
+          $ref: '#/components/responses/ValidationError'
+      summary: Upload media (binary)
+      tags:
+      - Media
+  /{workspaceUuid}/media/{mediaUuid}:
+    get:
+      description: Returns a single media asset.
+      operationId: getMedia
+      parameters:
+      - $ref: '#/components/parameters/workspaceUuid'
+      - $ref: '#/components/parameters/mediaUuid'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Media'
+          description: Media asset
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "404":
+          $ref: '#/components/responses/NotFound'
+      summary: Get media
+      tags:
+      - Media
+    put:
+      description: Update the alt text of a media asset.
+      operationId: updateMedia
+      parameters:
+      - $ref: '#/components/parameters/workspaceUuid'
+      - $ref: '#/components/parameters/mediaUuid'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/updateMedia_request'
+        required: true
+      responses:
+        "200":
+          $ref: '#/components/responses/SuccessResponse'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "404":
+          $ref: '#/components/responses/NotFound'
+      summary: Update media
+      tags:
+      - Media
+  /{workspaceUuid}/media/chunked/initiate:
+    post:
+      description: |
+        Start a chunked upload session for large files. Returns an `upload_uuid`,
+        `chunk_size`, and `total_chunks` to use for subsequent chunk requests.
+      operationId: initiateChunkedUpload
+      parameters:
+      - $ref: '#/components/parameters/workspaceUuid'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/initiateChunkedUpload_request'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/initiateChunkedUpload_200_response'
+          description: Chunked upload session details
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "422":
+          $ref: '#/components/responses/ValidationError'
+      summary: Initiate chunked upload
+      tags:
+      - Media
+  /{workspaceUuid}/media/remote/initiate:
+    post:
+      description: |
+        Download a file from a remote URL into the media library.
+        For small files the media object is returned immediately.
+        For large files a `download_id` is returned — poll the status endpoint.
+      operationId: initiateRemoteUpload
+      parameters:
+      - $ref: '#/components/parameters/workspaceUuid'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/initiateRemoteUpload_request'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/initiateRemoteUpload_200_response'
+          description: Media object or download job
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "422":
+          $ref: '#/components/responses/ValidationError'
+      summary: Initiate remote upload
+      tags:
+      - Media
+  /{workspaceUuid}/media/chunked/{uploadUuid}/upload:
+    post:
+      description: Upload a single chunk of a chunked upload session.
+      operationId: uploadChunk
+      parameters:
+      - $ref: '#/components/parameters/workspaceUuid'
+      - explode: false
+        in: path
+        name: uploadUuid
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/uploadChunk_request'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/uploadChunk_200_response'
+          description: Chunk received
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "422":
+          $ref: '#/components/responses/ValidationError'
+      summary: Upload a chunk
+      tags:
+      - Media
+  /{workspaceUuid}/media/chunked/{uploadUuid}/complete:
+    post:
+      description: Signal that all chunks have been uploaded. Returns the final media
+        object.
+      operationId: completeChunkedUpload
+      parameters:
+      - $ref: '#/components/parameters/workspaceUuid'
+      - explode: false
+        in: path
+        name: uploadUuid
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Media'
+          description: Completed media object
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "422":
+          $ref: '#/components/responses/ValidationError'
+      summary: Complete chunked upload
+      tags:
+      - Media
+  /{workspaceUuid}/media/chunked/{uploadUuid}:
+    delete:
+      description: Cancel an in-progress chunked upload session and clean up uploaded
+        chunks.
+      operationId: abortChunkedUpload
+      parameters:
+      - $ref: '#/components/parameters/workspaceUuid'
+      - explode: false
+        in: path
+        name: uploadUuid
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      responses:
+        "204":
+          description: Upload aborted
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+      summary: Abort chunked upload
+      tags:
+      - Media
+  /{workspaceUuid}/media/remote/{downloadId}/status:
+    get:
+      description: Poll the status of an in-progress remote media download.
+      operationId: getRemoteUploadStatus
+      parameters:
+      - $ref: '#/components/parameters/workspaceUuid'
+      - explode: false
+        in: path
+        name: downloadId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getRemoteUploadStatus_200_response'
+          description: Download status
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+      summary: Get remote upload status
+      tags:
+      - Media
+  /{workspaceUuid}/tags:
+    get:
+      operationId: listTags
+      parameters:
+      - $ref: '#/components/parameters/workspaceUuid'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/listTags_200_response'
+          description: List of tags
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+      summary: List tags
+      tags:
+      - Tags
+    post:
+      operationId: createTag
+      parameters:
+      - $ref: '#/components/parameters/workspaceUuid'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TagInput'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tag'
+          description: Created tag
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "422":
+          $ref: '#/components/responses/ValidationError'
+      summary: Create tag
+      tags:
+      - Tags
+  /{workspaceUuid}/tags/{tagUuid}:
+    delete:
+      operationId: deleteTag
+      parameters:
+      - $ref: '#/components/parameters/workspaceUuid'
+      - $ref: '#/components/parameters/tagUuid'
+      responses:
+        "200":
+          $ref: '#/components/responses/SuccessResponse'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "404":
+          $ref: '#/components/responses/NotFound'
+      summary: Delete tag
+      tags:
+      - Tags
+    get:
+      operationId: getTag
+      parameters:
+      - $ref: '#/components/parameters/workspaceUuid'
+      - $ref: '#/components/parameters/tagUuid'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tag'
+          description: Tag details
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "404":
+          $ref: '#/components/responses/NotFound'
+      summary: Get tag
+      tags:
+      - Tags
+    put:
+      operationId: updateTag
+      parameters:
+      - $ref: '#/components/parameters/workspaceUuid'
+      - $ref: '#/components/parameters/tagUuid'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TagInput'
+        required: true
+      responses:
+        "200":
+          $ref: '#/components/responses/SuccessResponse'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "422":
+          $ref: '#/components/responses/ValidationError'
+      summary: Update tag
+      tags:
+      - Tags
+  /{workspaceUuid}/posts:
+    delete:
+      description: Delete multiple posts at once.
+      operationId: deletePostsBulk
+      parameters:
+      - $ref: '#/components/parameters/workspaceUuid'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/deletePostsBulk_request'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteResult'
+          description: Deletion result
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+      summary: Delete posts (bulk)
+      tags:
+      - Posts
+    get:
+      description: Returns a paginated list of posts in the workspace.
+      operationId: listPosts
+      parameters:
+      - $ref: '#/components/parameters/workspaceUuid'
+      - explode: true
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          type: integer
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/listPosts_200_response'
+          description: Paginated list of posts
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+      summary: List posts
+      tags:
+      - Posts
+    post:
+      description: |
+        Create a new post. Use `schedule: true` with `date` and `time` to schedule,
+        `schedule_now: true` to publish immediately, or `queue: true` to add to the
+        smart publishing queue.
+      operationId: createPost
+      parameters:
+      - $ref: '#/components/parameters/workspaceUuid'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostInput'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+          description: Created post
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "422":
+          $ref: '#/components/responses/ValidationError'
+      summary: Create post
+      tags:
+      - Posts
+  /{workspaceUuid}/posts/{postUuid}:
+    delete:
+      operationId: deletePost
+      parameters:
+      - $ref: '#/components/parameters/workspaceUuid'
+      - $ref: '#/components/parameters/postUuid'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/deletePost_request'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteResult'
+          description: Deletion result
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "404":
+          $ref: '#/components/responses/NotFound'
+      summary: Delete post
+      tags:
+      - Posts
+    get:
+      operationId: getPost
+      parameters:
+      - $ref: '#/components/parameters/workspaceUuid'
+      - $ref: '#/components/parameters/postUuid'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+          description: Post details
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "404":
+          $ref: '#/components/responses/NotFound'
+      summary: Get post
+      tags:
+      - Posts
+    put:
+      operationId: updatePost
+      parameters:
+      - $ref: '#/components/parameters/workspaceUuid'
+      - $ref: '#/components/parameters/postUuid'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostInput'
+        required: true
+      responses:
+        "200":
+          $ref: '#/components/responses/SuccessResponse'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "422":
+          $ref: '#/components/responses/ValidationError'
+      summary: Update post
+      tags:
+      - Posts
+  /{workspaceUuid}/posts/schedule/{postUuid}:
+    post:
+      description: "Schedule an existing post. Set `postNow: true` to publish immediately."
+      operationId: schedulePost
+      parameters:
+      - $ref: '#/components/parameters/workspaceUuid'
+      - $ref: '#/components/parameters/postUuid'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/schedulePost_request'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScheduleResult'
+          description: Schedule confirmation
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "404":
+          $ref: '#/components/responses/NotFound'
+      summary: Schedule post
+      tags:
+      - Posts
+  /{workspaceUuid}/posts/add-to-queue/{postUuid}:
+    post:
+      description: Add an existing post to the smart publishing queue.
+      operationId: addPostToQueue
+      parameters:
+      - $ref: '#/components/parameters/workspaceUuid'
+      - $ref: '#/components/parameters/postUuid'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScheduleResult'
+          description: Queue confirmation
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "404":
+          $ref: '#/components/responses/NotFound'
+      summary: Add post to queue
+      tags:
+      - Posts
+  /{workspaceUuid}/posts/approve/{postUuid}:
+    post:
+      description: Approve a post that is pending review.
+      operationId: approvePost
+      parameters:
+      - $ref: '#/components/parameters/workspaceUuid'
+      - $ref: '#/components/parameters/postUuid'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScheduleResult'
+          description: Approval confirmation
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+        "404":
+          $ref: '#/components/responses/NotFound'
+      summary: Approve post
+      tags:
+      - Posts
+  /panel/workspaces:
+    delete:
+      operationId: deleteWorkspacesBulk
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/deleteWorkspacesBulk_request'
+        required: true
+      responses:
+        "200":
+          $ref: '#/components/responses/SuccessResponse'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      summary: Delete workspaces (bulk)
+      tags:
+      - Workspaces
+    get:
+      description: Returns a paginated list of all workspaces. Admin only.
+      operationId: listWorkspaces
+      parameters:
+      - explode: true
+        in: query
+        name: keyword
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: subscription_status
+        required: false
+        schema:
+          enum:
+          - active
+          - trialing
+          - past_due
+          - paused
+          - canceled
+          - incomplete
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: access_status
+        required: false
+        schema:
+          enum:
+          - subscription
+          - unlimited
+          - locked
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/listWorkspaces_200_response'
+          description: Paginated list of workspaces
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      summary: List workspaces
+      tags:
+      - Workspaces
+    post:
+      description: Create a new workspace. Admin only.
+      operationId: createWorkspace
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkspaceInput'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Workspace'
+          description: Created workspace
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+        "422":
+          $ref: '#/components/responses/ValidationError'
+      summary: Create workspace
+      tags:
+      - Workspaces
+  /panel/workspaces/{workspaceUuid}:
+    delete:
+      operationId: deleteWorkspace
+      parameters:
+      - $ref: '#/components/parameters/workspaceUuid'
+      responses:
+        "200":
+          $ref: '#/components/responses/SuccessResponse'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "404":
+          $ref: '#/components/responses/NotFound'
+      summary: Delete workspace
+      tags:
+      - Workspaces
+    get:
+      operationId: getWorkspace
+      parameters:
+      - $ref: '#/components/parameters/workspaceUuid'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Workspace'
+          description: Workspace details
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "404":
+          $ref: '#/components/responses/NotFound'
+      summary: Get workspace
+      tags:
+      - Workspaces
+    put:
+      operationId: updateWorkspace
+      parameters:
+      - $ref: '#/components/parameters/workspaceUuid'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkspaceInput'
+        required: true
+      responses:
+        "200":
+          $ref: '#/components/responses/SuccessResponse'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "404":
+          $ref: '#/components/responses/NotFound'
+      summary: Update workspace
+      tags:
+      - Workspaces
+  /panel/workspaces/{workspaceUuid}/users:
+    delete:
+      operationId: removeUserFromWorkspace
+      parameters:
+      - $ref: '#/components/parameters/workspaceUuid'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/removeUserFromWorkspace_request'
+        required: true
+      responses:
+        "200":
+          $ref: '#/components/responses/SuccessResponse'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+      summary: Remove user from workspace
+      tags:
+      - Workspaces
+    post:
+      operationId: addUserToWorkspace
+      parameters:
+      - $ref: '#/components/parameters/workspaceUuid'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkspaceUserInput'
+        required: true
+      responses:
+        "200":
+          $ref: '#/components/responses/SuccessResponse'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "422":
+          $ref: '#/components/responses/ValidationError'
+      summary: Add user to workspace
+      tags:
+      - Workspaces
+    put:
+      operationId: updateWorkspaceUser
+      parameters:
+      - $ref: '#/components/parameters/workspaceUuid'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkspaceUserInput'
+        required: true
+      responses:
+        "200":
+          $ref: '#/components/responses/SuccessResponse'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+      summary: Update user role in workspace
+      tags:
+      - Workspaces
+  /panel/workspaces/{workspaceUuid}/subscription:
+    delete:
+      operationId: deleteSubscription
+      parameters:
+      - $ref: '#/components/parameters/workspaceUuid'
+      responses:
+        "200":
+          $ref: '#/components/responses/SuccessResponse'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+      summary: Delete subscription
+      tags:
+      - Subscriptions
+    get:
+      operationId: getSubscription
+      parameters:
+      - $ref: '#/components/parameters/workspaceUuid'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subscription'
+          description: Subscription details or null
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+      summary: Get subscription
+      tags:
+      - Subscriptions
+    post:
+      operationId: createSubscription
+      parameters:
+      - $ref: '#/components/parameters/workspaceUuid'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubscriptionInput'
+        required: true
+      responses:
+        "201":
+          $ref: '#/components/responses/SuccessResponse'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "422":
+          $ref: '#/components/responses/ValidationError'
+      summary: Create subscription
+      tags:
+      - Subscriptions
+    put:
+      operationId: updateSubscription
+      parameters:
+      - $ref: '#/components/parameters/workspaceUuid'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubscriptionUpdateInput'
+        required: true
+      responses:
+        "200":
+          $ref: '#/components/responses/SuccessResponse'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+      summary: Update subscription
+      tags:
+      - Subscriptions
+  /panel/workspaces/{workspaceUuid}/subscription/new:
+    post:
+      description: Returns a Stripe Checkout URL for a new subscription.
+      operationId: checkoutSubscription
+      parameters:
+      - $ref: '#/components/parameters/workspaceUuid'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/checkoutSubscription_request'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/checkoutSubscription_200_response'
+          description: Checkout URL
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+      summary: New subscription checkout
+      tags:
+      - Subscriptions
+  /panel/workspaces/{workspaceUuid}/subscription/change-plan:
+    put:
+      operationId: changeSubscriptionPlan
+      parameters:
+      - $ref: '#/components/parameters/workspaceUuid'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/changeSubscriptionPlan_request'
+        required: true
+      responses:
+        "200":
+          $ref: '#/components/responses/SuccessResponse'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+      summary: Change subscription plan
+      tags:
+      - Subscriptions
+  /panel/workspaces/{workspaceUuid}/subscription/cancel:
+    post:
+      operationId: cancelSubscription
+      parameters:
+      - $ref: '#/components/parameters/workspaceUuid'
+      responses:
+        "200":
+          $ref: '#/components/responses/SuccessResponse'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+      summary: Cancel subscription
+      tags:
+      - Subscriptions
+  /panel/workspaces/{workspaceUuid}/subscription/resume:
+    post:
+      operationId: resumeSubscription
+      parameters:
+      - $ref: '#/components/parameters/workspaceUuid'
+      responses:
+        "200":
+          $ref: '#/components/responses/SuccessResponse'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+      summary: Resume subscription
+      tags:
+      - Subscriptions
+  /panel/workspaces/{workspaceUuid}/subscription/generic:
+    delete:
+      operationId: removeGenericSubscription
+      parameters:
+      - $ref: '#/components/parameters/workspaceUuid'
+      responses:
+        "200":
+          $ref: '#/components/responses/SuccessResponse'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+      summary: Remove generic subscription
+      tags:
+      - Subscriptions
+    post:
+      operationId: addGenericSubscription
+      parameters:
+      - $ref: '#/components/parameters/workspaceUuid'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/addGenericSubscription_request'
+        required: true
+      responses:
+        "200":
+          $ref: '#/components/responses/SuccessResponse'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+      summary: Add generic subscription
+      tags:
+      - Subscriptions
+  /panel/users:
+    delete:
+      operationId: deleteUsersBulk
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/deleteUsersBulk_request'
+        required: true
+      responses:
+        "200":
+          $ref: '#/components/responses/SuccessResponse'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+      summary: Delete users (bulk)
+      tags:
+      - Users
+    get:
+      operationId: listUsers
+      parameters:
+      - description: Search by name or email.
+        explode: true
+        in: query
+        name: keyword
+        required: false
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/listUsers_200_response'
+          description: Paginated list of users
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      summary: List users
+      tags:
+      - Users
+    post:
+      operationId: createUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserInput'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: Created user
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "422":
+          $ref: '#/components/responses/ValidationError'
+      summary: Create user
+      tags:
+      - Users
+  /panel/users/{userId}:
+    delete:
+      operationId: deleteUser
+      parameters:
+      - $ref: '#/components/parameters/userId'
+      responses:
+        "200":
+          $ref: '#/components/responses/SuccessResponse'
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/deleteUser_400_response'
+          description: Cannot delete own account
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+      summary: Delete user
+      tags:
+      - Users
+    get:
+      operationId: getUser
+      parameters:
+      - $ref: '#/components/parameters/userId'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: User details
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "404":
+          $ref: '#/components/responses/NotFound'
+      summary: Get user
+      tags:
+      - Users
+    put:
+      operationId: updateUser
+      parameters:
+      - $ref: '#/components/parameters/userId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdateInput'
+        required: true
+      responses:
+        "200":
+          $ref: '#/components/responses/SuccessResponse'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "422":
+          $ref: '#/components/responses/ValidationError'
+      summary: Update user
+      tags:
+      - Users
+  /panel/receipts:
+    delete:
+      operationId: deleteReceiptsBulk
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/deleteReceiptsBulk_request'
+        required: true
+      responses:
+        "200":
+          $ref: '#/components/responses/SuccessResponse'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+      summary: Delete receipts (bulk)
+      tags:
+      - Receipts
+    get:
+      operationId: listReceipts
+      parameters:
+      - explode: true
+        in: query
+        name: workspace_uuid
+        required: false
+        schema:
+          format: uuid
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: invoice_number
+        required: false
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/listReceipts_200_response'
+          description: Paginated list of receipts
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+      summary: List receipts
+      tags:
+      - Receipts
+    post:
+      operationId: createReceipt
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReceiptInput'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Receipt'
+          description: Created receipt
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "422":
+          $ref: '#/components/responses/ValidationError'
+      summary: Create receipt
+      tags:
+      - Receipts
+  /panel/receipts/{receiptUuid}:
+    delete:
+      operationId: deleteReceipt
+      parameters:
+      - $ref: '#/components/parameters/receiptUuid'
+      responses:
+        "200":
+          $ref: '#/components/responses/SuccessResponse'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "404":
+          $ref: '#/components/responses/NotFound'
+      summary: Delete receipt
+      tags:
+      - Receipts
+    get:
+      operationId: getReceipt
+      parameters:
+      - $ref: '#/components/parameters/receiptUuid'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Receipt'
+          description: Receipt details
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "404":
+          $ref: '#/components/responses/NotFound'
+      summary: Get receipt
+      tags:
+      - Receipts
+    put:
+      operationId: updateReceipt
+      parameters:
+      - $ref: '#/components/parameters/receiptUuid'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReceiptUpdateInput'
+        required: true
+      responses:
+        "200":
+          $ref: '#/components/responses/SuccessResponse'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "404":
+          $ref: '#/components/responses/NotFound'
+      summary: Update receipt
+      tags:
+      - Receipts
+components:
+  parameters:
+    workspaceUuid:
+      description: UUID of the workspace.
+      explode: false
+      in: path
+      name: workspaceUuid
+      required: true
+      schema:
+        format: uuid
+        type: string
+      style: simple
+    accountUuid:
+      description: UUID of the social media account.
+      explode: false
+      in: path
+      name: accountUuid
+      required: true
+      schema:
+        format: uuid
+        type: string
+      style: simple
+    mediaUuid:
+      description: UUID of the media asset.
+      explode: false
+      in: path
+      name: mediaUuid
+      required: true
+      schema:
+        format: uuid
+        type: string
+      style: simple
+    tagUuid:
+      description: UUID of the tag.
+      explode: false
+      in: path
+      name: tagUuid
+      required: true
+      schema:
+        format: uuid
+        type: string
+      style: simple
+    postUuid:
+      description: UUID of the post.
+      explode: false
+      in: path
+      name: postUuid
+      required: true
+      schema:
+        format: uuid
+        type: string
+      style: simple
+    userId:
+      description: ID of the user.
+      explode: false
+      in: path
+      name: userId
+      required: true
+      schema:
+        type: integer
+      style: simple
+    receiptUuid:
+      description: UUID of the receipt.
+      explode: false
+      in: path
+      name: receiptUuid
+      required: true
+      schema:
+        format: uuid
+        type: string
+      style: simple
+  responses:
+    Unauthorized:
+      content:
+        application/json:
+          schema:
+            properties:
+              message:
+                example: Unauthenticated.
+                type: string
+      description: Missing or invalid API token.
+    Forbidden:
+      content:
+        application/json:
+          schema:
+            properties:
+              message:
+                example: Access forbidden.
+                type: string
+      description: Insufficient permissions.
+    NotFound:
+      content:
+        application/json:
+          schema:
+            properties:
+              message:
+                example: Not found.
+                type: string
+      description: Resource not found.
+    ValidationError:
+      content:
+        application/json:
+          schema:
+            properties:
+              message:
+                example: Validation errors.
+                type: string
+              errors:
+                additionalProperties:
+                  items:
+                    type: string
+      description: Validation failed.
+    SuccessResponse:
+      content:
+        application/json:
+          schema:
+            properties:
+              success:
+                example: true
+                type: boolean
+      description: Operation succeeded.
+  schemas:
+    PaginationMeta:
+      properties:
+        links:
+          $ref: '#/components/schemas/PaginationMeta_links'
+        meta:
+          $ref: '#/components/schemas/PaginationMeta_meta'
+    Account:
+      example:
+        image: https://openapi-generator.tech
+        data: "{}"
+        provider: instagram
+        authorized: true
+        name: My Instagram
+        created_at: 2000-01-23T04:56:07.000+00:00
+        id: 0
+        uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        username: myhandle
+      properties:
+        id:
+          type: integer
+        uuid:
+          format: uuid
+          type: string
+        name:
+          example: My Instagram
+          type: string
+        username:
+          example: myhandle
+          type: string
+        image:
+          format: uri
+          type: string
+          nullable: true
+        provider:
+          enum:
+          - instagram
+          - tiktok
+          - pinterest
+          - twitter
+          - linkedin
+          - facebook_page
+          - youtube
+          - mastodon
+          type: string
+        data:
+          description: Provider-specific metadata.
+          type: object
+        authorized:
+          type: boolean
+        created_at:
+          format: date-time
+          type: string
+    Media:
+      example:
+        thumb_url: https://openapi-generator.tech
+        is_video: true
+        mime_type: image/jpeg
+        name: name
+        created_at: 2000-01-23T04:56:07.000+00:00
+        id: 7
+        type: image
+        uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        url: https://openapi-generator.tech
+      properties:
+        id:
+          type: integer
+        uuid:
+          format: uuid
+          type: string
+        name:
+          type: string
+        mime_type:
+          example: image/jpeg
+          type: string
+        type:
+          enum:
+          - image
+          - video
+          - gif
+          type: string
+        url:
+          format: uri
+          type: string
+        thumb_url:
+          format: uri
+          type: string
+          nullable: true
+        is_video:
+          type: boolean
+        created_at:
+          format: date-time
+          type: string
+    Tag:
+      example:
+        name: Campaign 2025
+        id: 0
+        hex_color: '#3B82F6'
+        uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+      properties:
+        id:
+          type: integer
+        uuid:
+          format: uuid
+          type: string
+        name:
+          example: Campaign 2025
+          type: string
+        hex_color:
+          example: '#3B82F6'
+          type: string
+    TagInput:
+      example:
+        name: name
+        hex_color: '#3B82F6'
+      properties:
+        name:
+          type: string
+        hex_color:
+          example: '#3B82F6'
+          type: string
+      required:
+      - hex_color
+      - name
+    PostStatus:
+      enum:
+      - draft
+      - scheduled
+      - published
+      type: string
+    DeleteMode:
+      default: app_only
+      description: |
+        - `app_only` — delete from PostBoost only
+        - `app_and_social` — delete from PostBoost and the social platform
+        - `social_only` — delete from the social platform only
+      enum:
+      - app_only
+      - app_and_social
+      - social_only
+      type: string
+    DeleteResult:
+      example:
+        deleted: true
+        deleted_from_app: true
+        to_trash: true
+      properties:
+        deleted:
+          type: boolean
+        deleted_from_app:
+          type: boolean
+        to_trash:
+          type: boolean
+    ScheduleResult:
+      example:
+        success: true
+        scheduled_at: 2025-06-01T10:00:00Z
+      properties:
+        success:
+          type: boolean
+        scheduled_at:
+          example: 2025-06-01T10:00:00Z
+          format: date-time
+          type: string
+    PostContent:
+      example:
+        video_thumbs:
+        - "{}"
+        - "{}"
+        media:
+        - 1
+        - 1
+        body: body
+        url: https://openapi-generator.tech
+      properties:
+        body:
+          description: Post text/caption.
+          type: string
+          nullable: true
+        url:
+          format: uri
+          type: string
+          nullable: true
+        media:
+          description: Array of media IDs from the media library.
+          items:
+            type: integer
+          type: array
+        video_thumbs:
+          items:
+            type: object
+          type: array
+    PostVersion:
+      example:
+        account_id: 6
+        is_original: true
+        options: "{}"
+        content:
+        - video_thumbs:
+          - "{}"
+          - "{}"
+          media:
+          - 1
+          - 1
+          body: body
+          url: https://openapi-generator.tech
+        - video_thumbs:
+          - "{}"
+          - "{}"
+          media:
+          - 1
+          - 1
+          body: body
+          url: https://openapi-generator.tech
+      properties:
+        account_id:
+          description: Use `0` for the original/default version.
+          type: integer
+        is_original:
+          description: Must be `true` for the first version.
+          type: boolean
+        content:
+          items:
+            $ref: '#/components/schemas/PostContent'
+          type: array
+        options:
+          description: Platform-specific publishing options.
+          type: object
+      required:
+      - account_id
+      - content
+      - is_original
+    PostInput:
+      example:
+        date: 2025-06-01
+        schedule: true
+        schedule_now: true
+        versions:
+        - account_id: 6
+          is_original: true
+          options: "{}"
+          content:
+          - video_thumbs:
+            - "{}"
+            - "{}"
+            media:
+            - 1
+            - 1
+            body: body
+            url: https://openapi-generator.tech
+          - video_thumbs:
+            - "{}"
+            - "{}"
+            media:
+            - 1
+            - 1
+            body: body
+            url: https://openapi-generator.tech
+        - account_id: 6
+          is_original: true
+          options: "{}"
+          content:
+          - video_thumbs:
+            - "{}"
+            - "{}"
+            media:
+            - 1
+            - 1
+            body: body
+            url: https://openapi-generator.tech
+          - video_thumbs:
+            - "{}"
+            - "{}"
+            media:
+            - 1
+            - 1
+            body: body
+            url: https://openapi-generator.tech
+        timezone: America/New_York
+        accounts:
+        - 0
+        - 0
+        time: 10:00
+        queue: true
+        tags:
+        - 6
+        - 6
+      properties:
+        versions:
+          description: "At least one version with `is_original: true` is required."
+          items:
+            $ref: '#/components/schemas/PostVersion'
+          minItems: 1
+          type: array
+        accounts:
+          description: Account IDs to publish to.
+          items:
+            type: integer
+          type: array
+        tags:
+          description: Tag IDs to attach.
+          items:
+            type: integer
+          type: array
+        date:
+          example: 2025-06-01
+          format: date
+          type: string
+        time:
+          example: 10:00
+          type: string
+        timezone:
+          example: America/New_York
+          type: string
+        schedule:
+          description: Schedule the post for the given date/time.
+          type: boolean
+        schedule_now:
+          description: Publish immediately.
+          type: boolean
+        queue:
+          description: Add to the smart publishing queue.
+          type: boolean
+      required:
+      - versions
+    Post:
+      example:
+        versions:
+        - account_id: 6
+          is_original: true
+          options: "{}"
+          content:
+          - video_thumbs:
+            - "{}"
+            - "{}"
+            media:
+            - 1
+            - 1
+            body: body
+            url: https://openapi-generator.tech
+          - video_thumbs:
+            - "{}"
+            - "{}"
+            media:
+            - 1
+            - 1
+            body: body
+            url: https://openapi-generator.tech
+        - account_id: 6
+          is_original: true
+          options: "{}"
+          content:
+          - video_thumbs:
+            - "{}"
+            - "{}"
+            media:
+            - 1
+            - 1
+            body: body
+            url: https://openapi-generator.tech
+          - video_thumbs:
+            - "{}"
+            - "{}"
+            media:
+            - 1
+            - 1
+            body: body
+            url: https://openapi-generator.tech
+        scheduled_at: 2000-01-23T04:56:07.000+00:00
+        created_at: 2000-01-23T04:56:07.000+00:00
+        id: 0
+        accounts:
+        - image: https://openapi-generator.tech
+          data: "{}"
+          provider: instagram
+          authorized: true
+          name: My Instagram
+          created_at: 2000-01-23T04:56:07.000+00:00
+          id: 0
+          uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          username: myhandle
+        - image: https://openapi-generator.tech
+          data: "{}"
+          provider: instagram
+          authorized: true
+          name: My Instagram
+          created_at: 2000-01-23T04:56:07.000+00:00
+          id: 0
+          uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          username: myhandle
+        published_at: 2000-01-23T04:56:07.000+00:00
+        uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        status: draft
+        tags:
+        - name: Campaign 2025
+          id: 0
+          hex_color: '#3B82F6'
+          uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        - name: Campaign 2025
+          id: 0
+          hex_color: '#3B82F6'
+          uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        trashed: true
+      properties:
+        id:
+          type: integer
+        uuid:
+          format: uuid
+          type: string
+        status:
+          $ref: '#/components/schemas/PostStatus'
+        accounts:
+          items:
+            $ref: '#/components/schemas/Account'
+          type: array
+        versions:
+          items:
+            $ref: '#/components/schemas/PostVersion'
+          type: array
+        tags:
+          items:
+            $ref: '#/components/schemas/Tag'
+          type: array
+        scheduled_at:
+          format: date-time
+          type: string
+          nullable: true
+        published_at:
+          format: date-time
+          type: string
+          nullable: true
+        created_at:
+          format: date-time
+          type: string
+        trashed:
+          type: boolean
+    WorkspaceInput:
+      example:
+        owner_id: 0
+        name: name
+        access_status: subscription
+        hex_color: '#1d4ed8'
+      properties:
+        name:
+          maxLength: 60
+          type: string
+        hex_color:
+          example: '#1d4ed8'
+          type: string
+        owner_id:
+          type: integer
+          nullable: true
+        access_status:
+          enum:
+          - subscription
+          - unlimited
+          - locked
+          type: string
+      required:
+      - access_status
+      - hex_color
+      - name
+    WorkspaceUserInput:
+      example:
+        role: admin
+        user_id: 0
+        is_owner: true
+        can_approve: true
+      properties:
+        user_id:
+          type: integer
+        role:
+          enum:
+          - admin
+          - member
+          - viewer
+          type: string
+        can_approve:
+          type: boolean
+        is_owner:
+          type: boolean
+      required:
+      - can_approve
+      - is_owner
+      - role
+      - user_id
+    Workspace:
+      example:
+        owner:
+          is_admin: true
+          name: name
+          created_at: 2000-01-23T04:56:07.000+00:00
+          email_verified_at: 2000-01-23T04:56:07.000+00:00
+          id: 0
+          email: email
+        name: name
+        access_status: subscription
+        created_at: 2000-01-23T04:56:07.000+00:00
+        hex_color: hex_color
+        uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+      properties:
+        uuid:
+          format: uuid
+          type: string
+        name:
+          type: string
+        hex_color:
+          type: string
+        owner:
+          $ref: '#/components/schemas/User'
+        access_status:
+          enum:
+          - subscription
+          - unlimited
+          - locked
+          type: string
+        created_at:
+          format: date-time
+          type: string
+    SubscriptionStatus:
+      enum:
+      - active
+      - trialing
+      - past_due
+      - paused
+      - canceled
+      - incomplete
+      type: string
+    SubscriptionInput:
+      example:
+        platform_plan_id: platform_plan_id
+        platform_subscription_id: platform_subscription_id
+        trial_ends_at: 2000-01-23T04:56:07.000+00:00
+        status: active
+      properties:
+        platform_subscription_id:
+          type: string
+        platform_plan_id:
+          type: string
+        status:
+          $ref: '#/components/schemas/SubscriptionStatus'
+        trial_ends_at:
+          description: Required when status is `trialing`.
+          format: date-time
+          type: string
+      required:
+      - platform_plan_id
+      - platform_subscription_id
+      - status
+    SubscriptionUpdateInput:
+      example:
+        platform_plan_id: platform_plan_id
+        trial_ends_at: 2000-01-23T04:56:07.000+00:00
+        status: active
+        paused_from: 2000-01-23T04:56:07.000+00:00
+      properties:
+        platform_plan_id:
+          type: string
+        status:
+          $ref: '#/components/schemas/SubscriptionStatus'
+        trial_ends_at:
+          description: Required when status is `trialing`.
+          format: date-time
+          type: string
+        paused_from:
+          description: Required when status is `paused`.
+          format: date-time
+          type: string
+      required:
+      - platform_plan_id
+      - status
+    Subscription:
+      example:
+        recurring: true
+        platform_plan_id: platform_plan_id
+        name: name
+        platform_subscription_id: platform_subscription_id
+        trial_ends_at: 2000-01-23T04:56:07.000+00:00
+        ends_at: 2000-01-23T04:56:07.000+00:00
+        status: active
+        paused_from: 2000-01-23T04:56:07.000+00:00
+      properties:
+        name:
+          type: string
+        platform_subscription_id:
+          type: string
+        platform_plan_id:
+          type: string
+        status:
+          $ref: '#/components/schemas/SubscriptionStatus'
+        recurring:
+          type: boolean
+        trial_ends_at:
+          format: date-time
+          type: string
+          nullable: true
+        paused_from:
+          format: date-time
+          type: string
+          nullable: true
+        ends_at:
+          format: date-time
+          type: string
+          nullable: true
+    UserInput:
+      example:
+        is_admin: true
+        password: password
+        password_confirmation: password_confirmation
+        name: name
+        email: email
+      properties:
+        name:
+          maxLength: 255
+          type: string
+        email:
+          format: email
+          type: string
+        password:
+          format: password
+          type: string
+        password_confirmation:
+          format: password
+          type: string
+        is_admin:
+          type: boolean
+      required:
+      - email
+      - is_admin
+      - name
+      - password
+      - password_confirmation
+    UserUpdateInput:
+      example:
+        is_admin: true
+        password: password
+        password_confirmation: password_confirmation
+        name: name
+        email: email
+      properties:
+        name:
+          type: string
+        email:
+          format: email
+          type: string
+        password:
+          description: Omit or set to null to keep the current password.
+          format: password
+          type: string
+          nullable: true
+        password_confirmation:
+          format: password
+          type: string
+        is_admin:
+          type: boolean
+      required:
+      - email
+      - is_admin
+      - name
+    User:
+      example:
+        is_admin: true
+        name: name
+        created_at: 2000-01-23T04:56:07.000+00:00
+        email_verified_at: 2000-01-23T04:56:07.000+00:00
+        id: 0
+        email: email
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          format: email
+          type: string
+        is_admin:
+          type: boolean
+        email_verified_at:
+          format: date-time
+          type: string
+          nullable: true
+        created_at:
+          format: date-time
+          type: string
+    ReceiptInput:
+      example:
+        transaction_id: transaction_id
+        paid_at: 2000-01-23
+        amount: 0.8008281904610115
+        receipt_url: https://openapi-generator.tech
+        description: description
+        workspace_uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        tax: 6.027456183070403
+        currency: USD
+        invoice_number: invoice_number
+      properties:
+        workspace_uuid:
+          format: uuid
+          type: string
+        transaction_id:
+          type: string
+        invoice_number:
+          type: string
+        amount:
+          type: number
+        tax:
+          type: number
+        currency:
+          example: USD
+          type: string
+        description:
+          type: string
+          nullable: true
+        receipt_url:
+          format: uri
+          type: string
+          nullable: true
+        paid_at:
+          format: date
+          type: string
+      required:
+      - amount
+      - currency
+      - invoice_number
+      - paid_at
+      - tax
+      - transaction_id
+      - workspace_uuid
+    ReceiptUpdateInput:
+      example:
+        transaction_id: transaction_id
+        paid_at: 2000-01-23
+        amount: 0.8008281904610115
+        receipt_url: https://openapi-generator.tech
+        description: description
+        tax: 6.027456183070403
+        currency: currency
+        invoice_number: invoice_number
+      properties:
+        transaction_id:
+          type: string
+        invoice_number:
+          type: string
+        amount:
+          type: number
+        tax:
+          type: number
+          nullable: true
+        currency:
+          type: string
+        description:
+          type: string
+          nullable: true
+        receipt_url:
+          format: uri
+          type: string
+          nullable: true
+        paid_at:
+          format: date
+          type: string
+      required:
+      - amount
+      - currency
+      - invoice_number
+      - paid_at
+      - transaction_id
+    Receipt:
+      example:
+        transaction_id: transaction_id
+        paid_at: 2000-01-23T04:56:07.000+00:00
+        amount: 0.8008281904610115
+        receipt_url: https://openapi-generator.tech
+        description: description
+        created_at: 2000-01-23T04:56:07.000+00:00
+        tax: 6.027456183070403
+        currency: currency
+        uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        invoice_number: invoice_number
+      properties:
+        uuid:
+          format: uuid
+          type: string
+        transaction_id:
+          type: string
+        invoice_number:
+          type: string
+        amount:
+          type: number
+        tax:
+          type: number
+        currency:
+          type: string
+        receipt_url:
+          format: uri
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        paid_at:
+          format: date-time
+          type: string
+        created_at:
+          format: date-time
+          type: string
+    listAccounts_200_response:
+      example:
+        data:
+        - image: https://openapi-generator.tech
+          data: "{}"
+          provider: instagram
+          authorized: true
+          name: My Instagram
+          created_at: 2000-01-23T04:56:07.000+00:00
+          id: 0
+          uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          username: myhandle
+        - image: https://openapi-generator.tech
+          data: "{}"
+          provider: instagram
+          authorized: true
+          name: My Instagram
+          created_at: 2000-01-23T04:56:07.000+00:00
+          id: 0
+          uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          username: myhandle
+      properties:
+        data:
+          items:
+            $ref: '#/components/schemas/Account'
+          type: array
+    listMedia_200_response:
+      allOf:
+      - $ref: '#/components/schemas/PaginationMeta'
+      - properties:
+          data:
+            items:
+              $ref: '#/components/schemas/Media'
+            type: array
+      example:
+        data:
+        - thumb_url: https://openapi-generator.tech
+          is_video: true
+          mime_type: image/jpeg
+          name: name
+          created_at: 2000-01-23T04:56:07.000+00:00
+          id: 7
+          type: image
+          uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          url: https://openapi-generator.tech
+        - thumb_url: https://openapi-generator.tech
+          is_video: true
+          mime_type: image/jpeg
+          name: name
+          created_at: 2000-01-23T04:56:07.000+00:00
+          id: 7
+          type: image
+          uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          url: https://openapi-generator.tech
+        meta:
+          per_page: 5
+          total: 2
+          last_page: 1
+          from: 6
+          to: 5
+          current_page: 0
+        links:
+          next: next
+          last: last
+          prev: prev
+          first: first
+    uploadMedia_request:
+      properties:
+        file:
+          description: The file to upload.
+          format: binary
+          type: string
+        alt_text:
+          description: Alternative text for accessibility.
+          maxLength: 255
+          type: string
+      required:
+      - file
+    deleteMediaBulk_request:
+      properties:
+        items:
+          description: Array of media IDs to delete.
+          items:
+            type: integer
+          type: array
+      required:
+      - items
+    updateMedia_request:
+      properties:
+        alt_text:
+          description: Alternative text for accessibility.
+          type: string
+      required:
+      - alt_text
+    initiateChunkedUpload_request:
+      properties:
+        filename:
+          maxLength: 255
+          type: string
+        mime_type:
+          example: video/mp4
+          type: string
+        total_size:
+          description: Total file size in bytes.
+          type: integer
+      required:
+      - filename
+      - mime_type
+      - total_size
+    initiateChunkedUpload_200_response:
+      example:
+        upload_uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        chunk_size: 0
+        total_chunks: 6
+      properties:
+        upload_uuid:
+          format: uuid
+          type: string
+        chunk_size:
+          type: integer
+        total_chunks:
+          type: integer
+    initiateRemoteUpload_request:
+      properties:
+        url:
+          description: URL of the remote file to download.
+          format: uri
+          type: string
+        alt_text:
+          maxLength: 255
+          type: string
+      required:
+      - url
+    initiateRemoteUpload_200_response_oneOf:
+      properties:
+        download_id:
+          type: string
+    initiateRemoteUpload_200_response:
+      oneOf:
+      - $ref: '#/components/schemas/Media'
+      - $ref: '#/components/schemas/initiateRemoteUpload_200_response_oneOf'
+    uploadChunk_request:
+      properties:
+        chunk:
+          format: binary
+          type: string
+        chunk_index:
+          description: Zero-based index of this chunk.
+          type: integer
+      required:
+      - chunk
+      - chunk_index
+    uploadChunk_200_response:
+      example:
+        received: 0
+      properties:
+        received:
+          description: Number of chunks received so far.
+          type: integer
+    getRemoteUploadStatus_200_response:
+      example:
+        media:
+          thumb_url: https://openapi-generator.tech
+          is_video: true
+          mime_type: image/jpeg
+          name: name
+          created_at: 2000-01-23T04:56:07.000+00:00
+          id: 7
+          type: image
+          uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          url: https://openapi-generator.tech
+        status: pending
+      properties:
+        status:
+          enum:
+          - pending
+          - downloading
+          - complete
+          - failed
+          type: string
+        media:
+          $ref: '#/components/schemas/Media'
+    listTags_200_response:
+      example:
+        data:
+        - name: Campaign 2025
+          id: 0
+          hex_color: '#3B82F6'
+          uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        - name: Campaign 2025
+          id: 0
+          hex_color: '#3B82F6'
+          uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+      properties:
+        data:
+          items:
+            $ref: '#/components/schemas/Tag'
+          type: array
+    listPosts_200_response:
+      allOf:
+      - $ref: '#/components/schemas/PaginationMeta'
+      - properties:
+          data:
+            items:
+              $ref: '#/components/schemas/Post'
+            type: array
+      example:
+        data:
+        - versions:
+          - account_id: 6
+            is_original: true
+            options: "{}"
+            content:
+            - video_thumbs:
+              - "{}"
+              - "{}"
+              media:
+              - 1
+              - 1
+              body: body
+              url: https://openapi-generator.tech
+            - video_thumbs:
+              - "{}"
+              - "{}"
+              media:
+              - 1
+              - 1
+              body: body
+              url: https://openapi-generator.tech
+          - account_id: 6
+            is_original: true
+            options: "{}"
+            content:
+            - video_thumbs:
+              - "{}"
+              - "{}"
+              media:
+              - 1
+              - 1
+              body: body
+              url: https://openapi-generator.tech
+            - video_thumbs:
+              - "{}"
+              - "{}"
+              media:
+              - 1
+              - 1
+              body: body
+              url: https://openapi-generator.tech
+          scheduled_at: 2000-01-23T04:56:07.000+00:00
+          created_at: 2000-01-23T04:56:07.000+00:00
+          id: 0
+          accounts:
+          - image: https://openapi-generator.tech
+            data: "{}"
+            provider: instagram
+            authorized: true
+            name: My Instagram
+            created_at: 2000-01-23T04:56:07.000+00:00
+            id: 0
+            uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            username: myhandle
+          - image: https://openapi-generator.tech
+            data: "{}"
+            provider: instagram
+            authorized: true
+            name: My Instagram
+            created_at: 2000-01-23T04:56:07.000+00:00
+            id: 0
+            uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            username: myhandle
+          published_at: 2000-01-23T04:56:07.000+00:00
+          uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          status: draft
+          tags:
+          - name: Campaign 2025
+            id: 0
+            hex_color: '#3B82F6'
+            uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          - name: Campaign 2025
+            id: 0
+            hex_color: '#3B82F6'
+            uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          trashed: true
+        - versions:
+          - account_id: 6
+            is_original: true
+            options: "{}"
+            content:
+            - video_thumbs:
+              - "{}"
+              - "{}"
+              media:
+              - 1
+              - 1
+              body: body
+              url: https://openapi-generator.tech
+            - video_thumbs:
+              - "{}"
+              - "{}"
+              media:
+              - 1
+              - 1
+              body: body
+              url: https://openapi-generator.tech
+          - account_id: 6
+            is_original: true
+            options: "{}"
+            content:
+            - video_thumbs:
+              - "{}"
+              - "{}"
+              media:
+              - 1
+              - 1
+              body: body
+              url: https://openapi-generator.tech
+            - video_thumbs:
+              - "{}"
+              - "{}"
+              media:
+              - 1
+              - 1
+              body: body
+              url: https://openapi-generator.tech
+          scheduled_at: 2000-01-23T04:56:07.000+00:00
+          created_at: 2000-01-23T04:56:07.000+00:00
+          id: 0
+          accounts:
+          - image: https://openapi-generator.tech
+            data: "{}"
+            provider: instagram
+            authorized: true
+            name: My Instagram
+            created_at: 2000-01-23T04:56:07.000+00:00
+            id: 0
+            uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            username: myhandle
+          - image: https://openapi-generator.tech
+            data: "{}"
+            provider: instagram
+            authorized: true
+            name: My Instagram
+            created_at: 2000-01-23T04:56:07.000+00:00
+            id: 0
+            uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            username: myhandle
+          published_at: 2000-01-23T04:56:07.000+00:00
+          uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          status: draft
+          tags:
+          - name: Campaign 2025
+            id: 0
+            hex_color: '#3B82F6'
+            uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          - name: Campaign 2025
+            id: 0
+            hex_color: '#3B82F6'
+            uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          trashed: true
+        meta:
+          per_page: 5
+          total: 2
+          last_page: 1
+          from: 6
+          to: 5
+          current_page: 0
+        links:
+          next: next
+          last: last
+          prev: prev
+          first: first
+    deletePostsBulk_request:
+      properties:
+        posts:
+          description: Array of post UUIDs to delete.
+          items:
+            format: uuid
+            type: string
+          type: array
+        trash:
+          default: false
+          description: Move to trash instead of permanent delete.
+          type: boolean
+        delete_mode:
+          $ref: '#/components/schemas/DeleteMode'
+      required:
+      - posts
+    deletePost_request:
+      properties:
+        trash:
+          default: false
+          type: boolean
+        delete_mode:
+          $ref: '#/components/schemas/DeleteMode'
+    schedulePost_request:
+      properties:
+        postNow:
+          type: boolean
+      required:
+      - postNow
+    listWorkspaces_200_response:
+      allOf:
+      - $ref: '#/components/schemas/PaginationMeta'
+      - properties:
+          data:
+            items:
+              $ref: '#/components/schemas/Workspace'
+            type: array
+      example:
+        data:
+        - owner:
+            is_admin: true
+            name: name
+            created_at: 2000-01-23T04:56:07.000+00:00
+            email_verified_at: 2000-01-23T04:56:07.000+00:00
+            id: 0
+            email: email
+          name: name
+          access_status: subscription
+          created_at: 2000-01-23T04:56:07.000+00:00
+          hex_color: hex_color
+          uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        - owner:
+            is_admin: true
+            name: name
+            created_at: 2000-01-23T04:56:07.000+00:00
+            email_verified_at: 2000-01-23T04:56:07.000+00:00
+            id: 0
+            email: email
+          name: name
+          access_status: subscription
+          created_at: 2000-01-23T04:56:07.000+00:00
+          hex_color: hex_color
+          uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        meta:
+          per_page: 5
+          total: 2
+          last_page: 1
+          from: 6
+          to: 5
+          current_page: 0
+        links:
+          next: next
+          last: last
+          prev: prev
+          first: first
+    deleteWorkspacesBulk_request:
+      properties:
+        workspaces:
+          items:
+            format: uuid
+            type: string
+          type: array
+      required:
+      - workspaces
+    removeUserFromWorkspace_request:
+      properties:
+        user_id:
+          type: integer
+      required:
+      - user_id
+    checkoutSubscription_request:
+      properties:
+        plan_id:
+          type: integer
+        cycle:
+          enum:
+          - monthly
+          - yearly
+          type: string
+        coupon:
+          type: string
+      required:
+      - cycle
+      - plan_id
+    checkoutSubscription_200_response:
+      example:
+        url: https://openapi-generator.tech
+      properties:
+        url:
+          format: uri
+          type: string
+    changeSubscriptionPlan_request:
+      properties:
+        plan_id:
+          type: integer
+        cycle:
+          enum:
+          - monthly
+          - yearly
+          type: string
+        prorate:
+          type: boolean
+        billing_immediately:
+          type: boolean
+      required:
+      - billing_immediately
+      - cycle
+      - plan_id
+      - prorate
+    addGenericSubscription_request:
+      properties:
+        plan_id:
+          type: integer
+        trial_days:
+          maximum: 365
+          minimum: 0
+          type: integer
+        keep_prev_trial_ends_at:
+          type: boolean
+      required:
+      - keep_prev_trial_ends_at
+      - plan_id
+    listUsers_200_response:
+      allOf:
+      - $ref: '#/components/schemas/PaginationMeta'
+      - properties:
+          data:
+            items:
+              $ref: '#/components/schemas/User'
+            type: array
+      example:
+        data:
+        - is_admin: true
+          name: name
+          created_at: 2000-01-23T04:56:07.000+00:00
+          email_verified_at: 2000-01-23T04:56:07.000+00:00
+          id: 0
+          email: email
+        - is_admin: true
+          name: name
+          created_at: 2000-01-23T04:56:07.000+00:00
+          email_verified_at: 2000-01-23T04:56:07.000+00:00
+          id: 0
+          email: email
+        meta:
+          per_page: 5
+          total: 2
+          last_page: 1
+          from: 6
+          to: 5
+          current_page: 0
+        links:
+          next: next
+          last: last
+          prev: prev
+          first: first
+    deleteUsersBulk_request:
+      properties:
+        users:
+          items:
+            type: integer
+          type: array
+      required:
+      - users
+    deleteUser_400_response:
+      example:
+        success: false
+        message: You cannot delete yourself.
+      properties:
+        success:
+          example: false
+          type: boolean
+        message:
+          example: You cannot delete yourself.
+          type: string
+    listReceipts_200_response:
+      allOf:
+      - $ref: '#/components/schemas/PaginationMeta'
+      - properties:
+          data:
+            items:
+              $ref: '#/components/schemas/Receipt'
+            type: array
+      example:
+        data:
+        - transaction_id: transaction_id
+          paid_at: 2000-01-23T04:56:07.000+00:00
+          amount: 0.8008281904610115
+          receipt_url: https://openapi-generator.tech
+          description: description
+          created_at: 2000-01-23T04:56:07.000+00:00
+          tax: 6.027456183070403
+          currency: currency
+          uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          invoice_number: invoice_number
+        - transaction_id: transaction_id
+          paid_at: 2000-01-23T04:56:07.000+00:00
+          amount: 0.8008281904610115
+          receipt_url: https://openapi-generator.tech
+          description: description
+          created_at: 2000-01-23T04:56:07.000+00:00
+          tax: 6.027456183070403
+          currency: currency
+          uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          invoice_number: invoice_number
+        meta:
+          per_page: 5
+          total: 2
+          last_page: 1
+          from: 6
+          to: 5
+          current_page: 0
+        links:
+          next: next
+          last: last
+          prev: prev
+          first: first
+    deleteReceiptsBulk_request:
+      properties:
+        receipts:
+          items:
+            format: uuid
+            type: string
+          type: array
+      required:
+      - receipts
+    PaginationMeta_links:
+      example:
+        next: next
+        last: last
+        prev: prev
+        first: first
+      properties:
+        first:
+          type: string
+        last:
+          type: string
+        prev:
+          type: string
+          nullable: true
+        next:
+          type: string
+          nullable: true
+    PaginationMeta_meta:
+      example:
+        per_page: 5
+        total: 2
+        last_page: 1
+        from: 6
+        to: 5
+        current_page: 0
+      properties:
+        current_page:
+          type: integer
+        from:
+          type: integer
+        last_page:
+          type: integer
+        per_page:
+          type: integer
+        to:
+          type: integer
+        total:
+          type: integer
+  securitySchemes:
+    bearerAuth:
+      description: |
+        Generate API tokens in your PostBoost dashboard under **Settings → Access Tokens**.
+        Include the token in every request:
+        ```
+        Authorization: Bearer YOUR_API_TOKEN
+        ```
+      scheme: bearer
+      type: http
+
