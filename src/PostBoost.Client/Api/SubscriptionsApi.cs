@@ -30,6 +30,9 @@ namespace PostBoost.Client.Api
         /// <summary>
         /// Add generic subscription
         /// </summary>
+        /// <remarks>
+        /// Assigns a non-Stripe (generic) subscription plan to the workspace, optionally granting a trial period. Used for AppSumo-style lifetime deals. Admin only.
+        /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
         /// <param name="addGenericSubscriptionRequest"></param>
@@ -41,7 +44,7 @@ namespace PostBoost.Client.Api
         /// Add generic subscription
         /// </summary>
         /// <remarks>
-        /// 
+        /// Assigns a non-Stripe (generic) subscription plan to the workspace, optionally granting a trial period. Used for AppSumo-style lifetime deals. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -52,6 +55,9 @@ namespace PostBoost.Client.Api
         /// <summary>
         /// Cancel subscription
         /// </summary>
+        /// <remarks>
+        /// Cancels the workspace&#39;s Stripe subscription at the end of the current billing period. Admin only.
+        /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
         /// <param name="operationIndex">Index associated with the operation.</param>
@@ -62,7 +68,7 @@ namespace PostBoost.Client.Api
         /// Cancel subscription
         /// </summary>
         /// <remarks>
-        /// 
+        /// Cancels the workspace&#39;s Stripe subscription at the end of the current billing period. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -72,6 +78,9 @@ namespace PostBoost.Client.Api
         /// <summary>
         /// Change subscription plan
         /// </summary>
+        /// <remarks>
+        /// Switches the workspace to a different Stripe plan. Optionally prorates the change and bills immediately. Admin only.
+        /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
         /// <param name="changeSubscriptionPlanRequest"></param>
@@ -83,7 +92,7 @@ namespace PostBoost.Client.Api
         /// Change subscription plan
         /// </summary>
         /// <remarks>
-        /// 
+        /// Switches the workspace to a different Stripe plan. Optionally prorates the change and bills immediately. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -119,6 +128,9 @@ namespace PostBoost.Client.Api
         /// <summary>
         /// Create subscription
         /// </summary>
+        /// <remarks>
+        /// Manually creates a subscription record for the workspace (for external billing integrations). Admin only.
+        /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
         /// <param name="subscriptionInput"></param>
@@ -130,7 +142,7 @@ namespace PostBoost.Client.Api
         /// Create subscription
         /// </summary>
         /// <remarks>
-        /// 
+        /// Manually creates a subscription record for the workspace (for external billing integrations). Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -141,6 +153,9 @@ namespace PostBoost.Client.Api
         /// <summary>
         /// Delete subscription
         /// </summary>
+        /// <remarks>
+        /// Removes the subscription record from the workspace. Admin only.
+        /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
         /// <param name="operationIndex">Index associated with the operation.</param>
@@ -151,7 +166,7 @@ namespace PostBoost.Client.Api
         /// Delete subscription
         /// </summary>
         /// <remarks>
-        /// 
+        /// Removes the subscription record from the workspace. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -161,6 +176,9 @@ namespace PostBoost.Client.Api
         /// <summary>
         /// Get subscription
         /// </summary>
+        /// <remarks>
+        /// Returns the active subscription for the workspace, or &#x60;null&#x60; if none exists. Admin only.
+        /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
         /// <param name="operationIndex">Index associated with the operation.</param>
@@ -171,7 +189,7 @@ namespace PostBoost.Client.Api
         /// Get subscription
         /// </summary>
         /// <remarks>
-        /// 
+        /// Returns the active subscription for the workspace, or &#x60;null&#x60; if none exists. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -181,6 +199,9 @@ namespace PostBoost.Client.Api
         /// <summary>
         /// Remove generic subscription
         /// </summary>
+        /// <remarks>
+        /// Removes the generic (non-Stripe) subscription from the workspace. Admin only.
+        /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
         /// <param name="operationIndex">Index associated with the operation.</param>
@@ -191,7 +212,7 @@ namespace PostBoost.Client.Api
         /// Remove generic subscription
         /// </summary>
         /// <remarks>
-        /// 
+        /// Removes the generic (non-Stripe) subscription from the workspace. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -201,6 +222,9 @@ namespace PostBoost.Client.Api
         /// <summary>
         /// Resume subscription
         /// </summary>
+        /// <remarks>
+        /// Resumes a previously canceled subscription before it expires. Admin only.
+        /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
         /// <param name="operationIndex">Index associated with the operation.</param>
@@ -211,7 +235,7 @@ namespace PostBoost.Client.Api
         /// Resume subscription
         /// </summary>
         /// <remarks>
-        /// 
+        /// Resumes a previously canceled subscription before it expires. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -221,6 +245,9 @@ namespace PostBoost.Client.Api
         /// <summary>
         /// Update subscription
         /// </summary>
+        /// <remarks>
+        /// Updates the plan ID, status, or trial/pause dates of an existing subscription. Admin only.
+        /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
         /// <param name="subscriptionUpdateInput"></param>
@@ -232,7 +259,7 @@ namespace PostBoost.Client.Api
         /// Update subscription
         /// </summary>
         /// <remarks>
-        /// 
+        /// Updates the plan ID, status, or trial/pause dates of an existing subscription. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -253,7 +280,7 @@ namespace PostBoost.Client.Api
         /// Add generic subscription
         /// </summary>
         /// <remarks>
-        /// 
+        /// Assigns a non-Stripe (generic) subscription plan to the workspace, optionally granting a trial period. Used for AppSumo-style lifetime deals. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -267,7 +294,7 @@ namespace PostBoost.Client.Api
         /// Add generic subscription
         /// </summary>
         /// <remarks>
-        /// 
+        /// Assigns a non-Stripe (generic) subscription plan to the workspace, optionally granting a trial period. Used for AppSumo-style lifetime deals. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -280,7 +307,7 @@ namespace PostBoost.Client.Api
         /// Cancel subscription
         /// </summary>
         /// <remarks>
-        /// 
+        /// Cancels the workspace&#39;s Stripe subscription at the end of the current billing period. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -293,7 +320,7 @@ namespace PostBoost.Client.Api
         /// Cancel subscription
         /// </summary>
         /// <remarks>
-        /// 
+        /// Cancels the workspace&#39;s Stripe subscription at the end of the current billing period. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -305,7 +332,7 @@ namespace PostBoost.Client.Api
         /// Change subscription plan
         /// </summary>
         /// <remarks>
-        /// 
+        /// Switches the workspace to a different Stripe plan. Optionally prorates the change and bills immediately. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -319,7 +346,7 @@ namespace PostBoost.Client.Api
         /// Change subscription plan
         /// </summary>
         /// <remarks>
-        /// 
+        /// Switches the workspace to a different Stripe plan. Optionally prorates the change and bills immediately. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -359,7 +386,7 @@ namespace PostBoost.Client.Api
         /// Create subscription
         /// </summary>
         /// <remarks>
-        /// 
+        /// Manually creates a subscription record for the workspace (for external billing integrations). Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -373,7 +400,7 @@ namespace PostBoost.Client.Api
         /// Create subscription
         /// </summary>
         /// <remarks>
-        /// 
+        /// Manually creates a subscription record for the workspace (for external billing integrations). Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -386,7 +413,7 @@ namespace PostBoost.Client.Api
         /// Delete subscription
         /// </summary>
         /// <remarks>
-        /// 
+        /// Removes the subscription record from the workspace. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -399,7 +426,7 @@ namespace PostBoost.Client.Api
         /// Delete subscription
         /// </summary>
         /// <remarks>
-        /// 
+        /// Removes the subscription record from the workspace. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -411,7 +438,7 @@ namespace PostBoost.Client.Api
         /// Get subscription
         /// </summary>
         /// <remarks>
-        /// 
+        /// Returns the active subscription for the workspace, or &#x60;null&#x60; if none exists. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -424,7 +451,7 @@ namespace PostBoost.Client.Api
         /// Get subscription
         /// </summary>
         /// <remarks>
-        /// 
+        /// Returns the active subscription for the workspace, or &#x60;null&#x60; if none exists. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -436,7 +463,7 @@ namespace PostBoost.Client.Api
         /// Remove generic subscription
         /// </summary>
         /// <remarks>
-        /// 
+        /// Removes the generic (non-Stripe) subscription from the workspace. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -449,7 +476,7 @@ namespace PostBoost.Client.Api
         /// Remove generic subscription
         /// </summary>
         /// <remarks>
-        /// 
+        /// Removes the generic (non-Stripe) subscription from the workspace. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -461,7 +488,7 @@ namespace PostBoost.Client.Api
         /// Resume subscription
         /// </summary>
         /// <remarks>
-        /// 
+        /// Resumes a previously canceled subscription before it expires. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -474,7 +501,7 @@ namespace PostBoost.Client.Api
         /// Resume subscription
         /// </summary>
         /// <remarks>
-        /// 
+        /// Resumes a previously canceled subscription before it expires. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -486,7 +513,7 @@ namespace PostBoost.Client.Api
         /// Update subscription
         /// </summary>
         /// <remarks>
-        /// 
+        /// Updates the plan ID, status, or trial/pause dates of an existing subscription. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -500,7 +527,7 @@ namespace PostBoost.Client.Api
         /// Update subscription
         /// </summary>
         /// <remarks>
-        /// 
+        /// Updates the plan ID, status, or trial/pause dates of an existing subscription. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -630,7 +657,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Add generic subscription 
+        /// Add generic subscription Assigns a non-Stripe (generic) subscription plan to the workspace, optionally granting a trial period. Used for AppSumo-style lifetime deals. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -644,7 +671,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Add generic subscription 
+        /// Add generic subscription Assigns a non-Stripe (generic) subscription plan to the workspace, optionally granting a trial period. Used for AppSumo-style lifetime deals. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -710,7 +737,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Add generic subscription 
+        /// Add generic subscription Assigns a non-Stripe (generic) subscription plan to the workspace, optionally granting a trial period. Used for AppSumo-style lifetime deals. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -725,7 +752,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Add generic subscription 
+        /// Add generic subscription Assigns a non-Stripe (generic) subscription plan to the workspace, optionally granting a trial period. Used for AppSumo-style lifetime deals. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -794,7 +821,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Cancel subscription 
+        /// Cancel subscription Cancels the workspace&#39;s Stripe subscription at the end of the current billing period. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -807,7 +834,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Cancel subscription 
+        /// Cancel subscription Cancels the workspace&#39;s Stripe subscription at the end of the current billing period. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -864,7 +891,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Cancel subscription 
+        /// Cancel subscription Cancels the workspace&#39;s Stripe subscription at the end of the current billing period. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -878,7 +905,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Cancel subscription 
+        /// Cancel subscription Cancels the workspace&#39;s Stripe subscription at the end of the current billing period. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -938,7 +965,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Change subscription plan 
+        /// Change subscription plan Switches the workspace to a different Stripe plan. Optionally prorates the change and bills immediately. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -952,7 +979,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Change subscription plan 
+        /// Change subscription plan Switches the workspace to a different Stripe plan. Optionally prorates the change and bills immediately. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -1018,7 +1045,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Change subscription plan 
+        /// Change subscription plan Switches the workspace to a different Stripe plan. Optionally prorates the change and bills immediately. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -1033,7 +1060,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Change subscription plan 
+        /// Change subscription plan Switches the workspace to a different Stripe plan. Optionally prorates the change and bills immediately. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -1266,7 +1293,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Create subscription 
+        /// Create subscription Manually creates a subscription record for the workspace (for external billing integrations). Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -1280,7 +1307,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Create subscription 
+        /// Create subscription Manually creates a subscription record for the workspace (for external billing integrations). Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -1346,7 +1373,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Create subscription 
+        /// Create subscription Manually creates a subscription record for the workspace (for external billing integrations). Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -1361,7 +1388,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Create subscription 
+        /// Create subscription Manually creates a subscription record for the workspace (for external billing integrations). Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -1430,7 +1457,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Delete subscription 
+        /// Delete subscription Removes the subscription record from the workspace. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -1443,7 +1470,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Delete subscription 
+        /// Delete subscription Removes the subscription record from the workspace. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -1500,7 +1527,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Delete subscription 
+        /// Delete subscription Removes the subscription record from the workspace. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -1514,7 +1541,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Delete subscription 
+        /// Delete subscription Removes the subscription record from the workspace. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -1574,7 +1601,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Get subscription 
+        /// Get subscription Returns the active subscription for the workspace, or &#x60;null&#x60; if none exists. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -1587,7 +1614,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Get subscription 
+        /// Get subscription Returns the active subscription for the workspace, or &#x60;null&#x60; if none exists. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -1644,7 +1671,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Get subscription 
+        /// Get subscription Returns the active subscription for the workspace, or &#x60;null&#x60; if none exists. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -1658,7 +1685,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Get subscription 
+        /// Get subscription Returns the active subscription for the workspace, or &#x60;null&#x60; if none exists. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -1718,7 +1745,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Remove generic subscription 
+        /// Remove generic subscription Removes the generic (non-Stripe) subscription from the workspace. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -1731,7 +1758,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Remove generic subscription 
+        /// Remove generic subscription Removes the generic (non-Stripe) subscription from the workspace. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -1788,7 +1815,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Remove generic subscription 
+        /// Remove generic subscription Removes the generic (non-Stripe) subscription from the workspace. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -1802,7 +1829,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Remove generic subscription 
+        /// Remove generic subscription Removes the generic (non-Stripe) subscription from the workspace. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -1862,7 +1889,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Resume subscription 
+        /// Resume subscription Resumes a previously canceled subscription before it expires. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -1875,7 +1902,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Resume subscription 
+        /// Resume subscription Resumes a previously canceled subscription before it expires. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -1932,7 +1959,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Resume subscription 
+        /// Resume subscription Resumes a previously canceled subscription before it expires. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -1946,7 +1973,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Resume subscription 
+        /// Resume subscription Resumes a previously canceled subscription before it expires. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -2006,7 +2033,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Update subscription 
+        /// Update subscription Updates the plan ID, status, or trial/pause dates of an existing subscription. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -2020,7 +2047,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Update subscription 
+        /// Update subscription Updates the plan ID, status, or trial/pause dates of an existing subscription. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -2086,7 +2113,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Update subscription 
+        /// Update subscription Updates the plan ID, status, or trial/pause dates of an existing subscription. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -2101,7 +2128,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Update subscription 
+        /// Update subscription Updates the plan ID, status, or trial/pause dates of an existing subscription. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>

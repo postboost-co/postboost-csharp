@@ -36,23 +36,43 @@ namespace PostBoost.Client.Model
         /// <summary>
         /// Gets or Sets Status
         /// </summary>
-        [DataMember(Name = "status", EmitDefaultValue = false)]
-        public SubscriptionStatus? Status { get; set; }
+        [DataMember(Name = "status", IsRequired = true, EmitDefaultValue = true)]
+        public SubscriptionStatus Status { get; set; }
         /// <summary>
         /// Initializes a new instance of the <see cref="Subscription" /> class.
         /// </summary>
-        /// <param name="name">name.</param>
-        /// <param name="platformSubscriptionId">platformSubscriptionId.</param>
-        /// <param name="platformPlanId">platformPlanId.</param>
-        /// <param name="status">status.</param>
-        /// <param name="recurring">recurring.</param>
+        [JsonConstructorAttribute]
+        protected Subscription() { }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Subscription" /> class.
+        /// </summary>
+        /// <param name="name">name (required).</param>
+        /// <param name="platformSubscriptionId">platformSubscriptionId (required).</param>
+        /// <param name="platformPlanId">platformPlanId (required).</param>
+        /// <param name="status">status (required).</param>
+        /// <param name="recurring">recurring (required).</param>
         /// <param name="trialEndsAt">trialEndsAt.</param>
         /// <param name="pausedFrom">pausedFrom.</param>
         /// <param name="endsAt">endsAt.</param>
-        public Subscription(string name = default(string), string platformSubscriptionId = default(string), string platformPlanId = default(string), SubscriptionStatus? status = default(SubscriptionStatus?), bool recurring = default(bool), DateTime trialEndsAt = default(DateTime), DateTime pausedFrom = default(DateTime), DateTime endsAt = default(DateTime))
+        public Subscription(string name = default(string), string platformSubscriptionId = default(string), string platformPlanId = default(string), SubscriptionStatus status = default(SubscriptionStatus), bool recurring = default(bool), DateTime trialEndsAt = default(DateTime), DateTime pausedFrom = default(DateTime), DateTime endsAt = default(DateTime))
         {
+            // to ensure "name" is required (not null)
+            if (name == null)
+            {
+                throw new ArgumentNullException("name is a required property for Subscription and cannot be null");
+            }
             this.Name = name;
+            // to ensure "platformSubscriptionId" is required (not null)
+            if (platformSubscriptionId == null)
+            {
+                throw new ArgumentNullException("platformSubscriptionId is a required property for Subscription and cannot be null");
+            }
             this.PlatformSubscriptionId = platformSubscriptionId;
+            // to ensure "platformPlanId" is required (not null)
+            if (platformPlanId == null)
+            {
+                throw new ArgumentNullException("platformPlanId is a required property for Subscription and cannot be null");
+            }
             this.PlatformPlanId = platformPlanId;
             this.Status = status;
             this.Recurring = recurring;
@@ -64,25 +84,25 @@ namespace PostBoost.Client.Model
         /// <summary>
         /// Gets or Sets Name
         /// </summary>
-        [DataMember(Name = "name", EmitDefaultValue = false)]
+        [DataMember(Name = "name", IsRequired = true, EmitDefaultValue = true)]
         public string Name { get; set; }
 
         /// <summary>
         /// Gets or Sets PlatformSubscriptionId
         /// </summary>
-        [DataMember(Name = "platform_subscription_id", EmitDefaultValue = false)]
+        [DataMember(Name = "platform_subscription_id", IsRequired = true, EmitDefaultValue = true)]
         public string PlatformSubscriptionId { get; set; }
 
         /// <summary>
         /// Gets or Sets PlatformPlanId
         /// </summary>
-        [DataMember(Name = "platform_plan_id", EmitDefaultValue = false)]
+        [DataMember(Name = "platform_plan_id", IsRequired = true, EmitDefaultValue = true)]
         public string PlatformPlanId { get; set; }
 
         /// <summary>
         /// Gets or Sets Recurring
         /// </summary>
-        [DataMember(Name = "recurring", EmitDefaultValue = true)]
+        [DataMember(Name = "recurring", IsRequired = true, EmitDefaultValue = true)]
         public bool Recurring { get; set; }
 
         /// <summary>

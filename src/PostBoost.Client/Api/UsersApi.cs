@@ -30,6 +30,9 @@ namespace PostBoost.Client.Api
         /// <summary>
         /// Create user
         /// </summary>
+        /// <remarks>
+        /// Creates a new user account on the platform. Admin only.
+        /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="userInput"></param>
         /// <param name="operationIndex">Index associated with the operation.</param>
@@ -40,7 +43,7 @@ namespace PostBoost.Client.Api
         /// Create user
         /// </summary>
         /// <remarks>
-        /// 
+        /// Creates a new user account on the platform. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="userInput"></param>
@@ -50,6 +53,9 @@ namespace PostBoost.Client.Api
         /// <summary>
         /// Delete user
         /// </summary>
+        /// <remarks>
+        /// Permanently deletes a user account. Returns 400 if you attempt to delete your own account. Admin only.
+        /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="userId">ID of the user.</param>
         /// <param name="operationIndex">Index associated with the operation.</param>
@@ -60,7 +66,7 @@ namespace PostBoost.Client.Api
         /// Delete user
         /// </summary>
         /// <remarks>
-        /// 
+        /// Permanently deletes a user account. Returns 400 if you attempt to delete your own account. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="userId">ID of the user.</param>
@@ -70,6 +76,9 @@ namespace PostBoost.Client.Api
         /// <summary>
         /// Delete users (bulk)
         /// </summary>
+        /// <remarks>
+        /// Permanently deletes one or more user accounts. You cannot delete your own account. Admin only.
+        /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="deleteUsersBulkRequest"></param>
         /// <param name="operationIndex">Index associated with the operation.</param>
@@ -80,7 +89,7 @@ namespace PostBoost.Client.Api
         /// Delete users (bulk)
         /// </summary>
         /// <remarks>
-        /// 
+        /// Permanently deletes one or more user accounts. You cannot delete your own account. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="deleteUsersBulkRequest"></param>
@@ -90,6 +99,9 @@ namespace PostBoost.Client.Api
         /// <summary>
         /// Get user
         /// </summary>
+        /// <remarks>
+        /// Returns a single user account by ID. Admin only.
+        /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="userId">ID of the user.</param>
         /// <param name="operationIndex">Index associated with the operation.</param>
@@ -100,7 +112,7 @@ namespace PostBoost.Client.Api
         /// Get user
         /// </summary>
         /// <remarks>
-        /// 
+        /// Returns a single user account by ID. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="userId">ID of the user.</param>
@@ -110,26 +122,34 @@ namespace PostBoost.Client.Api
         /// <summary>
         /// List users
         /// </summary>
+        /// <remarks>
+        /// Returns a paginated list of all users on the platform. Optionally filter by name or email. Admin only.
+        /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="keyword">Search by name or email. (optional)</param>
+        /// <param name="page">Page number (15 items per page). (optional, default to 1)</param>
         /// <param name="operationIndex">Index associated with the operation.</param>
         /// <returns>ListUsers200Response</returns>
-        ListUsers200Response ListUsers(string? keyword = default(string?), int operationIndex = 0);
+        ListUsers200Response ListUsers(string? keyword = default(string?), int? page = default(int?), int operationIndex = 0);
 
         /// <summary>
         /// List users
         /// </summary>
         /// <remarks>
-        /// 
+        /// Returns a paginated list of all users on the platform. Optionally filter by name or email. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="keyword">Search by name or email. (optional)</param>
+        /// <param name="page">Page number (15 items per page). (optional, default to 1)</param>
         /// <param name="operationIndex">Index associated with the operation.</param>
         /// <returns>ApiResponse of ListUsers200Response</returns>
-        ApiResponse<ListUsers200Response> ListUsersWithHttpInfo(string? keyword = default(string?), int operationIndex = 0);
+        ApiResponse<ListUsers200Response> ListUsersWithHttpInfo(string? keyword = default(string?), int? page = default(int?), int operationIndex = 0);
         /// <summary>
         /// Update user
         /// </summary>
+        /// <remarks>
+        /// Updates a user&#39;s name, email, admin status, or password. Admin only.
+        /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="userId">ID of the user.</param>
         /// <param name="userUpdateInput"></param>
@@ -141,7 +161,7 @@ namespace PostBoost.Client.Api
         /// Update user
         /// </summary>
         /// <remarks>
-        /// 
+        /// Updates a user&#39;s name, email, admin status, or password. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="userId">ID of the user.</param>
@@ -162,7 +182,7 @@ namespace PostBoost.Client.Api
         /// Create user
         /// </summary>
         /// <remarks>
-        /// 
+        /// Creates a new user account on the platform. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="userInput"></param>
@@ -175,7 +195,7 @@ namespace PostBoost.Client.Api
         /// Create user
         /// </summary>
         /// <remarks>
-        /// 
+        /// Creates a new user account on the platform. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="userInput"></param>
@@ -187,7 +207,7 @@ namespace PostBoost.Client.Api
         /// Delete user
         /// </summary>
         /// <remarks>
-        /// 
+        /// Permanently deletes a user account. Returns 400 if you attempt to delete your own account. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="userId">ID of the user.</param>
@@ -200,7 +220,7 @@ namespace PostBoost.Client.Api
         /// Delete user
         /// </summary>
         /// <remarks>
-        /// 
+        /// Permanently deletes a user account. Returns 400 if you attempt to delete your own account. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="userId">ID of the user.</param>
@@ -212,7 +232,7 @@ namespace PostBoost.Client.Api
         /// Delete users (bulk)
         /// </summary>
         /// <remarks>
-        /// 
+        /// Permanently deletes one or more user accounts. You cannot delete your own account. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="deleteUsersBulkRequest"></param>
@@ -225,7 +245,7 @@ namespace PostBoost.Client.Api
         /// Delete users (bulk)
         /// </summary>
         /// <remarks>
-        /// 
+        /// Permanently deletes one or more user accounts. You cannot delete your own account. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="deleteUsersBulkRequest"></param>
@@ -237,7 +257,7 @@ namespace PostBoost.Client.Api
         /// Get user
         /// </summary>
         /// <remarks>
-        /// 
+        /// Returns a single user account by ID. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="userId">ID of the user.</param>
@@ -250,7 +270,7 @@ namespace PostBoost.Client.Api
         /// Get user
         /// </summary>
         /// <remarks>
-        /// 
+        /// Returns a single user account by ID. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="userId">ID of the user.</param>
@@ -262,32 +282,34 @@ namespace PostBoost.Client.Api
         /// List users
         /// </summary>
         /// <remarks>
-        /// 
+        /// Returns a paginated list of all users on the platform. Optionally filter by name or email. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="keyword">Search by name or email. (optional)</param>
+        /// <param name="page">Page number (15 items per page). (optional, default to 1)</param>
         /// <param name="operationIndex">Index associated with the operation.</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns>Task of ListUsers200Response</returns>
-        System.Threading.Tasks.Task<ListUsers200Response> ListUsersAsync(string? keyword = default(string?), int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken));
+        System.Threading.Tasks.Task<ListUsers200Response> ListUsersAsync(string? keyword = default(string?), int? page = default(int?), int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken));
 
         /// <summary>
         /// List users
         /// </summary>
         /// <remarks>
-        /// 
+        /// Returns a paginated list of all users on the platform. Optionally filter by name or email. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="keyword">Search by name or email. (optional)</param>
+        /// <param name="page">Page number (15 items per page). (optional, default to 1)</param>
         /// <param name="operationIndex">Index associated with the operation.</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns>Task of ApiResponse (ListUsers200Response)</returns>
-        System.Threading.Tasks.Task<ApiResponse<ListUsers200Response>> ListUsersWithHttpInfoAsync(string? keyword = default(string?), int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken));
+        System.Threading.Tasks.Task<ApiResponse<ListUsers200Response>> ListUsersWithHttpInfoAsync(string? keyword = default(string?), int? page = default(int?), int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken));
         /// <summary>
         /// Update user
         /// </summary>
         /// <remarks>
-        /// 
+        /// Updates a user&#39;s name, email, admin status, or password. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="userId">ID of the user.</param>
@@ -301,7 +323,7 @@ namespace PostBoost.Client.Api
         /// Update user
         /// </summary>
         /// <remarks>
-        /// 
+        /// Updates a user&#39;s name, email, admin status, or password. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="userId">ID of the user.</param>
@@ -431,7 +453,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Create user 
+        /// Create user Creates a new user account on the platform. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="userInput"></param>
@@ -444,7 +466,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Create user 
+        /// Create user Creates a new user account on the platform. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="userInput"></param>
@@ -508,7 +530,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Create user 
+        /// Create user Creates a new user account on the platform. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="userInput"></param>
@@ -522,7 +544,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Create user 
+        /// Create user Creates a new user account on the platform. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="userInput"></param>
@@ -589,7 +611,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Delete user 
+        /// Delete user Permanently deletes a user account. Returns 400 if you attempt to delete your own account. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="userId">ID of the user.</param>
@@ -602,7 +624,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Delete user 
+        /// Delete user Permanently deletes a user account. Returns 400 if you attempt to delete your own account. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="userId">ID of the user.</param>
@@ -659,7 +681,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Delete user 
+        /// Delete user Permanently deletes a user account. Returns 400 if you attempt to delete your own account. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="userId">ID of the user.</param>
@@ -673,7 +695,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Delete user 
+        /// Delete user Permanently deletes a user account. Returns 400 if you attempt to delete your own account. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="userId">ID of the user.</param>
@@ -733,7 +755,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Delete users (bulk) 
+        /// Delete users (bulk) Permanently deletes one or more user accounts. You cannot delete your own account. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="deleteUsersBulkRequest"></param>
@@ -746,7 +768,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Delete users (bulk) 
+        /// Delete users (bulk) Permanently deletes one or more user accounts. You cannot delete your own account. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="deleteUsersBulkRequest"></param>
@@ -810,7 +832,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Delete users (bulk) 
+        /// Delete users (bulk) Permanently deletes one or more user accounts. You cannot delete your own account. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="deleteUsersBulkRequest"></param>
@@ -824,7 +846,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Delete users (bulk) 
+        /// Delete users (bulk) Permanently deletes one or more user accounts. You cannot delete your own account. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="deleteUsersBulkRequest"></param>
@@ -891,7 +913,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Get user 
+        /// Get user Returns a single user account by ID. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="userId">ID of the user.</param>
@@ -904,7 +926,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Get user 
+        /// Get user Returns a single user account by ID. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="userId">ID of the user.</param>
@@ -961,7 +983,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Get user 
+        /// Get user Returns a single user account by ID. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="userId">ID of the user.</param>
@@ -975,7 +997,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Get user 
+        /// Get user Returns a single user account by ID. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="userId">ID of the user.</param>
@@ -1035,26 +1057,28 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// List users 
+        /// List users Returns a paginated list of all users on the platform. Optionally filter by name or email. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="keyword">Search by name or email. (optional)</param>
+        /// <param name="page">Page number (15 items per page). (optional, default to 1)</param>
         /// <param name="operationIndex">Index associated with the operation.</param>
         /// <returns>ListUsers200Response</returns>
-        public ListUsers200Response ListUsers(string? keyword = default(string?), int operationIndex = 0)
+        public ListUsers200Response ListUsers(string? keyword = default(string?), int? page = default(int?), int operationIndex = 0)
         {
-            PostBoost.Client.Client.ApiResponse<ListUsers200Response> localVarResponse = ListUsersWithHttpInfo(keyword);
+            PostBoost.Client.Client.ApiResponse<ListUsers200Response> localVarResponse = ListUsersWithHttpInfo(keyword, page);
             return localVarResponse.Data;
         }
 
         /// <summary>
-        /// List users 
+        /// List users Returns a paginated list of all users on the platform. Optionally filter by name or email. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="keyword">Search by name or email. (optional)</param>
+        /// <param name="page">Page number (15 items per page). (optional, default to 1)</param>
         /// <param name="operationIndex">Index associated with the operation.</param>
         /// <returns>ApiResponse of ListUsers200Response</returns>
-        public PostBoost.Client.Client.ApiResponse<ListUsers200Response> ListUsersWithHttpInfo(string? keyword = default(string?), int operationIndex = 0)
+        public PostBoost.Client.Client.ApiResponse<ListUsers200Response> ListUsersWithHttpInfo(string? keyword = default(string?), int? page = default(int?), int operationIndex = 0)
         {
             PostBoost.Client.Client.RequestOptions localVarRequestOptions = new PostBoost.Client.Client.RequestOptions();
 
@@ -1081,6 +1105,10 @@ namespace PostBoost.Client.Api
             if (keyword != null)
             {
                 localVarRequestOptions.QueryParameters.Add(PostBoost.Client.Client.ClientUtils.ParameterToMultiMap("", "keyword", keyword));
+            }
+            if (page != null)
+            {
+                localVarRequestOptions.QueryParameters.Add(PostBoost.Client.Client.ClientUtils.ParameterToMultiMap("", "page", page));
             }
 
             localVarRequestOptions.Operation = "UsersApi.ListUsers";
@@ -1108,28 +1136,30 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// List users 
+        /// List users Returns a paginated list of all users on the platform. Optionally filter by name or email. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="keyword">Search by name or email. (optional)</param>
+        /// <param name="page">Page number (15 items per page). (optional, default to 1)</param>
         /// <param name="operationIndex">Index associated with the operation.</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns>Task of ListUsers200Response</returns>
-        public async System.Threading.Tasks.Task<ListUsers200Response> ListUsersAsync(string? keyword = default(string?), int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+        public async System.Threading.Tasks.Task<ListUsers200Response> ListUsersAsync(string? keyword = default(string?), int? page = default(int?), int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
         {
-            PostBoost.Client.Client.ApiResponse<ListUsers200Response> localVarResponse = await ListUsersWithHttpInfoAsync(keyword, operationIndex, cancellationToken).ConfigureAwait(false);
+            PostBoost.Client.Client.ApiResponse<ListUsers200Response> localVarResponse = await ListUsersWithHttpInfoAsync(keyword, page, operationIndex, cancellationToken).ConfigureAwait(false);
             return localVarResponse.Data;
         }
 
         /// <summary>
-        /// List users 
+        /// List users Returns a paginated list of all users on the platform. Optionally filter by name or email. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="keyword">Search by name or email. (optional)</param>
+        /// <param name="page">Page number (15 items per page). (optional, default to 1)</param>
         /// <param name="operationIndex">Index associated with the operation.</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns>Task of ApiResponse (ListUsers200Response)</returns>
-        public async System.Threading.Tasks.Task<PostBoost.Client.Client.ApiResponse<ListUsers200Response>> ListUsersWithHttpInfoAsync(string? keyword = default(string?), int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+        public async System.Threading.Tasks.Task<PostBoost.Client.Client.ApiResponse<ListUsers200Response>> ListUsersWithHttpInfoAsync(string? keyword = default(string?), int? page = default(int?), int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
         {
 
             PostBoost.Client.Client.RequestOptions localVarRequestOptions = new PostBoost.Client.Client.RequestOptions();
@@ -1157,6 +1187,10 @@ namespace PostBoost.Client.Api
             if (keyword != null)
             {
                 localVarRequestOptions.QueryParameters.Add(PostBoost.Client.Client.ClientUtils.ParameterToMultiMap("", "keyword", keyword));
+            }
+            if (page != null)
+            {
+                localVarRequestOptions.QueryParameters.Add(PostBoost.Client.Client.ClientUtils.ParameterToMultiMap("", "page", page));
             }
 
             localVarRequestOptions.Operation = "UsersApi.ListUsers";
@@ -1185,7 +1219,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Update user 
+        /// Update user Updates a user&#39;s name, email, admin status, or password. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="userId">ID of the user.</param>
@@ -1199,7 +1233,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Update user 
+        /// Update user Updates a user&#39;s name, email, admin status, or password. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="userId">ID of the user.</param>
@@ -1265,7 +1299,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Update user 
+        /// Update user Updates a user&#39;s name, email, admin status, or password. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="userId">ID of the user.</param>
@@ -1280,7 +1314,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Update user 
+        /// Update user Updates a user&#39;s name, email, admin status, or password. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="userId">ID of the user.</param>

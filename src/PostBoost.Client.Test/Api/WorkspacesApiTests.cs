@@ -126,7 +126,8 @@ namespace PostBoost.Client.Test.Api
             //string? keyword = null;
             //string? subscriptionStatus = null;
             //string? accessStatus = null;
-            //var response = instance.ListWorkspaces(keyword, subscriptionStatus, accessStatus);
+            //int? page = null;
+            //var response = instance.ListWorkspaces(keyword, subscriptionStatus, accessStatus, page);
             //Assert.IsType<ListWorkspaces200Response>(response);
         }
 

@@ -61,43 +61,58 @@ namespace PostBoost.Client.Model
         /// <summary>
         /// Gets or Sets AccessStatus
         /// </summary>
-        [DataMember(Name = "access_status", EmitDefaultValue = false)]
-        public AccessStatusEnum? AccessStatus { get; set; }
+        [DataMember(Name = "access_status", IsRequired = true, EmitDefaultValue = true)]
+        public AccessStatusEnum AccessStatus { get; set; }
         /// <summary>
         /// Initializes a new instance of the <see cref="Workspace" /> class.
         /// </summary>
-        /// <param name="uuid">uuid.</param>
-        /// <param name="name">name.</param>
-        /// <param name="hexColor">hexColor.</param>
+        [JsonConstructorAttribute]
+        protected Workspace() { }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Workspace" /> class.
+        /// </summary>
+        /// <param name="uuid">uuid (required).</param>
+        /// <param name="name">name (required).</param>
+        /// <param name="hexColor">hexColor (required).</param>
         /// <param name="owner">owner.</param>
-        /// <param name="accessStatus">accessStatus.</param>
-        /// <param name="createdAt">createdAt.</param>
-        public Workspace(Guid uuid = default(Guid), string name = default(string), string hexColor = default(string), User owner = default(User), AccessStatusEnum? accessStatus = default(AccessStatusEnum?), DateTime createdAt = default(DateTime))
+        /// <param name="accessStatus">accessStatus (required).</param>
+        /// <param name="createdAt">createdAt (required).</param>
+        public Workspace(Guid uuid = default(Guid), string name = default(string), string hexColor = default(string), User owner = default(User), AccessStatusEnum accessStatus = default(AccessStatusEnum), DateTime createdAt = default(DateTime))
         {
             this.Uuid = uuid;
+            // to ensure "name" is required (not null)
+            if (name == null)
+            {
+                throw new ArgumentNullException("name is a required property for Workspace and cannot be null");
+            }
             this.Name = name;
+            // to ensure "hexColor" is required (not null)
+            if (hexColor == null)
+            {
+                throw new ArgumentNullException("hexColor is a required property for Workspace and cannot be null");
+            }
             this.HexColor = hexColor;
-            this.Owner = owner;
             this.AccessStatus = accessStatus;
             this.CreatedAt = createdAt;
+            this.Owner = owner;
         }
 
         /// <summary>
         /// Gets or Sets Uuid
         /// </summary>
-        [DataMember(Name = "uuid", EmitDefaultValue = false)]
+        [DataMember(Name = "uuid", IsRequired = true, EmitDefaultValue = true)]
         public Guid Uuid { get; set; }
 
         /// <summary>
         /// Gets or Sets Name
         /// </summary>
-        [DataMember(Name = "name", EmitDefaultValue = false)]
+        [DataMember(Name = "name", IsRequired = true, EmitDefaultValue = true)]
         public string Name { get; set; }
 
         /// <summary>
         /// Gets or Sets HexColor
         /// </summary>
-        [DataMember(Name = "hex_color", EmitDefaultValue = false)]
+        [DataMember(Name = "hex_color", IsRequired = true, EmitDefaultValue = true)]
         public string HexColor { get; set; }
 
         /// <summary>
@@ -109,7 +124,7 @@ namespace PostBoost.Client.Model
         /// <summary>
         /// Gets or Sets CreatedAt
         /// </summary>
-        [DataMember(Name = "created_at", EmitDefaultValue = false)]
+        [DataMember(Name = "created_at", IsRequired = true, EmitDefaultValue = true)]
         public DateTime CreatedAt { get; set; }
 
         /// <summary>

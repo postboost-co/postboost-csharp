@@ -105,6 +105,9 @@ namespace PostBoost.Client.Api
         /// <summary>
         /// Delete post
         /// </summary>
+        /// <remarks>
+        /// Deletes a post. Use &#x60;delete_mode&#x60; to control whether to also remove the published content from social platforms.
+        /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
         /// <param name="postUuid">UUID of the post.</param>
@@ -117,7 +120,7 @@ namespace PostBoost.Client.Api
         /// Delete post
         /// </summary>
         /// <remarks>
-        /// 
+        /// Deletes a post. Use &#x60;delete_mode&#x60; to control whether to also remove the published content from social platforms.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -154,6 +157,9 @@ namespace PostBoost.Client.Api
         /// <summary>
         /// Get post
         /// </summary>
+        /// <remarks>
+        /// Returns a single post with all its versions and associated accounts.
+        /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
         /// <param name="postUuid">UUID of the post.</param>
@@ -165,7 +171,7 @@ namespace PostBoost.Client.Api
         /// Get post
         /// </summary>
         /// <remarks>
-        /// 
+        /// Returns a single post with all its versions and associated accounts.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -228,6 +234,9 @@ namespace PostBoost.Client.Api
         /// <summary>
         /// Update post
         /// </summary>
+        /// <remarks>
+        /// Replaces a post&#39;s versions, accounts, tags, and scheduling options. The post must not be in a published state.
+        /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
         /// <param name="postUuid">UUID of the post.</param>
@@ -240,7 +249,7 @@ namespace PostBoost.Client.Api
         /// Update post
         /// </summary>
         /// <remarks>
-        /// 
+        /// Replaces a post&#39;s versions, accounts, tags, and scheduling options. The post must not be in a published state.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -343,7 +352,7 @@ namespace PostBoost.Client.Api
         /// Delete post
         /// </summary>
         /// <remarks>
-        /// 
+        /// Deletes a post. Use &#x60;delete_mode&#x60; to control whether to also remove the published content from social platforms.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -358,7 +367,7 @@ namespace PostBoost.Client.Api
         /// Delete post
         /// </summary>
         /// <remarks>
-        /// 
+        /// Deletes a post. Use &#x60;delete_mode&#x60; to control whether to also remove the published content from social platforms.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -399,7 +408,7 @@ namespace PostBoost.Client.Api
         /// Get post
         /// </summary>
         /// <remarks>
-        /// 
+        /// Returns a single post with all its versions and associated accounts.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -413,7 +422,7 @@ namespace PostBoost.Client.Api
         /// Get post
         /// </summary>
         /// <remarks>
-        /// 
+        /// Returns a single post with all its versions and associated accounts.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -482,7 +491,7 @@ namespace PostBoost.Client.Api
         /// Update post
         /// </summary>
         /// <remarks>
-        /// 
+        /// Replaces a post&#39;s versions, accounts, tags, and scheduling options. The post must not be in a published state.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -497,7 +506,7 @@ namespace PostBoost.Client.Api
         /// Update post
         /// </summary>
         /// <remarks>
-        /// 
+        /// Replaces a post&#39;s versions, accounts, tags, and scheduling options. The post must not be in a published state.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -1092,7 +1101,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Delete post 
+        /// Delete post Deletes a post. Use &#x60;delete_mode&#x60; to control whether to also remove the published content from social platforms.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -1107,7 +1116,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Delete post 
+        /// Delete post Deletes a post. Use &#x60;delete_mode&#x60; to control whether to also remove the published content from social platforms.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -1169,7 +1178,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Delete post 
+        /// Delete post Deletes a post. Use &#x60;delete_mode&#x60; to control whether to also remove the published content from social platforms.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -1185,7 +1194,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Delete post 
+        /// Delete post Deletes a post. Use &#x60;delete_mode&#x60; to control whether to also remove the published content from social platforms.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -1414,7 +1423,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Get post 
+        /// Get post Returns a single post with all its versions and associated accounts.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -1428,7 +1437,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Get post 
+        /// Get post Returns a single post with all its versions and associated accounts.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -1487,7 +1496,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Get post 
+        /// Get post Returns a single post with all its versions and associated accounts.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -1502,7 +1511,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Get post 
+        /// Get post Returns a single post with all its versions and associated accounts.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -1890,7 +1899,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Update post 
+        /// Update post Replaces a post&#39;s versions, accounts, tags, and scheduling options. The post must not be in a published state.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -1905,7 +1914,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Update post 
+        /// Update post Replaces a post&#39;s versions, accounts, tags, and scheduling options. The post must not be in a published state.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -1973,7 +1982,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Update post 
+        /// Update post Replaces a post&#39;s versions, accounts, tags, and scheduling options. The post must not be in a published state.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -1989,7 +1998,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Update post 
+        /// Update post Replaces a post&#39;s versions, accounts, tags, and scheduling options. The post must not be in a published state.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>

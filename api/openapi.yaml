@@ -149,7 +149,7 @@ paths:
               $ref: '#/components/schemas/uploadMedia_request'
         required: true
       responses:
-        "200":
+        "201":
           content:
             application/json:
               schema:
@@ -220,11 +220,11 @@ paths:
               $ref: '#/components/schemas/initiateChunkedUpload_request'
         required: true
       responses:
-        "200":
+        "201":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/initiateChunkedUpload_200_response'
+                $ref: '#/components/schemas/initiateChunkedUpload_201_response'
           description: Chunked upload session details
         "401":
           $ref: '#/components/responses/Unauthorized'
@@ -249,11 +249,11 @@ paths:
               $ref: '#/components/schemas/initiateRemoteUpload_request'
         required: true
       responses:
-        "200":
+        "201":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/initiateRemoteUpload_200_response'
+                $ref: '#/components/schemas/initiateRemoteUpload_201_response'
           description: Media object or download job
         "401":
           $ref: '#/components/responses/Unauthorized'
@@ -283,11 +283,11 @@ paths:
               $ref: '#/components/schemas/uploadChunk_request'
         required: true
       responses:
-        "200":
+        "201":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/uploadChunk_200_response'
+                $ref: '#/components/schemas/uploadChunk_201_response'
           description: Chunk received
         "401":
           $ref: '#/components/responses/Unauthorized'
@@ -312,7 +312,7 @@ paths:
           type: string
         style: simple
       responses:
-        "200":
+        "201":
           content:
             application/json:
               schema:
@@ -375,6 +375,7 @@ paths:
       - Media
   /{workspaceUuid}/tags:
     get:
+      description: Returns all tags defined in the workspace.
       operationId: listTags
       parameters:
       - $ref: '#/components/parameters/workspaceUuid'
@@ -391,6 +392,7 @@ paths:
       tags:
       - Tags
     post:
+      description: Creates a new color-coded tag in the workspace for organizing posts.
       operationId: createTag
       parameters:
       - $ref: '#/components/parameters/workspaceUuid'
@@ -401,7 +403,7 @@ paths:
               $ref: '#/components/schemas/TagInput'
         required: true
       responses:
-        "200":
+        "201":
           content:
             application/json:
               schema:
@@ -416,6 +418,8 @@ paths:
       - Tags
   /{workspaceUuid}/tags/{tagUuid}:
     delete:
+      description: Permanently deletes a tag. Posts that had this tag attached are
+        unaffected.
       operationId: deleteTag
       parameters:
       - $ref: '#/components/parameters/workspaceUuid'
@@ -431,6 +435,7 @@ paths:
       tags:
       - Tags
     get:
+      description: Returns a single tag by UUID.
       operationId: getTag
       parameters:
       - $ref: '#/components/parameters/workspaceUuid'
@@ -450,6 +455,7 @@ paths:
       tags:
       - Tags
     put:
+      description: Updates a tag's name or color.
       operationId: updateTag
       parameters:
       - $ref: '#/components/parameters/workspaceUuid'
@@ -536,7 +542,7 @@ paths:
               $ref: '#/components/schemas/PostInput'
         required: true
       responses:
-        "200":
+        "201":
           content:
             application/json:
               schema:
@@ -551,6 +557,8 @@ paths:
       - Posts
   /{workspaceUuid}/posts/{postUuid}:
     delete:
+      description: Deletes a post. Use `delete_mode` to control whether to also remove
+        the published content from social platforms.
       operationId: deletePost
       parameters:
       - $ref: '#/components/parameters/workspaceUuid'
@@ -575,6 +583,7 @@ paths:
       tags:
       - Posts
     get:
+      description: Returns a single post with all its versions and associated accounts.
       operationId: getPost
       parameters:
       - $ref: '#/components/parameters/workspaceUuid'
@@ -594,6 +603,8 @@ paths:
       tags:
       - Posts
     put:
+      description: "Replaces a post's versions, accounts, tags, and scheduling options.\
+        \ The post must not be in a published state."
       operationId: updatePost
       parameters:
       - $ref: '#/components/parameters/workspaceUuid'
@@ -651,7 +662,7 @@ paths:
       - $ref: '#/components/parameters/workspaceUuid'
       - $ref: '#/components/parameters/postUuid'
       responses:
-        "200":
+        "201":
           content:
             application/json:
               schema:
@@ -689,6 +700,8 @@ paths:
       - Posts
   /panel/workspaces:
     delete:
+      description: Permanently deletes one or more workspaces and all their associated
+        data. Admin only.
       operationId: deleteWorkspacesBulk
       requestBody:
         content:
@@ -742,6 +755,15 @@ paths:
           - locked
           type: string
         style: form
+      - description: Page number (15 items per page).
+        explode: true
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          type: integer
+        style: form
       responses:
         "200":
           content:
@@ -766,7 +788,7 @@ paths:
               $ref: '#/components/schemas/WorkspaceInput'
         required: true
       responses:
-        "200":
+        "201":
           content:
             application/json:
               schema:
@@ -783,6 +805,8 @@ paths:
       - Workspaces
   /panel/workspaces/{workspaceUuid}:
     delete:
+      description: Permanently deletes a single workspace and all its associated data.
+        Admin only.
       operationId: deleteWorkspace
       parameters:
       - $ref: '#/components/parameters/workspaceUuid'
@@ -791,12 +815,16 @@ paths:
           $ref: '#/components/responses/SuccessResponse'
         "401":
           $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
         "404":
           $ref: '#/components/responses/NotFound'
       summary: Delete workspace
       tags:
       - Workspaces
     get:
+      description: Returns a single workspace by UUID including its subscription status.
+        Admin only.
       operationId: getWorkspace
       parameters:
       - $ref: '#/components/parameters/workspaceUuid'
@@ -809,12 +837,15 @@ paths:
           description: Workspace details
         "401":
           $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
         "404":
           $ref: '#/components/responses/NotFound'
       summary: Get workspace
       tags:
       - Workspaces
     put:
+      description: "Updates a workspace's name, color, or access status. Admin only."
       operationId: updateWorkspace
       parameters:
       - $ref: '#/components/parameters/workspaceUuid'
@@ -829,6 +860,8 @@ paths:
           $ref: '#/components/responses/SuccessResponse'
         "401":
           $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
         "404":
           $ref: '#/components/responses/NotFound'
       summary: Update workspace
@@ -836,6 +869,8 @@ paths:
       - Workspaces
   /panel/workspaces/{workspaceUuid}/users:
     delete:
+      description: Removes a user's access to the workspace. The user account is not
+        deleted. Admin only.
       operationId: removeUserFromWorkspace
       parameters:
       - $ref: '#/components/parameters/workspaceUuid'
@@ -850,10 +885,14 @@ paths:
           $ref: '#/components/responses/SuccessResponse'
         "401":
           $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
       summary: Remove user from workspace
       tags:
       - Workspaces
     post:
+      description: Adds an existing user to the workspace with a specified role. Admin
+        only.
       operationId: addUserToWorkspace
       parameters:
       - $ref: '#/components/parameters/workspaceUuid'
@@ -864,16 +903,20 @@ paths:
               $ref: '#/components/schemas/WorkspaceUserInput'
         required: true
       responses:
-        "200":
+        "201":
           $ref: '#/components/responses/SuccessResponse'
         "401":
           $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
         "422":
           $ref: '#/components/responses/ValidationError'
       summary: Add user to workspace
       tags:
       - Workspaces
     put:
+      description: Changes a user's role or permissions within the workspace. Admin
+        only.
       operationId: updateWorkspaceUser
       parameters:
       - $ref: '#/components/parameters/workspaceUuid'
@@ -888,11 +931,14 @@ paths:
           $ref: '#/components/responses/SuccessResponse'
         "401":
           $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
       summary: Update user role in workspace
       tags:
       - Workspaces
   /panel/workspaces/{workspaceUuid}/subscription:
     delete:
+      description: Removes the subscription record from the workspace. Admin only.
       operationId: deleteSubscription
       parameters:
       - $ref: '#/components/parameters/workspaceUuid'
@@ -901,10 +947,14 @@ paths:
           $ref: '#/components/responses/SuccessResponse'
         "401":
           $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
       summary: Delete subscription
       tags:
       - Subscriptions
     get:
+      description: "Returns the active subscription for the workspace, or `null` if\
+        \ none exists. Admin only."
       operationId: getSubscription
       parameters:
       - $ref: '#/components/parameters/workspaceUuid'
@@ -917,10 +967,14 @@ paths:
           description: Subscription details or null
         "401":
           $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
       summary: Get subscription
       tags:
       - Subscriptions
     post:
+      description: Manually creates a subscription record for the workspace (for external
+        billing integrations). Admin only.
       operationId: createSubscription
       parameters:
       - $ref: '#/components/parameters/workspaceUuid'
@@ -935,12 +989,16 @@ paths:
           $ref: '#/components/responses/SuccessResponse'
         "401":
           $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
         "422":
           $ref: '#/components/responses/ValidationError'
       summary: Create subscription
       tags:
       - Subscriptions
     put:
+      description: "Updates the plan ID, status, or trial/pause dates of an existing\
+        \ subscription. Admin only."
       operationId: updateSubscription
       parameters:
       - $ref: '#/components/parameters/workspaceUuid'
@@ -955,6 +1013,8 @@ paths:
           $ref: '#/components/responses/SuccessResponse'
         "401":
           $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
       summary: Update subscription
       tags:
       - Subscriptions
@@ -979,11 +1039,15 @@ paths:
           description: Checkout URL
         "401":
           $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
       summary: New subscription checkout
       tags:
       - Subscriptions
   /panel/workspaces/{workspaceUuid}/subscription/change-plan:
     put:
+      description: Switches the workspace to a different Stripe plan. Optionally prorates
+        the change and bills immediately. Admin only.
       operationId: changeSubscriptionPlan
       parameters:
       - $ref: '#/components/parameters/workspaceUuid'
@@ -998,11 +1062,15 @@ paths:
           $ref: '#/components/responses/SuccessResponse'
         "401":
           $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
       summary: Change subscription plan
       tags:
       - Subscriptions
   /panel/workspaces/{workspaceUuid}/subscription/cancel:
     post:
+      description: Cancels the workspace's Stripe subscription at the end of the current
+        billing period. Admin only.
       operationId: cancelSubscription
       parameters:
       - $ref: '#/components/parameters/workspaceUuid'
@@ -1011,11 +1079,15 @@ paths:
           $ref: '#/components/responses/SuccessResponse'
         "401":
           $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
       summary: Cancel subscription
       tags:
       - Subscriptions
   /panel/workspaces/{workspaceUuid}/subscription/resume:
     post:
+      description: Resumes a previously canceled subscription before it expires. Admin
+        only.
       operationId: resumeSubscription
       parameters:
       - $ref: '#/components/parameters/workspaceUuid'
@@ -1024,11 +1096,15 @@ paths:
           $ref: '#/components/responses/SuccessResponse'
         "401":
           $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
       summary: Resume subscription
       tags:
       - Subscriptions
   /panel/workspaces/{workspaceUuid}/subscription/generic:
     delete:
+      description: Removes the generic (non-Stripe) subscription from the workspace.
+        Admin only.
       operationId: removeGenericSubscription
       parameters:
       - $ref: '#/components/parameters/workspaceUuid'
@@ -1037,10 +1113,15 @@ paths:
           $ref: '#/components/responses/SuccessResponse'
         "401":
           $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
       summary: Remove generic subscription
       tags:
       - Subscriptions
     post:
+      description: "Assigns a non-Stripe (generic) subscription plan to the workspace,\
+        \ optionally granting a trial period. Used for AppSumo-style lifetime deals.\
+        \ Admin only."
       operationId: addGenericSubscription
       parameters:
       - $ref: '#/components/parameters/workspaceUuid'
@@ -1051,15 +1132,19 @@ paths:
               $ref: '#/components/schemas/addGenericSubscription_request'
         required: true
       responses:
-        "200":
+        "201":
           $ref: '#/components/responses/SuccessResponse'
         "401":
           $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
       summary: Add generic subscription
       tags:
       - Subscriptions
   /panel/users:
     delete:
+      description: Permanently deletes one or more user accounts. You cannot delete
+        your own account. Admin only.
       operationId: deleteUsersBulk
       requestBody:
         content:
@@ -1072,10 +1157,14 @@ paths:
           $ref: '#/components/responses/SuccessResponse'
         "401":
           $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
       summary: Delete users (bulk)
       tags:
       - Users
     get:
+      description: Returns a paginated list of all users on the platform. Optionally
+        filter by name or email. Admin only.
       operationId: listUsers
       parameters:
       - description: Search by name or email.
@@ -1085,6 +1174,15 @@ paths:
         required: false
         schema:
           type: string
+        style: form
+      - description: Page number (15 items per page).
+        explode: true
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          type: integer
         style: form
       responses:
         "200":
@@ -1101,6 +1199,7 @@ paths:
       tags:
       - Users
     post:
+      description: Creates a new user account on the platform. Admin only.
       operationId: createUser
       requestBody:
         content:
@@ -1109,7 +1208,7 @@ paths:
               $ref: '#/components/schemas/UserInput'
         required: true
       responses:
-        "200":
+        "201":
           content:
             application/json:
               schema:
@@ -1117,6 +1216,8 @@ paths:
           description: Created user
         "401":
           $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
         "422":
           $ref: '#/components/responses/ValidationError'
       summary: Create user
@@ -1124,6 +1225,8 @@ paths:
       - Users
   /panel/users/{userId}:
     delete:
+      description: Permanently deletes a user account. Returns 400 if you attempt
+        to delete your own account. Admin only.
       operationId: deleteUser
       parameters:
       - $ref: '#/components/parameters/userId'
@@ -1138,10 +1241,13 @@ paths:
           description: Cannot delete own account
         "401":
           $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
       summary: Delete user
       tags:
       - Users
     get:
+      description: Returns a single user account by ID. Admin only.
       operationId: getUser
       parameters:
       - $ref: '#/components/parameters/userId'
@@ -1154,12 +1260,16 @@ paths:
           description: User details
         "401":
           $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
         "404":
           $ref: '#/components/responses/NotFound'
       summary: Get user
       tags:
       - Users
     put:
+      description: "Updates a user's name, email, admin status, or password. Admin\
+        \ only."
       operationId: updateUser
       parameters:
       - $ref: '#/components/parameters/userId'
@@ -1174,6 +1284,8 @@ paths:
           $ref: '#/components/responses/SuccessResponse'
         "401":
           $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
         "422":
           $ref: '#/components/responses/ValidationError'
       summary: Update user
@@ -1181,6 +1293,7 @@ paths:
       - Users
   /panel/receipts:
     delete:
+      description: Permanently deletes one or more receipt records. Admin only.
       operationId: deleteReceiptsBulk
       requestBody:
         content:
@@ -1193,10 +1306,14 @@ paths:
           $ref: '#/components/responses/SuccessResponse'
         "401":
           $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
       summary: Delete receipts (bulk)
       tags:
       - Receipts
     get:
+      description: Returns a paginated list of billing receipts. Filter by workspace
+        UUID or invoice number. Admin only.
       operationId: listReceipts
       parameters:
       - explode: true
@@ -1214,6 +1331,15 @@ paths:
         schema:
           type: string
         style: form
+      - description: Page number (15 items per page).
+        explode: true
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          type: integer
+        style: form
       responses:
         "200":
           content:
@@ -1223,10 +1349,13 @@ paths:
           description: Paginated list of receipts
         "401":
           $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
       summary: List receipts
       tags:
       - Receipts
     post:
+      description: Creates a billing receipt record for a workspace. Admin only.
       operationId: createReceipt
       requestBody:
         content:
@@ -1235,7 +1364,7 @@ paths:
               $ref: '#/components/schemas/ReceiptInput'
         required: true
       responses:
-        "200":
+        "201":
           content:
             application/json:
               schema:
@@ -1243,6 +1372,8 @@ paths:
           description: Created receipt
         "401":
           $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
         "422":
           $ref: '#/components/responses/ValidationError'
       summary: Create receipt
@@ -1250,6 +1381,7 @@ paths:
       - Receipts
   /panel/receipts/{receiptUuid}:
     delete:
+      description: Permanently deletes a single receipt. Admin only.
       operationId: deleteReceipt
       parameters:
       - $ref: '#/components/parameters/receiptUuid'
@@ -1258,12 +1390,15 @@ paths:
           $ref: '#/components/responses/SuccessResponse'
         "401":
           $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
         "404":
           $ref: '#/components/responses/NotFound'
       summary: Delete receipt
       tags:
       - Receipts
     get:
+      description: Returns a single receipt by UUID. Admin only.
       operationId: getReceipt
       parameters:
       - $ref: '#/components/parameters/receiptUuid'
@@ -1276,12 +1411,16 @@ paths:
           description: Receipt details
         "401":
           $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
         "404":
           $ref: '#/components/responses/NotFound'
       summary: Get receipt
       tags:
       - Receipts
     put:
+      description: "Updates a receipt's transaction details, amount, or payment date.\
+        \ Admin only."
       operationId: updateReceipt
       parameters:
       - $ref: '#/components/parameters/receiptUuid'
@@ -1296,6 +1435,8 @@ paths:
           $ref: '#/components/responses/SuccessResponse'
         "401":
           $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
         "404":
           $ref: '#/components/responses/NotFound'
       summary: Update receipt
@@ -1475,6 +1616,15 @@ components:
         created_at:
           format: date-time
           type: string
+      required:
+      - authorized
+      - created_at
+      - data
+      - id
+      - name
+      - provider
+      - username
+      - uuid
     Media:
       example:
         thumb_url: https://openapi-generator.tech
@@ -1515,6 +1665,15 @@ components:
         created_at:
           format: date-time
           type: string
+      required:
+      - created_at
+      - id
+      - is_video
+      - mime_type
+      - name
+      - type
+      - url
+      - uuid
     Tag:
       example:
         name: Campaign 2025
@@ -1533,6 +1692,11 @@ components:
         hex_color:
           example: '#3B82F6'
           type: string
+      required:
+      - hex_color
+      - id
+      - name
+      - uuid
     TagInput:
       example:
         name: name
@@ -1575,6 +1739,10 @@ components:
           type: boolean
         to_trash:
           type: boolean
+      required:
+      - deleted
+      - deleted_from_app
+      - to_trash
     ScheduleResult:
       example:
         success: true
@@ -1586,6 +1754,8 @@ components:
           example: 2025-06-01T10:00:00Z
           format: date-time
           type: string
+      required:
+      - success
     PostContent:
       example:
         video_thumbs:
@@ -1858,6 +2028,15 @@ components:
           type: string
         trashed:
           type: boolean
+      required:
+      - accounts
+      - created_at
+      - id
+      - status
+      - tags
+      - trashed
+      - uuid
+      - versions
     WorkspaceInput:
       example:
         owner_id: 0
@@ -1941,6 +2120,12 @@ components:
         created_at:
           format: date-time
           type: string
+      required:
+      - access_status
+      - created_at
+      - hex_color
+      - name
+      - uuid
     SubscriptionStatus:
       enum:
       - active
@@ -2026,6 +2211,12 @@ components:
           format: date-time
           type: string
           nullable: true
+      required:
+      - name
+      - platform_plan_id
+      - platform_subscription_id
+      - recurring
+      - status
     UserInput:
       example:
         is_admin: true
@@ -2106,6 +2297,12 @@ components:
         created_at:
           format: date-time
           type: string
+      required:
+      - created_at
+      - email
+      - id
+      - is_admin
+      - name
     ReceiptInput:
       example:
         transaction_id: transaction_id
@@ -2227,6 +2424,15 @@ components:
         created_at:
           format: date-time
           type: string
+      required:
+      - amount
+      - created_at
+      - currency
+      - invoice_number
+      - paid_at
+      - tax
+      - transaction_id
+      - uuid
     listAccounts_200_response:
       example:
         data:
@@ -2336,7 +2542,7 @@ components:
       - filename
       - mime_type
       - total_size
-    initiateChunkedUpload_200_response:
+    initiateChunkedUpload_201_response:
       example:
         upload_uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
         chunk_size: 0
@@ -2360,14 +2566,14 @@ components:
           type: string
       required:
       - url
-    initiateRemoteUpload_200_response_oneOf:
+    initiateRemoteUpload_201_response_oneOf:
       properties:
         download_id:
           type: string
-    initiateRemoteUpload_200_response:
+    initiateRemoteUpload_201_response:
       oneOf:
       - $ref: '#/components/schemas/Media'
-      - $ref: '#/components/schemas/initiateRemoteUpload_200_response_oneOf'
+      - $ref: '#/components/schemas/initiateRemoteUpload_201_response_oneOf'
     uploadChunk_request:
       properties:
         chunk:
@@ -2379,7 +2585,7 @@ components:
       required:
       - chunk
       - chunk_index
-    uploadChunk_200_response:
+    uploadChunk_201_response:
       example:
         received: 0
       properties:

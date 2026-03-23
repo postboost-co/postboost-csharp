@@ -35,44 +35,59 @@ namespace PostBoost.Client.Model
         /// <summary>
         /// Initializes a new instance of the <see cref="User" /> class.
         /// </summary>
-        /// <param name="id">id.</param>
-        /// <param name="name">name.</param>
-        /// <param name="email">email.</param>
-        /// <param name="isAdmin">isAdmin.</param>
+        [JsonConstructorAttribute]
+        protected User() { }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="User" /> class.
+        /// </summary>
+        /// <param name="id">id (required).</param>
+        /// <param name="name">name (required).</param>
+        /// <param name="email">email (required).</param>
+        /// <param name="isAdmin">isAdmin (required).</param>
         /// <param name="emailVerifiedAt">emailVerifiedAt.</param>
-        /// <param name="createdAt">createdAt.</param>
+        /// <param name="createdAt">createdAt (required).</param>
         public User(int id = default(int), string name = default(string), string email = default(string), bool isAdmin = default(bool), DateTime emailVerifiedAt = default(DateTime), DateTime createdAt = default(DateTime))
         {
             this.Id = id;
+            // to ensure "name" is required (not null)
+            if (name == null)
+            {
+                throw new ArgumentNullException("name is a required property for User and cannot be null");
+            }
             this.Name = name;
+            // to ensure "email" is required (not null)
+            if (email == null)
+            {
+                throw new ArgumentNullException("email is a required property for User and cannot be null");
+            }
             this.Email = email;
             this.IsAdmin = isAdmin;
-            this.EmailVerifiedAt = emailVerifiedAt;
             this.CreatedAt = createdAt;
+            this.EmailVerifiedAt = emailVerifiedAt;
         }
 
         /// <summary>
         /// Gets or Sets Id
         /// </summary>
-        [DataMember(Name = "id", EmitDefaultValue = false)]
+        [DataMember(Name = "id", IsRequired = true, EmitDefaultValue = true)]
         public int Id { get; set; }
 
         /// <summary>
         /// Gets or Sets Name
         /// </summary>
-        [DataMember(Name = "name", EmitDefaultValue = false)]
+        [DataMember(Name = "name", IsRequired = true, EmitDefaultValue = true)]
         public string Name { get; set; }
 
         /// <summary>
         /// Gets or Sets Email
         /// </summary>
-        [DataMember(Name = "email", EmitDefaultValue = false)]
+        [DataMember(Name = "email", IsRequired = true, EmitDefaultValue = true)]
         public string Email { get; set; }
 
         /// <summary>
         /// Gets or Sets IsAdmin
         /// </summary>
-        [DataMember(Name = "is_admin", EmitDefaultValue = true)]
+        [DataMember(Name = "is_admin", IsRequired = true, EmitDefaultValue = true)]
         public bool IsAdmin { get; set; }
 
         /// <summary>
@@ -84,7 +99,7 @@ namespace PostBoost.Client.Model
         /// <summary>
         /// Gets or Sets CreatedAt
         /// </summary>
-        [DataMember(Name = "created_at", EmitDefaultValue = false)]
+        [DataMember(Name = "created_at", IsRequired = true, EmitDefaultValue = true)]
         public DateTime CreatedAt { get; set; }
 
         /// <summary>

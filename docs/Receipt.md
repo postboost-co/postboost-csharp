@@ -4,16 +4,16 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Uuid** | **Guid** |  | [optional] 
-**TransactionId** | **string** |  | [optional] 
-**InvoiceNumber** | **string** |  | [optional] 
-**Amount** | **decimal** |  | [optional] 
-**Tax** | **decimal** |  | [optional] 
-**Currency** | **string** |  | [optional] 
+**Uuid** | **Guid** |  | 
+**TransactionId** | **string** |  | 
+**InvoiceNumber** | **string** |  | 
+**Amount** | **decimal** |  | 
+**Tax** | **decimal** |  | 
+**Currency** | **string** |  | 
 **ReceiptUrl** | **string** |  | [optional] 
 **Description** | **string** |  | [optional] 
-**PaidAt** | **DateTime** |  | [optional] 
-**CreatedAt** | **DateTime** |  | [optional] 
+**PaidAt** | **DateTime** |  | 
+**CreatedAt** | **DateTime** |  | 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 

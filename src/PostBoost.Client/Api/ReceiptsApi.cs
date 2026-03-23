@@ -30,6 +30,9 @@ namespace PostBoost.Client.Api
         /// <summary>
         /// Create receipt
         /// </summary>
+        /// <remarks>
+        /// Creates a billing receipt record for a workspace. Admin only.
+        /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="receiptInput"></param>
         /// <param name="operationIndex">Index associated with the operation.</param>
@@ -40,7 +43,7 @@ namespace PostBoost.Client.Api
         /// Create receipt
         /// </summary>
         /// <remarks>
-        /// 
+        /// Creates a billing receipt record for a workspace. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="receiptInput"></param>
@@ -50,6 +53,9 @@ namespace PostBoost.Client.Api
         /// <summary>
         /// Delete receipt
         /// </summary>
+        /// <remarks>
+        /// Permanently deletes a single receipt. Admin only.
+        /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="receiptUuid">UUID of the receipt.</param>
         /// <param name="operationIndex">Index associated with the operation.</param>
@@ -60,7 +66,7 @@ namespace PostBoost.Client.Api
         /// Delete receipt
         /// </summary>
         /// <remarks>
-        /// 
+        /// Permanently deletes a single receipt. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="receiptUuid">UUID of the receipt.</param>
@@ -70,6 +76,9 @@ namespace PostBoost.Client.Api
         /// <summary>
         /// Delete receipts (bulk)
         /// </summary>
+        /// <remarks>
+        /// Permanently deletes one or more receipt records. Admin only.
+        /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="deleteReceiptsBulkRequest"></param>
         /// <param name="operationIndex">Index associated with the operation.</param>
@@ -80,7 +89,7 @@ namespace PostBoost.Client.Api
         /// Delete receipts (bulk)
         /// </summary>
         /// <remarks>
-        /// 
+        /// Permanently deletes one or more receipt records. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="deleteReceiptsBulkRequest"></param>
@@ -90,6 +99,9 @@ namespace PostBoost.Client.Api
         /// <summary>
         /// Get receipt
         /// </summary>
+        /// <remarks>
+        /// Returns a single receipt by UUID. Admin only.
+        /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="receiptUuid">UUID of the receipt.</param>
         /// <param name="operationIndex">Index associated with the operation.</param>
@@ -100,7 +112,7 @@ namespace PostBoost.Client.Api
         /// Get receipt
         /// </summary>
         /// <remarks>
-        /// 
+        /// Returns a single receipt by UUID. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="receiptUuid">UUID of the receipt.</param>
@@ -110,28 +122,36 @@ namespace PostBoost.Client.Api
         /// <summary>
         /// List receipts
         /// </summary>
+        /// <remarks>
+        /// Returns a paginated list of billing receipts. Filter by workspace UUID or invoice number. Admin only.
+        /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid"> (optional)</param>
         /// <param name="invoiceNumber"> (optional)</param>
+        /// <param name="page">Page number (15 items per page). (optional, default to 1)</param>
         /// <param name="operationIndex">Index associated with the operation.</param>
         /// <returns>ListReceipts200Response</returns>
-        ListReceipts200Response ListReceipts(Guid? workspaceUuid = default(Guid?), string? invoiceNumber = default(string?), int operationIndex = 0);
+        ListReceipts200Response ListReceipts(Guid? workspaceUuid = default(Guid?), string? invoiceNumber = default(string?), int? page = default(int?), int operationIndex = 0);
 
         /// <summary>
         /// List receipts
         /// </summary>
         /// <remarks>
-        /// 
+        /// Returns a paginated list of billing receipts. Filter by workspace UUID or invoice number. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid"> (optional)</param>
         /// <param name="invoiceNumber"> (optional)</param>
+        /// <param name="page">Page number (15 items per page). (optional, default to 1)</param>
         /// <param name="operationIndex">Index associated with the operation.</param>
         /// <returns>ApiResponse of ListReceipts200Response</returns>
-        ApiResponse<ListReceipts200Response> ListReceiptsWithHttpInfo(Guid? workspaceUuid = default(Guid?), string? invoiceNumber = default(string?), int operationIndex = 0);
+        ApiResponse<ListReceipts200Response> ListReceiptsWithHttpInfo(Guid? workspaceUuid = default(Guid?), string? invoiceNumber = default(string?), int? page = default(int?), int operationIndex = 0);
         /// <summary>
         /// Update receipt
         /// </summary>
+        /// <remarks>
+        /// Updates a receipt&#39;s transaction details, amount, or payment date. Admin only.
+        /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="receiptUuid">UUID of the receipt.</param>
         /// <param name="receiptUpdateInput"></param>
@@ -143,7 +163,7 @@ namespace PostBoost.Client.Api
         /// Update receipt
         /// </summary>
         /// <remarks>
-        /// 
+        /// Updates a receipt&#39;s transaction details, amount, or payment date. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="receiptUuid">UUID of the receipt.</param>
@@ -164,7 +184,7 @@ namespace PostBoost.Client.Api
         /// Create receipt
         /// </summary>
         /// <remarks>
-        /// 
+        /// Creates a billing receipt record for a workspace. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="receiptInput"></param>
@@ -177,7 +197,7 @@ namespace PostBoost.Client.Api
         /// Create receipt
         /// </summary>
         /// <remarks>
-        /// 
+        /// Creates a billing receipt record for a workspace. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="receiptInput"></param>
@@ -189,7 +209,7 @@ namespace PostBoost.Client.Api
         /// Delete receipt
         /// </summary>
         /// <remarks>
-        /// 
+        /// Permanently deletes a single receipt. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="receiptUuid">UUID of the receipt.</param>
@@ -202,7 +222,7 @@ namespace PostBoost.Client.Api
         /// Delete receipt
         /// </summary>
         /// <remarks>
-        /// 
+        /// Permanently deletes a single receipt. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="receiptUuid">UUID of the receipt.</param>
@@ -214,7 +234,7 @@ namespace PostBoost.Client.Api
         /// Delete receipts (bulk)
         /// </summary>
         /// <remarks>
-        /// 
+        /// Permanently deletes one or more receipt records. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="deleteReceiptsBulkRequest"></param>
@@ -227,7 +247,7 @@ namespace PostBoost.Client.Api
         /// Delete receipts (bulk)
         /// </summary>
         /// <remarks>
-        /// 
+        /// Permanently deletes one or more receipt records. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="deleteReceiptsBulkRequest"></param>
@@ -239,7 +259,7 @@ namespace PostBoost.Client.Api
         /// Get receipt
         /// </summary>
         /// <remarks>
-        /// 
+        /// Returns a single receipt by UUID. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="receiptUuid">UUID of the receipt.</param>
@@ -252,7 +272,7 @@ namespace PostBoost.Client.Api
         /// Get receipt
         /// </summary>
         /// <remarks>
-        /// 
+        /// Returns a single receipt by UUID. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="receiptUuid">UUID of the receipt.</param>
@@ -264,34 +284,36 @@ namespace PostBoost.Client.Api
         /// List receipts
         /// </summary>
         /// <remarks>
-        /// 
+        /// Returns a paginated list of billing receipts. Filter by workspace UUID or invoice number. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid"> (optional)</param>
         /// <param name="invoiceNumber"> (optional)</param>
+        /// <param name="page">Page number (15 items per page). (optional, default to 1)</param>
         /// <param name="operationIndex">Index associated with the operation.</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns>Task of ListReceipts200Response</returns>
-        System.Threading.Tasks.Task<ListReceipts200Response> ListReceiptsAsync(Guid? workspaceUuid = default(Guid?), string? invoiceNumber = default(string?), int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken));
+        System.Threading.Tasks.Task<ListReceipts200Response> ListReceiptsAsync(Guid? workspaceUuid = default(Guid?), string? invoiceNumber = default(string?), int? page = default(int?), int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken));
 
         /// <summary>
         /// List receipts
         /// </summary>
         /// <remarks>
-        /// 
+        /// Returns a paginated list of billing receipts. Filter by workspace UUID or invoice number. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid"> (optional)</param>
         /// <param name="invoiceNumber"> (optional)</param>
+        /// <param name="page">Page number (15 items per page). (optional, default to 1)</param>
         /// <param name="operationIndex">Index associated with the operation.</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns>Task of ApiResponse (ListReceipts200Response)</returns>
-        System.Threading.Tasks.Task<ApiResponse<ListReceipts200Response>> ListReceiptsWithHttpInfoAsync(Guid? workspaceUuid = default(Guid?), string? invoiceNumber = default(string?), int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken));
+        System.Threading.Tasks.Task<ApiResponse<ListReceipts200Response>> ListReceiptsWithHttpInfoAsync(Guid? workspaceUuid = default(Guid?), string? invoiceNumber = default(string?), int? page = default(int?), int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken));
         /// <summary>
         /// Update receipt
         /// </summary>
         /// <remarks>
-        /// 
+        /// Updates a receipt&#39;s transaction details, amount, or payment date. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="receiptUuid">UUID of the receipt.</param>
@@ -305,7 +327,7 @@ namespace PostBoost.Client.Api
         /// Update receipt
         /// </summary>
         /// <remarks>
-        /// 
+        /// Updates a receipt&#39;s transaction details, amount, or payment date. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="receiptUuid">UUID of the receipt.</param>
@@ -435,7 +457,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Create receipt 
+        /// Create receipt Creates a billing receipt record for a workspace. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="receiptInput"></param>
@@ -448,7 +470,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Create receipt 
+        /// Create receipt Creates a billing receipt record for a workspace. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="receiptInput"></param>
@@ -512,7 +534,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Create receipt 
+        /// Create receipt Creates a billing receipt record for a workspace. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="receiptInput"></param>
@@ -526,7 +548,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Create receipt 
+        /// Create receipt Creates a billing receipt record for a workspace. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="receiptInput"></param>
@@ -593,7 +615,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Delete receipt 
+        /// Delete receipt Permanently deletes a single receipt. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="receiptUuid">UUID of the receipt.</param>
@@ -606,7 +628,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Delete receipt 
+        /// Delete receipt Permanently deletes a single receipt. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="receiptUuid">UUID of the receipt.</param>
@@ -663,7 +685,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Delete receipt 
+        /// Delete receipt Permanently deletes a single receipt. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="receiptUuid">UUID of the receipt.</param>
@@ -677,7 +699,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Delete receipt 
+        /// Delete receipt Permanently deletes a single receipt. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="receiptUuid">UUID of the receipt.</param>
@@ -737,7 +759,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Delete receipts (bulk) 
+        /// Delete receipts (bulk) Permanently deletes one or more receipt records. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="deleteReceiptsBulkRequest"></param>
@@ -750,7 +772,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Delete receipts (bulk) 
+        /// Delete receipts (bulk) Permanently deletes one or more receipt records. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="deleteReceiptsBulkRequest"></param>
@@ -814,7 +836,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Delete receipts (bulk) 
+        /// Delete receipts (bulk) Permanently deletes one or more receipt records. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="deleteReceiptsBulkRequest"></param>
@@ -828,7 +850,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Delete receipts (bulk) 
+        /// Delete receipts (bulk) Permanently deletes one or more receipt records. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="deleteReceiptsBulkRequest"></param>
@@ -895,7 +917,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Get receipt 
+        /// Get receipt Returns a single receipt by UUID. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="receiptUuid">UUID of the receipt.</param>
@@ -908,7 +930,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Get receipt 
+        /// Get receipt Returns a single receipt by UUID. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="receiptUuid">UUID of the receipt.</param>
@@ -965,7 +987,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Get receipt 
+        /// Get receipt Returns a single receipt by UUID. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="receiptUuid">UUID of the receipt.</param>
@@ -979,7 +1001,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Get receipt 
+        /// Get receipt Returns a single receipt by UUID. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="receiptUuid">UUID of the receipt.</param>
@@ -1039,28 +1061,30 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// List receipts 
+        /// List receipts Returns a paginated list of billing receipts. Filter by workspace UUID or invoice number. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid"> (optional)</param>
         /// <param name="invoiceNumber"> (optional)</param>
+        /// <param name="page">Page number (15 items per page). (optional, default to 1)</param>
         /// <param name="operationIndex">Index associated with the operation.</param>
         /// <returns>ListReceipts200Response</returns>
-        public ListReceipts200Response ListReceipts(Guid? workspaceUuid = default(Guid?), string? invoiceNumber = default(string?), int operationIndex = 0)
+        public ListReceipts200Response ListReceipts(Guid? workspaceUuid = default(Guid?), string? invoiceNumber = default(string?), int? page = default(int?), int operationIndex = 0)
         {
-            PostBoost.Client.Client.ApiResponse<ListReceipts200Response> localVarResponse = ListReceiptsWithHttpInfo(workspaceUuid, invoiceNumber);
+            PostBoost.Client.Client.ApiResponse<ListReceipts200Response> localVarResponse = ListReceiptsWithHttpInfo(workspaceUuid, invoiceNumber, page);
             return localVarResponse.Data;
         }
 
         /// <summary>
-        /// List receipts 
+        /// List receipts Returns a paginated list of billing receipts. Filter by workspace UUID or invoice number. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid"> (optional)</param>
         /// <param name="invoiceNumber"> (optional)</param>
+        /// <param name="page">Page number (15 items per page). (optional, default to 1)</param>
         /// <param name="operationIndex">Index associated with the operation.</param>
         /// <returns>ApiResponse of ListReceipts200Response</returns>
-        public PostBoost.Client.Client.ApiResponse<ListReceipts200Response> ListReceiptsWithHttpInfo(Guid? workspaceUuid = default(Guid?), string? invoiceNumber = default(string?), int operationIndex = 0)
+        public PostBoost.Client.Client.ApiResponse<ListReceipts200Response> ListReceiptsWithHttpInfo(Guid? workspaceUuid = default(Guid?), string? invoiceNumber = default(string?), int? page = default(int?), int operationIndex = 0)
         {
             PostBoost.Client.Client.RequestOptions localVarRequestOptions = new PostBoost.Client.Client.RequestOptions();
 
@@ -1091,6 +1115,10 @@ namespace PostBoost.Client.Api
             if (invoiceNumber != null)
             {
                 localVarRequestOptions.QueryParameters.Add(PostBoost.Client.Client.ClientUtils.ParameterToMultiMap("", "invoice_number", invoiceNumber));
+            }
+            if (page != null)
+            {
+                localVarRequestOptions.QueryParameters.Add(PostBoost.Client.Client.ClientUtils.ParameterToMultiMap("", "page", page));
             }
 
             localVarRequestOptions.Operation = "ReceiptsApi.ListReceipts";
@@ -1118,30 +1146,32 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// List receipts 
+        /// List receipts Returns a paginated list of billing receipts. Filter by workspace UUID or invoice number. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid"> (optional)</param>
         /// <param name="invoiceNumber"> (optional)</param>
+        /// <param name="page">Page number (15 items per page). (optional, default to 1)</param>
         /// <param name="operationIndex">Index associated with the operation.</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns>Task of ListReceipts200Response</returns>
-        public async System.Threading.Tasks.Task<ListReceipts200Response> ListReceiptsAsync(Guid? workspaceUuid = default(Guid?), string? invoiceNumber = default(string?), int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+        public async System.Threading.Tasks.Task<ListReceipts200Response> ListReceiptsAsync(Guid? workspaceUuid = default(Guid?), string? invoiceNumber = default(string?), int? page = default(int?), int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
         {
-            PostBoost.Client.Client.ApiResponse<ListReceipts200Response> localVarResponse = await ListReceiptsWithHttpInfoAsync(workspaceUuid, invoiceNumber, operationIndex, cancellationToken).ConfigureAwait(false);
+            PostBoost.Client.Client.ApiResponse<ListReceipts200Response> localVarResponse = await ListReceiptsWithHttpInfoAsync(workspaceUuid, invoiceNumber, page, operationIndex, cancellationToken).ConfigureAwait(false);
             return localVarResponse.Data;
         }
 
         /// <summary>
-        /// List receipts 
+        /// List receipts Returns a paginated list of billing receipts. Filter by workspace UUID or invoice number. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid"> (optional)</param>
         /// <param name="invoiceNumber"> (optional)</param>
+        /// <param name="page">Page number (15 items per page). (optional, default to 1)</param>
         /// <param name="operationIndex">Index associated with the operation.</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns>Task of ApiResponse (ListReceipts200Response)</returns>
-        public async System.Threading.Tasks.Task<PostBoost.Client.Client.ApiResponse<ListReceipts200Response>> ListReceiptsWithHttpInfoAsync(Guid? workspaceUuid = default(Guid?), string? invoiceNumber = default(string?), int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+        public async System.Threading.Tasks.Task<PostBoost.Client.Client.ApiResponse<ListReceipts200Response>> ListReceiptsWithHttpInfoAsync(Guid? workspaceUuid = default(Guid?), string? invoiceNumber = default(string?), int? page = default(int?), int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
         {
 
             PostBoost.Client.Client.RequestOptions localVarRequestOptions = new PostBoost.Client.Client.RequestOptions();
@@ -1173,6 +1203,10 @@ namespace PostBoost.Client.Api
             if (invoiceNumber != null)
             {
                 localVarRequestOptions.QueryParameters.Add(PostBoost.Client.Client.ClientUtils.ParameterToMultiMap("", "invoice_number", invoiceNumber));
+            }
+            if (page != null)
+            {
+                localVarRequestOptions.QueryParameters.Add(PostBoost.Client.Client.ClientUtils.ParameterToMultiMap("", "page", page));
             }
 
             localVarRequestOptions.Operation = "ReceiptsApi.ListReceipts";
@@ -1201,7 +1235,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Update receipt 
+        /// Update receipt Updates a receipt&#39;s transaction details, amount, or payment date. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="receiptUuid">UUID of the receipt.</param>
@@ -1215,7 +1249,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Update receipt 
+        /// Update receipt Updates a receipt&#39;s transaction details, amount, or payment date. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="receiptUuid">UUID of the receipt.</param>
@@ -1281,7 +1315,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Update receipt 
+        /// Update receipt Updates a receipt&#39;s transaction details, amount, or payment date. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="receiptUuid">UUID of the receipt.</param>
@@ -1296,7 +1330,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Update receipt 
+        /// Update receipt Updates a receipt&#39;s transaction details, amount, or payment date. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="receiptUuid">UUID of the receipt.</param>

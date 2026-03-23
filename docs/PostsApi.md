@@ -106,7 +106,7 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **200** | Queue confirmation |  -  |
+| **201** | Queue confirmation |  -  |
 | **401** |  |  -  |
 | **404** |  |  -  |
 
@@ -303,7 +303,7 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **200** | Created post |  -  |
+| **201** | Created post |  -  |
 | **401** |  |  -  |
 | **422** |  |  -  |
 
@@ -314,6 +314,8 @@ catch (ApiException e)
 > DeleteResult DeletePost (Guid workspaceUuid, Guid postUuid, DeletePostRequest? deletePostRequest = null)
 
 Delete post
+
+Deletes a post. Use `delete_mode` to control whether to also remove the published content from social platforms.
 
 ### Example
 ```csharp
@@ -509,6 +511,8 @@ catch (ApiException e)
 > Post GetPost (Guid workspaceUuid, Guid postUuid)
 
 Get post
+
+Returns a single post with all its versions and associated accounts.
 
 ### Example
 ```csharp
@@ -802,6 +806,8 @@ catch (ApiException e)
 > Object UpdatePost (Guid workspaceUuid, Guid postUuid, PostInput postInput)
 
 Update post
+
+Replaces a post's versions, accounts, tags, and scheduling options. The post must not be in a published state.
 
 ### Example
 ```csharp

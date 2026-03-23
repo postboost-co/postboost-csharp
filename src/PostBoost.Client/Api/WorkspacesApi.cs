@@ -30,6 +30,9 @@ namespace PostBoost.Client.Api
         /// <summary>
         /// Add user to workspace
         /// </summary>
+        /// <remarks>
+        /// Adds an existing user to the workspace with a specified role. Admin only.
+        /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
         /// <param name="workspaceUserInput"></param>
@@ -41,7 +44,7 @@ namespace PostBoost.Client.Api
         /// Add user to workspace
         /// </summary>
         /// <remarks>
-        /// 
+        /// Adds an existing user to the workspace with a specified role. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -75,6 +78,9 @@ namespace PostBoost.Client.Api
         /// <summary>
         /// Delete workspace
         /// </summary>
+        /// <remarks>
+        /// Permanently deletes a single workspace and all its associated data. Admin only.
+        /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
         /// <param name="operationIndex">Index associated with the operation.</param>
@@ -85,7 +91,7 @@ namespace PostBoost.Client.Api
         /// Delete workspace
         /// </summary>
         /// <remarks>
-        /// 
+        /// Permanently deletes a single workspace and all its associated data. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -95,6 +101,9 @@ namespace PostBoost.Client.Api
         /// <summary>
         /// Delete workspaces (bulk)
         /// </summary>
+        /// <remarks>
+        /// Permanently deletes one or more workspaces and all their associated data. Admin only.
+        /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="deleteWorkspacesBulkRequest"></param>
         /// <param name="operationIndex">Index associated with the operation.</param>
@@ -105,7 +114,7 @@ namespace PostBoost.Client.Api
         /// Delete workspaces (bulk)
         /// </summary>
         /// <remarks>
-        /// 
+        /// Permanently deletes one or more workspaces and all their associated data. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="deleteWorkspacesBulkRequest"></param>
@@ -115,6 +124,9 @@ namespace PostBoost.Client.Api
         /// <summary>
         /// Get workspace
         /// </summary>
+        /// <remarks>
+        /// Returns a single workspace by UUID including its subscription status. Admin only.
+        /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
         /// <param name="operationIndex">Index associated with the operation.</param>
@@ -125,7 +137,7 @@ namespace PostBoost.Client.Api
         /// Get workspace
         /// </summary>
         /// <remarks>
-        /// 
+        /// Returns a single workspace by UUID including its subscription status. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -142,9 +154,10 @@ namespace PostBoost.Client.Api
         /// <param name="keyword"> (optional)</param>
         /// <param name="subscriptionStatus"> (optional)</param>
         /// <param name="accessStatus"> (optional)</param>
+        /// <param name="page">Page number (15 items per page). (optional, default to 1)</param>
         /// <param name="operationIndex">Index associated with the operation.</param>
         /// <returns>ListWorkspaces200Response</returns>
-        ListWorkspaces200Response ListWorkspaces(string? keyword = default(string?), string? subscriptionStatus = default(string?), string? accessStatus = default(string?), int operationIndex = 0);
+        ListWorkspaces200Response ListWorkspaces(string? keyword = default(string?), string? subscriptionStatus = default(string?), string? accessStatus = default(string?), int? page = default(int?), int operationIndex = 0);
 
         /// <summary>
         /// List workspaces
@@ -156,12 +169,16 @@ namespace PostBoost.Client.Api
         /// <param name="keyword"> (optional)</param>
         /// <param name="subscriptionStatus"> (optional)</param>
         /// <param name="accessStatus"> (optional)</param>
+        /// <param name="page">Page number (15 items per page). (optional, default to 1)</param>
         /// <param name="operationIndex">Index associated with the operation.</param>
         /// <returns>ApiResponse of ListWorkspaces200Response</returns>
-        ApiResponse<ListWorkspaces200Response> ListWorkspacesWithHttpInfo(string? keyword = default(string?), string? subscriptionStatus = default(string?), string? accessStatus = default(string?), int operationIndex = 0);
+        ApiResponse<ListWorkspaces200Response> ListWorkspacesWithHttpInfo(string? keyword = default(string?), string? subscriptionStatus = default(string?), string? accessStatus = default(string?), int? page = default(int?), int operationIndex = 0);
         /// <summary>
         /// Remove user from workspace
         /// </summary>
+        /// <remarks>
+        /// Removes a user&#39;s access to the workspace. The user account is not deleted. Admin only.
+        /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
         /// <param name="removeUserFromWorkspaceRequest"></param>
@@ -173,7 +190,7 @@ namespace PostBoost.Client.Api
         /// Remove user from workspace
         /// </summary>
         /// <remarks>
-        /// 
+        /// Removes a user&#39;s access to the workspace. The user account is not deleted. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -184,6 +201,9 @@ namespace PostBoost.Client.Api
         /// <summary>
         /// Update workspace
         /// </summary>
+        /// <remarks>
+        /// Updates a workspace&#39;s name, color, or access status. Admin only.
+        /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
         /// <param name="workspaceInput"></param>
@@ -195,7 +215,7 @@ namespace PostBoost.Client.Api
         /// Update workspace
         /// </summary>
         /// <remarks>
-        /// 
+        /// Updates a workspace&#39;s name, color, or access status. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -206,6 +226,9 @@ namespace PostBoost.Client.Api
         /// <summary>
         /// Update user role in workspace
         /// </summary>
+        /// <remarks>
+        /// Changes a user&#39;s role or permissions within the workspace. Admin only.
+        /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
         /// <param name="workspaceUserInput"></param>
@@ -217,7 +240,7 @@ namespace PostBoost.Client.Api
         /// Update user role in workspace
         /// </summary>
         /// <remarks>
-        /// 
+        /// Changes a user&#39;s role or permissions within the workspace. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -238,7 +261,7 @@ namespace PostBoost.Client.Api
         /// Add user to workspace
         /// </summary>
         /// <remarks>
-        /// 
+        /// Adds an existing user to the workspace with a specified role. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -252,7 +275,7 @@ namespace PostBoost.Client.Api
         /// Add user to workspace
         /// </summary>
         /// <remarks>
-        /// 
+        /// Adds an existing user to the workspace with a specified role. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -290,7 +313,7 @@ namespace PostBoost.Client.Api
         /// Delete workspace
         /// </summary>
         /// <remarks>
-        /// 
+        /// Permanently deletes a single workspace and all its associated data. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -303,7 +326,7 @@ namespace PostBoost.Client.Api
         /// Delete workspace
         /// </summary>
         /// <remarks>
-        /// 
+        /// Permanently deletes a single workspace and all its associated data. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -315,7 +338,7 @@ namespace PostBoost.Client.Api
         /// Delete workspaces (bulk)
         /// </summary>
         /// <remarks>
-        /// 
+        /// Permanently deletes one or more workspaces and all their associated data. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="deleteWorkspacesBulkRequest"></param>
@@ -328,7 +351,7 @@ namespace PostBoost.Client.Api
         /// Delete workspaces (bulk)
         /// </summary>
         /// <remarks>
-        /// 
+        /// Permanently deletes one or more workspaces and all their associated data. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="deleteWorkspacesBulkRequest"></param>
@@ -340,7 +363,7 @@ namespace PostBoost.Client.Api
         /// Get workspace
         /// </summary>
         /// <remarks>
-        /// 
+        /// Returns a single workspace by UUID including its subscription status. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -353,7 +376,7 @@ namespace PostBoost.Client.Api
         /// Get workspace
         /// </summary>
         /// <remarks>
-        /// 
+        /// Returns a single workspace by UUID including its subscription status. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -371,10 +394,11 @@ namespace PostBoost.Client.Api
         /// <param name="keyword"> (optional)</param>
         /// <param name="subscriptionStatus"> (optional)</param>
         /// <param name="accessStatus"> (optional)</param>
+        /// <param name="page">Page number (15 items per page). (optional, default to 1)</param>
         /// <param name="operationIndex">Index associated with the operation.</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns>Task of ListWorkspaces200Response</returns>
-        System.Threading.Tasks.Task<ListWorkspaces200Response> ListWorkspacesAsync(string? keyword = default(string?), string? subscriptionStatus = default(string?), string? accessStatus = default(string?), int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken));
+        System.Threading.Tasks.Task<ListWorkspaces200Response> ListWorkspacesAsync(string? keyword = default(string?), string? subscriptionStatus = default(string?), string? accessStatus = default(string?), int? page = default(int?), int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken));
 
         /// <summary>
         /// List workspaces
@@ -386,15 +410,16 @@ namespace PostBoost.Client.Api
         /// <param name="keyword"> (optional)</param>
         /// <param name="subscriptionStatus"> (optional)</param>
         /// <param name="accessStatus"> (optional)</param>
+        /// <param name="page">Page number (15 items per page). (optional, default to 1)</param>
         /// <param name="operationIndex">Index associated with the operation.</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns>Task of ApiResponse (ListWorkspaces200Response)</returns>
-        System.Threading.Tasks.Task<ApiResponse<ListWorkspaces200Response>> ListWorkspacesWithHttpInfoAsync(string? keyword = default(string?), string? subscriptionStatus = default(string?), string? accessStatus = default(string?), int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken));
+        System.Threading.Tasks.Task<ApiResponse<ListWorkspaces200Response>> ListWorkspacesWithHttpInfoAsync(string? keyword = default(string?), string? subscriptionStatus = default(string?), string? accessStatus = default(string?), int? page = default(int?), int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken));
         /// <summary>
         /// Remove user from workspace
         /// </summary>
         /// <remarks>
-        /// 
+        /// Removes a user&#39;s access to the workspace. The user account is not deleted. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -408,7 +433,7 @@ namespace PostBoost.Client.Api
         /// Remove user from workspace
         /// </summary>
         /// <remarks>
-        /// 
+        /// Removes a user&#39;s access to the workspace. The user account is not deleted. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -421,7 +446,7 @@ namespace PostBoost.Client.Api
         /// Update workspace
         /// </summary>
         /// <remarks>
-        /// 
+        /// Updates a workspace&#39;s name, color, or access status. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -435,7 +460,7 @@ namespace PostBoost.Client.Api
         /// Update workspace
         /// </summary>
         /// <remarks>
-        /// 
+        /// Updates a workspace&#39;s name, color, or access status. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -448,7 +473,7 @@ namespace PostBoost.Client.Api
         /// Update user role in workspace
         /// </summary>
         /// <remarks>
-        /// 
+        /// Changes a user&#39;s role or permissions within the workspace. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -462,7 +487,7 @@ namespace PostBoost.Client.Api
         /// Update user role in workspace
         /// </summary>
         /// <remarks>
-        /// 
+        /// Changes a user&#39;s role or permissions within the workspace. Admin only.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -592,7 +617,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Add user to workspace 
+        /// Add user to workspace Adds an existing user to the workspace with a specified role. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -606,7 +631,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Add user to workspace 
+        /// Add user to workspace Adds an existing user to the workspace with a specified role. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -672,7 +697,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Add user to workspace 
+        /// Add user to workspace Adds an existing user to the workspace with a specified role. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -687,7 +712,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Add user to workspace 
+        /// Add user to workspace Adds an existing user to the workspace with a specified role. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -914,7 +939,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Delete workspace 
+        /// Delete workspace Permanently deletes a single workspace and all its associated data. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -927,7 +952,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Delete workspace 
+        /// Delete workspace Permanently deletes a single workspace and all its associated data. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -984,7 +1009,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Delete workspace 
+        /// Delete workspace Permanently deletes a single workspace and all its associated data. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -998,7 +1023,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Delete workspace 
+        /// Delete workspace Permanently deletes a single workspace and all its associated data. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -1058,7 +1083,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Delete workspaces (bulk) 
+        /// Delete workspaces (bulk) Permanently deletes one or more workspaces and all their associated data. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="deleteWorkspacesBulkRequest"></param>
@@ -1071,7 +1096,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Delete workspaces (bulk) 
+        /// Delete workspaces (bulk) Permanently deletes one or more workspaces and all their associated data. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="deleteWorkspacesBulkRequest"></param>
@@ -1135,7 +1160,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Delete workspaces (bulk) 
+        /// Delete workspaces (bulk) Permanently deletes one or more workspaces and all their associated data. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="deleteWorkspacesBulkRequest"></param>
@@ -1149,7 +1174,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Delete workspaces (bulk) 
+        /// Delete workspaces (bulk) Permanently deletes one or more workspaces and all their associated data. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="deleteWorkspacesBulkRequest"></param>
@@ -1216,7 +1241,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Get workspace 
+        /// Get workspace Returns a single workspace by UUID including its subscription status. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -1229,7 +1254,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Get workspace 
+        /// Get workspace Returns a single workspace by UUID including its subscription status. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -1286,7 +1311,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Get workspace 
+        /// Get workspace Returns a single workspace by UUID including its subscription status. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -1300,7 +1325,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Get workspace 
+        /// Get workspace Returns a single workspace by UUID including its subscription status. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -1366,11 +1391,12 @@ namespace PostBoost.Client.Api
         /// <param name="keyword"> (optional)</param>
         /// <param name="subscriptionStatus"> (optional)</param>
         /// <param name="accessStatus"> (optional)</param>
+        /// <param name="page">Page number (15 items per page). (optional, default to 1)</param>
         /// <param name="operationIndex">Index associated with the operation.</param>
         /// <returns>ListWorkspaces200Response</returns>
-        public ListWorkspaces200Response ListWorkspaces(string? keyword = default(string?), string? subscriptionStatus = default(string?), string? accessStatus = default(string?), int operationIndex = 0)
+        public ListWorkspaces200Response ListWorkspaces(string? keyword = default(string?), string? subscriptionStatus = default(string?), string? accessStatus = default(string?), int? page = default(int?), int operationIndex = 0)
         {
-            PostBoost.Client.Client.ApiResponse<ListWorkspaces200Response> localVarResponse = ListWorkspacesWithHttpInfo(keyword, subscriptionStatus, accessStatus);
+            PostBoost.Client.Client.ApiResponse<ListWorkspaces200Response> localVarResponse = ListWorkspacesWithHttpInfo(keyword, subscriptionStatus, accessStatus, page);
             return localVarResponse.Data;
         }
 
@@ -1381,9 +1407,10 @@ namespace PostBoost.Client.Api
         /// <param name="keyword"> (optional)</param>
         /// <param name="subscriptionStatus"> (optional)</param>
         /// <param name="accessStatus"> (optional)</param>
+        /// <param name="page">Page number (15 items per page). (optional, default to 1)</param>
         /// <param name="operationIndex">Index associated with the operation.</param>
         /// <returns>ApiResponse of ListWorkspaces200Response</returns>
-        public PostBoost.Client.Client.ApiResponse<ListWorkspaces200Response> ListWorkspacesWithHttpInfo(string? keyword = default(string?), string? subscriptionStatus = default(string?), string? accessStatus = default(string?), int operationIndex = 0)
+        public PostBoost.Client.Client.ApiResponse<ListWorkspaces200Response> ListWorkspacesWithHttpInfo(string? keyword = default(string?), string? subscriptionStatus = default(string?), string? accessStatus = default(string?), int? page = default(int?), int operationIndex = 0)
         {
             PostBoost.Client.Client.RequestOptions localVarRequestOptions = new PostBoost.Client.Client.RequestOptions();
 
@@ -1418,6 +1445,10 @@ namespace PostBoost.Client.Api
             if (accessStatus != null)
             {
                 localVarRequestOptions.QueryParameters.Add(PostBoost.Client.Client.ClientUtils.ParameterToMultiMap("", "access_status", accessStatus));
+            }
+            if (page != null)
+            {
+                localVarRequestOptions.QueryParameters.Add(PostBoost.Client.Client.ClientUtils.ParameterToMultiMap("", "page", page));
             }
 
             localVarRequestOptions.Operation = "WorkspacesApi.ListWorkspaces";
@@ -1451,12 +1482,13 @@ namespace PostBoost.Client.Api
         /// <param name="keyword"> (optional)</param>
         /// <param name="subscriptionStatus"> (optional)</param>
         /// <param name="accessStatus"> (optional)</param>
+        /// <param name="page">Page number (15 items per page). (optional, default to 1)</param>
         /// <param name="operationIndex">Index associated with the operation.</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns>Task of ListWorkspaces200Response</returns>
-        public async System.Threading.Tasks.Task<ListWorkspaces200Response> ListWorkspacesAsync(string? keyword = default(string?), string? subscriptionStatus = default(string?), string? accessStatus = default(string?), int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+        public async System.Threading.Tasks.Task<ListWorkspaces200Response> ListWorkspacesAsync(string? keyword = default(string?), string? subscriptionStatus = default(string?), string? accessStatus = default(string?), int? page = default(int?), int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
         {
-            PostBoost.Client.Client.ApiResponse<ListWorkspaces200Response> localVarResponse = await ListWorkspacesWithHttpInfoAsync(keyword, subscriptionStatus, accessStatus, operationIndex, cancellationToken).ConfigureAwait(false);
+            PostBoost.Client.Client.ApiResponse<ListWorkspaces200Response> localVarResponse = await ListWorkspacesWithHttpInfoAsync(keyword, subscriptionStatus, accessStatus, page, operationIndex, cancellationToken).ConfigureAwait(false);
             return localVarResponse.Data;
         }
 
@@ -1467,10 +1499,11 @@ namespace PostBoost.Client.Api
         /// <param name="keyword"> (optional)</param>
         /// <param name="subscriptionStatus"> (optional)</param>
         /// <param name="accessStatus"> (optional)</param>
+        /// <param name="page">Page number (15 items per page). (optional, default to 1)</param>
         /// <param name="operationIndex">Index associated with the operation.</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns>Task of ApiResponse (ListWorkspaces200Response)</returns>
-        public async System.Threading.Tasks.Task<PostBoost.Client.Client.ApiResponse<ListWorkspaces200Response>> ListWorkspacesWithHttpInfoAsync(string? keyword = default(string?), string? subscriptionStatus = default(string?), string? accessStatus = default(string?), int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+        public async System.Threading.Tasks.Task<PostBoost.Client.Client.ApiResponse<ListWorkspaces200Response>> ListWorkspacesWithHttpInfoAsync(string? keyword = default(string?), string? subscriptionStatus = default(string?), string? accessStatus = default(string?), int? page = default(int?), int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
         {
 
             PostBoost.Client.Client.RequestOptions localVarRequestOptions = new PostBoost.Client.Client.RequestOptions();
@@ -1507,6 +1540,10 @@ namespace PostBoost.Client.Api
             {
                 localVarRequestOptions.QueryParameters.Add(PostBoost.Client.Client.ClientUtils.ParameterToMultiMap("", "access_status", accessStatus));
             }
+            if (page != null)
+            {
+                localVarRequestOptions.QueryParameters.Add(PostBoost.Client.Client.ClientUtils.ParameterToMultiMap("", "page", page));
+            }
 
             localVarRequestOptions.Operation = "WorkspacesApi.ListWorkspaces";
             localVarRequestOptions.OperationIndex = operationIndex;
@@ -1534,7 +1571,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Remove user from workspace 
+        /// Remove user from workspace Removes a user&#39;s access to the workspace. The user account is not deleted. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -1548,7 +1585,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Remove user from workspace 
+        /// Remove user from workspace Removes a user&#39;s access to the workspace. The user account is not deleted. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -1614,7 +1651,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Remove user from workspace 
+        /// Remove user from workspace Removes a user&#39;s access to the workspace. The user account is not deleted. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -1629,7 +1666,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Remove user from workspace 
+        /// Remove user from workspace Removes a user&#39;s access to the workspace. The user account is not deleted. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -1698,7 +1735,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Update workspace 
+        /// Update workspace Updates a workspace&#39;s name, color, or access status. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -1712,7 +1749,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Update workspace 
+        /// Update workspace Updates a workspace&#39;s name, color, or access status. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -1778,7 +1815,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Update workspace 
+        /// Update workspace Updates a workspace&#39;s name, color, or access status. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -1793,7 +1830,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Update workspace 
+        /// Update workspace Updates a workspace&#39;s name, color, or access status. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -1862,7 +1899,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Update user role in workspace 
+        /// Update user role in workspace Changes a user&#39;s role or permissions within the workspace. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -1876,7 +1913,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Update user role in workspace 
+        /// Update user role in workspace Changes a user&#39;s role or permissions within the workspace. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -1942,7 +1979,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Update user role in workspace 
+        /// Update user role in workspace Changes a user&#39;s role or permissions within the workspace. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -1957,7 +1994,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Update user role in workspace 
+        /// Update user role in workspace Changes a user&#39;s role or permissions within the workspace. Admin only.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>

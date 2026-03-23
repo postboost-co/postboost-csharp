@@ -4,16 +4,16 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Id** | **int** |  | [optional] 
-**Uuid** | **Guid** |  | [optional] 
-**Status** | **PostStatus** |  | [optional] 
-**Accounts** | [**List&lt;Account&gt;**](Account.md) |  | [optional] 
-**Versions** | [**List&lt;PostVersion&gt;**](PostVersion.md) |  | [optional] 
-**Tags** | [**List&lt;Tag&gt;**](Tag.md) |  | [optional] 
+**Id** | **int** |  | 
+**Uuid** | **Guid** |  | 
+**Status** | **PostStatus** |  | 
+**Accounts** | [**List&lt;Account&gt;**](Account.md) |  | 
+**Versions** | [**List&lt;PostVersion&gt;**](PostVersion.md) |  | 
+**Tags** | [**List&lt;Tag&gt;**](Tag.md) |  | 
 **ScheduledAt** | **DateTime** |  | [optional] 
 **PublishedAt** | **DateTime** |  | [optional] 
-**CreatedAt** | **DateTime** |  | [optional] 
-**Trashed** | **bool** |  | [optional] 
+**CreatedAt** | **DateTime** |  | 
+**Trashed** | **bool** |  | 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 

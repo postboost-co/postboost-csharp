@@ -16,6 +16,8 @@ All URIs are relative to *https://postboost.co/app/api*
 
 Create tag
 
+Creates a new color-coded tag in the workspace for organizing posts.
+
 ### Example
 ```csharp
 using System.Collections.Generic;
@@ -100,7 +102,7 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **200** | Created tag |  -  |
+| **201** | Created tag |  -  |
 | **401** |  |  -  |
 | **422** |  |  -  |
 
@@ -111,6 +113,8 @@ catch (ApiException e)
 > Object DeleteTag (Guid workspaceUuid, Guid tagUuid)
 
 Delete tag
+
+Permanently deletes a tag. Posts that had this tag attached are unaffected.
 
 ### Example
 ```csharp
@@ -208,6 +212,8 @@ catch (ApiException e)
 
 Get tag
 
+Returns a single tag by UUID.
+
 ### Example
 ```csharp
 using System.Collections.Generic;
@@ -304,6 +310,8 @@ catch (ApiException e)
 
 List tags
 
+Returns all tags defined in the workspace.
+
 ### Example
 ```csharp
 using System.Collections.Generic;
@@ -396,6 +404,8 @@ catch (ApiException e)
 > Object UpdateTag (Guid workspaceUuid, Guid tagUuid, TagInput tagInput)
 
 Update tag
+
+Updates a tag's name or color.
 
 ### Example
 ```csharp

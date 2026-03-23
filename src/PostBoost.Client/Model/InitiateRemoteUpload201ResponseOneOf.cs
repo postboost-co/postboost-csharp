@@ -27,16 +27,16 @@ using OpenAPIDateConverter = PostBoost.Client.Client.OpenAPIDateConverter;
 namespace PostBoost.Client.Model
 {
     /// <summary>
-    /// InitiateRemoteUpload200ResponseOneOf
+    /// InitiateRemoteUpload201ResponseOneOf
     /// </summary>
-    [DataContract(Name = "initiateRemoteUpload_200_response_oneOf")]
-    public partial class InitiateRemoteUpload200ResponseOneOf : IValidatableObject
+    [DataContract(Name = "initiateRemoteUpload_201_response_oneOf")]
+    public partial class InitiateRemoteUpload201ResponseOneOf : IValidatableObject
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="InitiateRemoteUpload200ResponseOneOf" /> class.
+        /// Initializes a new instance of the <see cref="InitiateRemoteUpload201ResponseOneOf" /> class.
         /// </summary>
         /// <param name="downloadId">downloadId.</param>
-        public InitiateRemoteUpload200ResponseOneOf(string downloadId = default(string))
+        public InitiateRemoteUpload201ResponseOneOf(string downloadId = default(string))
         {
             this.DownloadId = downloadId;
         }
@@ -54,7 +54,7 @@ namespace PostBoost.Client.Model
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
-            sb.Append("class InitiateRemoteUpload200ResponseOneOf {\n");
+            sb.Append("class InitiateRemoteUpload201ResponseOneOf {\n");
             sb.Append("  DownloadId: ").Append(DownloadId).Append("\n");
             sb.Append("}\n");
             return sb.ToString();

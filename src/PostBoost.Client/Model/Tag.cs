@@ -35,28 +35,43 @@ namespace PostBoost.Client.Model
         /// <summary>
         /// Initializes a new instance of the <see cref="Tag" /> class.
         /// </summary>
-        /// <param name="id">id.</param>
-        /// <param name="uuid">uuid.</param>
-        /// <param name="name">name.</param>
-        /// <param name="hexColor">hexColor.</param>
+        [JsonConstructorAttribute]
+        protected Tag() { }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Tag" /> class.
+        /// </summary>
+        /// <param name="id">id (required).</param>
+        /// <param name="uuid">uuid (required).</param>
+        /// <param name="name">name (required).</param>
+        /// <param name="hexColor">hexColor (required).</param>
         public Tag(int id = default(int), Guid uuid = default(Guid), string name = default(string), string hexColor = default(string))
         {
             this.Id = id;
             this.Uuid = uuid;
+            // to ensure "name" is required (not null)
+            if (name == null)
+            {
+                throw new ArgumentNullException("name is a required property for Tag and cannot be null");
+            }
             this.Name = name;
+            // to ensure "hexColor" is required (not null)
+            if (hexColor == null)
+            {
+                throw new ArgumentNullException("hexColor is a required property for Tag and cannot be null");
+            }
             this.HexColor = hexColor;
         }
 
         /// <summary>
         /// Gets or Sets Id
         /// </summary>
-        [DataMember(Name = "id", EmitDefaultValue = false)]
+        [DataMember(Name = "id", IsRequired = true, EmitDefaultValue = true)]
         public int Id { get; set; }
 
         /// <summary>
         /// Gets or Sets Uuid
         /// </summary>
-        [DataMember(Name = "uuid", EmitDefaultValue = false)]
+        [DataMember(Name = "uuid", IsRequired = true, EmitDefaultValue = true)]
         public Guid Uuid { get; set; }
 
         /// <summary>
@@ -65,7 +80,7 @@ namespace PostBoost.Client.Model
         /*
         <example>Campaign 2025</example>
         */
-        [DataMember(Name = "name", EmitDefaultValue = false)]
+        [DataMember(Name = "name", IsRequired = true, EmitDefaultValue = true)]
         public string Name { get; set; }
 
         /// <summary>
@@ -74,7 +89,7 @@ namespace PostBoost.Client.Model
         /*
         <example>#3B82F6</example>
         */
-        [DataMember(Name = "hex_color", EmitDefaultValue = false)]
+        [DataMember(Name = "hex_color", IsRequired = true, EmitDefaultValue = true)]
         public string HexColor { get; set; }
 
         /// <summary>

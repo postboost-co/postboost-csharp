@@ -21,6 +21,8 @@ All URIs are relative to *https://postboost.co/app/api*
 
 Add generic subscription
 
+Assigns a non-Stripe (generic) subscription plan to the workspace, optionally granting a trial period. Used for AppSumo-style lifetime deals. Admin only.
+
 ### Example
 ```csharp
 using System.Collections.Generic;
@@ -105,8 +107,9 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **200** |  |  -  |
+| **201** |  |  -  |
 | **401** |  |  -  |
+| **403** |  |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
@@ -115,6 +118,8 @@ catch (ApiException e)
 > Object CancelSubscription (Guid workspaceUuid)
 
 Cancel subscription
+
+Cancels the workspace's Stripe subscription at the end of the current billing period. Admin only.
 
 ### Example
 ```csharp
@@ -200,6 +205,7 @@ catch (ApiException e)
 |-------------|-------------|------------------|
 | **200** |  |  -  |
 | **401** |  |  -  |
+| **403** |  |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
@@ -208,6 +214,8 @@ catch (ApiException e)
 > Object ChangeSubscriptionPlan (Guid workspaceUuid, ChangeSubscriptionPlanRequest changeSubscriptionPlanRequest)
 
 Change subscription plan
+
+Switches the workspace to a different Stripe plan. Optionally prorates the change and bills immediately. Admin only.
 
 ### Example
 ```csharp
@@ -295,6 +303,7 @@ catch (ApiException e)
 |-------------|-------------|------------------|
 | **200** |  |  -  |
 | **401** |  |  -  |
+| **403** |  |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
@@ -392,6 +401,7 @@ catch (ApiException e)
 |-------------|-------------|------------------|
 | **200** | Checkout URL |  -  |
 | **401** |  |  -  |
+| **403** |  |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
@@ -400,6 +410,8 @@ catch (ApiException e)
 > Object CreateSubscription (Guid workspaceUuid, SubscriptionInput subscriptionInput)
 
 Create subscription
+
+Manually creates a subscription record for the workspace (for external billing integrations). Admin only.
 
 ### Example
 ```csharp
@@ -487,6 +499,7 @@ catch (ApiException e)
 |-------------|-------------|------------------|
 | **201** |  |  -  |
 | **401** |  |  -  |
+| **403** |  |  -  |
 | **422** |  |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
@@ -496,6 +509,8 @@ catch (ApiException e)
 > Object DeleteSubscription (Guid workspaceUuid)
 
 Delete subscription
+
+Removes the subscription record from the workspace. Admin only.
 
 ### Example
 ```csharp
@@ -581,6 +596,7 @@ catch (ApiException e)
 |-------------|-------------|------------------|
 | **200** |  |  -  |
 | **401** |  |  -  |
+| **403** |  |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
@@ -589,6 +605,8 @@ catch (ApiException e)
 > Subscription GetSubscription (Guid workspaceUuid)
 
 Get subscription
+
+Returns the active subscription for the workspace, or `null` if none exists. Admin only.
 
 ### Example
 ```csharp
@@ -674,6 +692,7 @@ catch (ApiException e)
 |-------------|-------------|------------------|
 | **200** | Subscription details or null |  -  |
 | **401** |  |  -  |
+| **403** |  |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
@@ -682,6 +701,8 @@ catch (ApiException e)
 > Object RemoveGenericSubscription (Guid workspaceUuid)
 
 Remove generic subscription
+
+Removes the generic (non-Stripe) subscription from the workspace. Admin only.
 
 ### Example
 ```csharp
@@ -767,6 +788,7 @@ catch (ApiException e)
 |-------------|-------------|------------------|
 | **200** |  |  -  |
 | **401** |  |  -  |
+| **403** |  |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
@@ -775,6 +797,8 @@ catch (ApiException e)
 > Object ResumeSubscription (Guid workspaceUuid)
 
 Resume subscription
+
+Resumes a previously canceled subscription before it expires. Admin only.
 
 ### Example
 ```csharp
@@ -860,6 +884,7 @@ catch (ApiException e)
 |-------------|-------------|------------------|
 | **200** |  |  -  |
 | **401** |  |  -  |
+| **403** |  |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
@@ -868,6 +893,8 @@ catch (ApiException e)
 > Object UpdateSubscription (Guid workspaceUuid, SubscriptionUpdateInput subscriptionUpdateInput)
 
 Update subscription
+
+Updates the plan ID, status, or trial/pause dates of an existing subscription. Admin only.
 
 ### Example
 ```csharp
@@ -955,6 +982,7 @@ catch (ApiException e)
 |-------------|-------------|------------------|
 | **200** |  |  -  |
 | **401** |  |  -  |
+| **403** |  |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 

@@ -1,0 +1,19 @@
+# PostBoost.Client.Model.InitiateRemoteUpload201Response
+
+## Properties
+
+Name | Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+**Id** | **int** |  | 
+**Uuid** | **Guid** |  | 
+**Name** | **string** |  | 
+**MimeType** | **string** |  | 
+**Type** | **string** |  | 
+**Url** | **string** |  | 
+**ThumbUrl** | **string** |  | [optional] 
+**IsVideo** | **bool** |  | 
+**CreatedAt** | **DateTime** |  | 
+**DownloadId** | **string** |  | [optional] 
+
+[[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
+

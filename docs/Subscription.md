@@ -4,11 +4,11 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Name** | **string** |  | [optional] 
-**PlatformSubscriptionId** | **string** |  | [optional] 
-**PlatformPlanId** | **string** |  | [optional] 
-**Status** | **SubscriptionStatus** |  | [optional] 
-**Recurring** | **bool** |  | [optional] 
+**Name** | **string** |  | 
+**PlatformSubscriptionId** | **string** |  | 
+**PlatformPlanId** | **string** |  | 
+**Status** | **SubscriptionStatus** |  | 
+**Recurring** | **bool** |  | 
 **TrialEndsAt** | **DateTime** |  | [optional] 
 **PausedFrom** | **DateTime** |  | [optional] 
 **EndsAt** | **DateTime** |  | [optional] 

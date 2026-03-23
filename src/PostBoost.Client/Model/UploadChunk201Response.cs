@@ -27,16 +27,16 @@ using OpenAPIDateConverter = PostBoost.Client.Client.OpenAPIDateConverter;
 namespace PostBoost.Client.Model
 {
     /// <summary>
-    /// UploadChunk200Response
+    /// UploadChunk201Response
     /// </summary>
-    [DataContract(Name = "uploadChunk_200_response")]
-    public partial class UploadChunk200Response : IValidatableObject
+    [DataContract(Name = "uploadChunk_201_response")]
+    public partial class UploadChunk201Response : IValidatableObject
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="UploadChunk200Response" /> class.
+        /// Initializes a new instance of the <see cref="UploadChunk201Response" /> class.
         /// </summary>
         /// <param name="received">Number of chunks received so far..</param>
-        public UploadChunk200Response(int received = default(int))
+        public UploadChunk201Response(int received = default(int))
         {
             this.Received = received;
         }
@@ -55,7 +55,7 @@ namespace PostBoost.Client.Model
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
-            sb.Append("class UploadChunk200Response {\n");
+            sb.Append("class UploadChunk201Response {\n");
             sb.Append("  Received: ").Append(Received).Append("\n");
             sb.Append("}\n");
             return sb.ToString();

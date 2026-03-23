@@ -162,8 +162,8 @@ namespace PostBoost.Client.Api
         /// <param name="workspaceUuid">UUID of the workspace.</param>
         /// <param name="initiateChunkedUploadRequest"></param>
         /// <param name="operationIndex">Index associated with the operation.</param>
-        /// <returns>InitiateChunkedUpload200Response</returns>
-        InitiateChunkedUpload200Response InitiateChunkedUpload(Guid workspaceUuid, InitiateChunkedUploadRequest initiateChunkedUploadRequest, int operationIndex = 0);
+        /// <returns>InitiateChunkedUpload201Response</returns>
+        InitiateChunkedUpload201Response InitiateChunkedUpload(Guid workspaceUuid, InitiateChunkedUploadRequest initiateChunkedUploadRequest, int operationIndex = 0);
 
         /// <summary>
         /// Initiate chunked upload
@@ -175,8 +175,8 @@ namespace PostBoost.Client.Api
         /// <param name="workspaceUuid">UUID of the workspace.</param>
         /// <param name="initiateChunkedUploadRequest"></param>
         /// <param name="operationIndex">Index associated with the operation.</param>
-        /// <returns>ApiResponse of InitiateChunkedUpload200Response</returns>
-        ApiResponse<InitiateChunkedUpload200Response> InitiateChunkedUploadWithHttpInfo(Guid workspaceUuid, InitiateChunkedUploadRequest initiateChunkedUploadRequest, int operationIndex = 0);
+        /// <returns>ApiResponse of InitiateChunkedUpload201Response</returns>
+        ApiResponse<InitiateChunkedUpload201Response> InitiateChunkedUploadWithHttpInfo(Guid workspaceUuid, InitiateChunkedUploadRequest initiateChunkedUploadRequest, int operationIndex = 0);
         /// <summary>
         /// Initiate remote upload
         /// </summary>
@@ -187,8 +187,8 @@ namespace PostBoost.Client.Api
         /// <param name="workspaceUuid">UUID of the workspace.</param>
         /// <param name="initiateRemoteUploadRequest"></param>
         /// <param name="operationIndex">Index associated with the operation.</param>
-        /// <returns>InitiateRemoteUpload200Response</returns>
-        InitiateRemoteUpload200Response InitiateRemoteUpload(Guid workspaceUuid, InitiateRemoteUploadRequest initiateRemoteUploadRequest, int operationIndex = 0);
+        /// <returns>InitiateRemoteUpload201Response</returns>
+        InitiateRemoteUpload201Response InitiateRemoteUpload(Guid workspaceUuid, InitiateRemoteUploadRequest initiateRemoteUploadRequest, int operationIndex = 0);
 
         /// <summary>
         /// Initiate remote upload
@@ -200,8 +200,8 @@ namespace PostBoost.Client.Api
         /// <param name="workspaceUuid">UUID of the workspace.</param>
         /// <param name="initiateRemoteUploadRequest"></param>
         /// <param name="operationIndex">Index associated with the operation.</param>
-        /// <returns>ApiResponse of InitiateRemoteUpload200Response</returns>
-        ApiResponse<InitiateRemoteUpload200Response> InitiateRemoteUploadWithHttpInfo(Guid workspaceUuid, InitiateRemoteUploadRequest initiateRemoteUploadRequest, int operationIndex = 0);
+        /// <returns>ApiResponse of InitiateRemoteUpload201Response</returns>
+        ApiResponse<InitiateRemoteUpload201Response> InitiateRemoteUploadWithHttpInfo(Guid workspaceUuid, InitiateRemoteUploadRequest initiateRemoteUploadRequest, int operationIndex = 0);
         /// <summary>
         /// List media
         /// </summary>
@@ -266,8 +266,8 @@ namespace PostBoost.Client.Api
         /// <param name="chunk"></param>
         /// <param name="chunkIndex">Zero-based index of this chunk.</param>
         /// <param name="operationIndex">Index associated with the operation.</param>
-        /// <returns>UploadChunk200Response</returns>
-        UploadChunk200Response UploadChunk(Guid workspaceUuid, Guid uploadUuid, System.IO.Stream chunk, int chunkIndex, int operationIndex = 0);
+        /// <returns>UploadChunk201Response</returns>
+        UploadChunk201Response UploadChunk(Guid workspaceUuid, Guid uploadUuid, System.IO.Stream chunk, int chunkIndex, int operationIndex = 0);
 
         /// <summary>
         /// Upload a chunk
@@ -281,8 +281,8 @@ namespace PostBoost.Client.Api
         /// <param name="chunk"></param>
         /// <param name="chunkIndex">Zero-based index of this chunk.</param>
         /// <param name="operationIndex">Index associated with the operation.</param>
-        /// <returns>ApiResponse of UploadChunk200Response</returns>
-        ApiResponse<UploadChunk200Response> UploadChunkWithHttpInfo(Guid workspaceUuid, Guid uploadUuid, System.IO.Stream chunk, int chunkIndex, int operationIndex = 0);
+        /// <returns>ApiResponse of UploadChunk201Response</returns>
+        ApiResponse<UploadChunk201Response> UploadChunkWithHttpInfo(Guid workspaceUuid, Guid uploadUuid, System.IO.Stream chunk, int chunkIndex, int operationIndex = 0);
         /// <summary>
         /// Upload media (binary)
         /// </summary>
@@ -465,8 +465,8 @@ namespace PostBoost.Client.Api
         /// <param name="initiateChunkedUploadRequest"></param>
         /// <param name="operationIndex">Index associated with the operation.</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
-        /// <returns>Task of InitiateChunkedUpload200Response</returns>
-        System.Threading.Tasks.Task<InitiateChunkedUpload200Response> InitiateChunkedUploadAsync(Guid workspaceUuid, InitiateChunkedUploadRequest initiateChunkedUploadRequest, int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken));
+        /// <returns>Task of InitiateChunkedUpload201Response</returns>
+        System.Threading.Tasks.Task<InitiateChunkedUpload201Response> InitiateChunkedUploadAsync(Guid workspaceUuid, InitiateChunkedUploadRequest initiateChunkedUploadRequest, int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken));
 
         /// <summary>
         /// Initiate chunked upload
@@ -479,8 +479,8 @@ namespace PostBoost.Client.Api
         /// <param name="initiateChunkedUploadRequest"></param>
         /// <param name="operationIndex">Index associated with the operation.</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
-        /// <returns>Task of ApiResponse (InitiateChunkedUpload200Response)</returns>
-        System.Threading.Tasks.Task<ApiResponse<InitiateChunkedUpload200Response>> InitiateChunkedUploadWithHttpInfoAsync(Guid workspaceUuid, InitiateChunkedUploadRequest initiateChunkedUploadRequest, int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken));
+        /// <returns>Task of ApiResponse (InitiateChunkedUpload201Response)</returns>
+        System.Threading.Tasks.Task<ApiResponse<InitiateChunkedUpload201Response>> InitiateChunkedUploadWithHttpInfoAsync(Guid workspaceUuid, InitiateChunkedUploadRequest initiateChunkedUploadRequest, int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken));
         /// <summary>
         /// Initiate remote upload
         /// </summary>
@@ -492,8 +492,8 @@ namespace PostBoost.Client.Api
         /// <param name="initiateRemoteUploadRequest"></param>
         /// <param name="operationIndex">Index associated with the operation.</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
-        /// <returns>Task of InitiateRemoteUpload200Response</returns>
-        System.Threading.Tasks.Task<InitiateRemoteUpload200Response> InitiateRemoteUploadAsync(Guid workspaceUuid, InitiateRemoteUploadRequest initiateRemoteUploadRequest, int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken));
+        /// <returns>Task of InitiateRemoteUpload201Response</returns>
+        System.Threading.Tasks.Task<InitiateRemoteUpload201Response> InitiateRemoteUploadAsync(Guid workspaceUuid, InitiateRemoteUploadRequest initiateRemoteUploadRequest, int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken));
 
         /// <summary>
         /// Initiate remote upload
@@ -506,8 +506,8 @@ namespace PostBoost.Client.Api
         /// <param name="initiateRemoteUploadRequest"></param>
         /// <param name="operationIndex">Index associated with the operation.</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
-        /// <returns>Task of ApiResponse (InitiateRemoteUpload200Response)</returns>
-        System.Threading.Tasks.Task<ApiResponse<InitiateRemoteUpload200Response>> InitiateRemoteUploadWithHttpInfoAsync(Guid workspaceUuid, InitiateRemoteUploadRequest initiateRemoteUploadRequest, int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken));
+        /// <returns>Task of ApiResponse (InitiateRemoteUpload201Response)</returns>
+        System.Threading.Tasks.Task<ApiResponse<InitiateRemoteUpload201Response>> InitiateRemoteUploadWithHttpInfoAsync(Guid workspaceUuid, InitiateRemoteUploadRequest initiateRemoteUploadRequest, int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken));
         /// <summary>
         /// List media
         /// </summary>
@@ -577,8 +577,8 @@ namespace PostBoost.Client.Api
         /// <param name="chunkIndex">Zero-based index of this chunk.</param>
         /// <param name="operationIndex">Index associated with the operation.</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
-        /// <returns>Task of UploadChunk200Response</returns>
-        System.Threading.Tasks.Task<UploadChunk200Response> UploadChunkAsync(Guid workspaceUuid, Guid uploadUuid, System.IO.Stream chunk, int chunkIndex, int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken));
+        /// <returns>Task of UploadChunk201Response</returns>
+        System.Threading.Tasks.Task<UploadChunk201Response> UploadChunkAsync(Guid workspaceUuid, Guid uploadUuid, System.IO.Stream chunk, int chunkIndex, int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken));
 
         /// <summary>
         /// Upload a chunk
@@ -593,8 +593,8 @@ namespace PostBoost.Client.Api
         /// <param name="chunkIndex">Zero-based index of this chunk.</param>
         /// <param name="operationIndex">Index associated with the operation.</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
-        /// <returns>Task of ApiResponse (UploadChunk200Response)</returns>
-        System.Threading.Tasks.Task<ApiResponse<UploadChunk200Response>> UploadChunkWithHttpInfoAsync(Guid workspaceUuid, Guid uploadUuid, System.IO.Stream chunk, int chunkIndex, int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken));
+        /// <returns>Task of ApiResponse (UploadChunk201Response)</returns>
+        System.Threading.Tasks.Task<ApiResponse<UploadChunk201Response>> UploadChunkWithHttpInfoAsync(Guid workspaceUuid, Guid uploadUuid, System.IO.Stream chunk, int chunkIndex, int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken));
         /// <summary>
         /// Upload media (binary)
         /// </summary>
@@ -1525,10 +1525,10 @@ namespace PostBoost.Client.Api
         /// <param name="workspaceUuid">UUID of the workspace.</param>
         /// <param name="initiateChunkedUploadRequest"></param>
         /// <param name="operationIndex">Index associated with the operation.</param>
-        /// <returns>InitiateChunkedUpload200Response</returns>
-        public InitiateChunkedUpload200Response InitiateChunkedUpload(Guid workspaceUuid, InitiateChunkedUploadRequest initiateChunkedUploadRequest, int operationIndex = 0)
+        /// <returns>InitiateChunkedUpload201Response</returns>
+        public InitiateChunkedUpload201Response InitiateChunkedUpload(Guid workspaceUuid, InitiateChunkedUploadRequest initiateChunkedUploadRequest, int operationIndex = 0)
         {
-            PostBoost.Client.Client.ApiResponse<InitiateChunkedUpload200Response> localVarResponse = InitiateChunkedUploadWithHttpInfo(workspaceUuid, initiateChunkedUploadRequest);
+            PostBoost.Client.Client.ApiResponse<InitiateChunkedUpload201Response> localVarResponse = InitiateChunkedUploadWithHttpInfo(workspaceUuid, initiateChunkedUploadRequest);
             return localVarResponse.Data;
         }
 
@@ -1539,8 +1539,8 @@ namespace PostBoost.Client.Api
         /// <param name="workspaceUuid">UUID of the workspace.</param>
         /// <param name="initiateChunkedUploadRequest"></param>
         /// <param name="operationIndex">Index associated with the operation.</param>
-        /// <returns>ApiResponse of InitiateChunkedUpload200Response</returns>
-        public PostBoost.Client.Client.ApiResponse<InitiateChunkedUpload200Response> InitiateChunkedUploadWithHttpInfo(Guid workspaceUuid, InitiateChunkedUploadRequest initiateChunkedUploadRequest, int operationIndex = 0)
+        /// <returns>ApiResponse of InitiateChunkedUpload201Response</returns>
+        public PostBoost.Client.Client.ApiResponse<InitiateChunkedUpload201Response> InitiateChunkedUploadWithHttpInfo(Guid workspaceUuid, InitiateChunkedUploadRequest initiateChunkedUploadRequest, int operationIndex = 0)
         {
             // verify the required parameter 'initiateChunkedUploadRequest' is set
             if (initiateChunkedUploadRequest == null)
@@ -1585,7 +1585,7 @@ namespace PostBoost.Client.Api
             }
 
             // make the HTTP request
-            var localVarResponse = this.Client.Post<InitiateChunkedUpload200Response>("/{workspaceUuid}/media/chunked/initiate", localVarRequestOptions, this.Configuration);
+            var localVarResponse = this.Client.Post<InitiateChunkedUpload201Response>("/{workspaceUuid}/media/chunked/initiate", localVarRequestOptions, this.Configuration);
             if (this.ExceptionFactory != null)
             {
                 Exception _exception = this.ExceptionFactory("InitiateChunkedUpload", localVarResponse);
@@ -1606,10 +1606,10 @@ namespace PostBoost.Client.Api
         /// <param name="initiateChunkedUploadRequest"></param>
         /// <param name="operationIndex">Index associated with the operation.</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
-        /// <returns>Task of InitiateChunkedUpload200Response</returns>
-        public async System.Threading.Tasks.Task<InitiateChunkedUpload200Response> InitiateChunkedUploadAsync(Guid workspaceUuid, InitiateChunkedUploadRequest initiateChunkedUploadRequest, int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+        /// <returns>Task of InitiateChunkedUpload201Response</returns>
+        public async System.Threading.Tasks.Task<InitiateChunkedUpload201Response> InitiateChunkedUploadAsync(Guid workspaceUuid, InitiateChunkedUploadRequest initiateChunkedUploadRequest, int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
         {
-            PostBoost.Client.Client.ApiResponse<InitiateChunkedUpload200Response> localVarResponse = await InitiateChunkedUploadWithHttpInfoAsync(workspaceUuid, initiateChunkedUploadRequest, operationIndex, cancellationToken).ConfigureAwait(false);
+            PostBoost.Client.Client.ApiResponse<InitiateChunkedUpload201Response> localVarResponse = await InitiateChunkedUploadWithHttpInfoAsync(workspaceUuid, initiateChunkedUploadRequest, operationIndex, cancellationToken).ConfigureAwait(false);
             return localVarResponse.Data;
         }
 
@@ -1621,8 +1621,8 @@ namespace PostBoost.Client.Api
         /// <param name="initiateChunkedUploadRequest"></param>
         /// <param name="operationIndex">Index associated with the operation.</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
-        /// <returns>Task of ApiResponse (InitiateChunkedUpload200Response)</returns>
-        public async System.Threading.Tasks.Task<PostBoost.Client.Client.ApiResponse<InitiateChunkedUpload200Response>> InitiateChunkedUploadWithHttpInfoAsync(Guid workspaceUuid, InitiateChunkedUploadRequest initiateChunkedUploadRequest, int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+        /// <returns>Task of ApiResponse (InitiateChunkedUpload201Response)</returns>
+        public async System.Threading.Tasks.Task<PostBoost.Client.Client.ApiResponse<InitiateChunkedUpload201Response>> InitiateChunkedUploadWithHttpInfoAsync(Guid workspaceUuid, InitiateChunkedUploadRequest initiateChunkedUploadRequest, int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
         {
             // verify the required parameter 'initiateChunkedUploadRequest' is set
             if (initiateChunkedUploadRequest == null)
@@ -1668,7 +1668,7 @@ namespace PostBoost.Client.Api
             }
 
             // make the HTTP request
-            var localVarResponse = await this.AsynchronousClient.PostAsync<InitiateChunkedUpload200Response>("/{workspaceUuid}/media/chunked/initiate", localVarRequestOptions, this.Configuration, cancellationToken).ConfigureAwait(false);
+            var localVarResponse = await this.AsynchronousClient.PostAsync<InitiateChunkedUpload201Response>("/{workspaceUuid}/media/chunked/initiate", localVarRequestOptions, this.Configuration, cancellationToken).ConfigureAwait(false);
 
             if (this.ExceptionFactory != null)
             {
@@ -1689,10 +1689,10 @@ namespace PostBoost.Client.Api
         /// <param name="workspaceUuid">UUID of the workspace.</param>
         /// <param name="initiateRemoteUploadRequest"></param>
         /// <param name="operationIndex">Index associated with the operation.</param>
-        /// <returns>InitiateRemoteUpload200Response</returns>
-        public InitiateRemoteUpload200Response InitiateRemoteUpload(Guid workspaceUuid, InitiateRemoteUploadRequest initiateRemoteUploadRequest, int operationIndex = 0)
+        /// <returns>InitiateRemoteUpload201Response</returns>
+        public InitiateRemoteUpload201Response InitiateRemoteUpload(Guid workspaceUuid, InitiateRemoteUploadRequest initiateRemoteUploadRequest, int operationIndex = 0)
         {
-            PostBoost.Client.Client.ApiResponse<InitiateRemoteUpload200Response> localVarResponse = InitiateRemoteUploadWithHttpInfo(workspaceUuid, initiateRemoteUploadRequest);
+            PostBoost.Client.Client.ApiResponse<InitiateRemoteUpload201Response> localVarResponse = InitiateRemoteUploadWithHttpInfo(workspaceUuid, initiateRemoteUploadRequest);
             return localVarResponse.Data;
         }
 
@@ -1703,8 +1703,8 @@ namespace PostBoost.Client.Api
         /// <param name="workspaceUuid">UUID of the workspace.</param>
         /// <param name="initiateRemoteUploadRequest"></param>
         /// <param name="operationIndex">Index associated with the operation.</param>
-        /// <returns>ApiResponse of InitiateRemoteUpload200Response</returns>
-        public PostBoost.Client.Client.ApiResponse<InitiateRemoteUpload200Response> InitiateRemoteUploadWithHttpInfo(Guid workspaceUuid, InitiateRemoteUploadRequest initiateRemoteUploadRequest, int operationIndex = 0)
+        /// <returns>ApiResponse of InitiateRemoteUpload201Response</returns>
+        public PostBoost.Client.Client.ApiResponse<InitiateRemoteUpload201Response> InitiateRemoteUploadWithHttpInfo(Guid workspaceUuid, InitiateRemoteUploadRequest initiateRemoteUploadRequest, int operationIndex = 0)
         {
             // verify the required parameter 'initiateRemoteUploadRequest' is set
             if (initiateRemoteUploadRequest == null)
@@ -1749,7 +1749,7 @@ namespace PostBoost.Client.Api
             }
 
             // make the HTTP request
-            var localVarResponse = this.Client.Post<InitiateRemoteUpload200Response>("/{workspaceUuid}/media/remote/initiate", localVarRequestOptions, this.Configuration);
+            var localVarResponse = this.Client.Post<InitiateRemoteUpload201Response>("/{workspaceUuid}/media/remote/initiate", localVarRequestOptions, this.Configuration);
             if (this.ExceptionFactory != null)
             {
                 Exception _exception = this.ExceptionFactory("InitiateRemoteUpload", localVarResponse);
@@ -1770,10 +1770,10 @@ namespace PostBoost.Client.Api
         /// <param name="initiateRemoteUploadRequest"></param>
         /// <param name="operationIndex">Index associated with the operation.</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
-        /// <returns>Task of InitiateRemoteUpload200Response</returns>
-        public async System.Threading.Tasks.Task<InitiateRemoteUpload200Response> InitiateRemoteUploadAsync(Guid workspaceUuid, InitiateRemoteUploadRequest initiateRemoteUploadRequest, int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+        /// <returns>Task of InitiateRemoteUpload201Response</returns>
+        public async System.Threading.Tasks.Task<InitiateRemoteUpload201Response> InitiateRemoteUploadAsync(Guid workspaceUuid, InitiateRemoteUploadRequest initiateRemoteUploadRequest, int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
         {
-            PostBoost.Client.Client.ApiResponse<InitiateRemoteUpload200Response> localVarResponse = await InitiateRemoteUploadWithHttpInfoAsync(workspaceUuid, initiateRemoteUploadRequest, operationIndex, cancellationToken).ConfigureAwait(false);
+            PostBoost.Client.Client.ApiResponse<InitiateRemoteUpload201Response> localVarResponse = await InitiateRemoteUploadWithHttpInfoAsync(workspaceUuid, initiateRemoteUploadRequest, operationIndex, cancellationToken).ConfigureAwait(false);
             return localVarResponse.Data;
         }
 
@@ -1785,8 +1785,8 @@ namespace PostBoost.Client.Api
         /// <param name="initiateRemoteUploadRequest"></param>
         /// <param name="operationIndex">Index associated with the operation.</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
-        /// <returns>Task of ApiResponse (InitiateRemoteUpload200Response)</returns>
-        public async System.Threading.Tasks.Task<PostBoost.Client.Client.ApiResponse<InitiateRemoteUpload200Response>> InitiateRemoteUploadWithHttpInfoAsync(Guid workspaceUuid, InitiateRemoteUploadRequest initiateRemoteUploadRequest, int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+        /// <returns>Task of ApiResponse (InitiateRemoteUpload201Response)</returns>
+        public async System.Threading.Tasks.Task<PostBoost.Client.Client.ApiResponse<InitiateRemoteUpload201Response>> InitiateRemoteUploadWithHttpInfoAsync(Guid workspaceUuid, InitiateRemoteUploadRequest initiateRemoteUploadRequest, int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
         {
             // verify the required parameter 'initiateRemoteUploadRequest' is set
             if (initiateRemoteUploadRequest == null)
@@ -1832,7 +1832,7 @@ namespace PostBoost.Client.Api
             }
 
             // make the HTTP request
-            var localVarResponse = await this.AsynchronousClient.PostAsync<InitiateRemoteUpload200Response>("/{workspaceUuid}/media/remote/initiate", localVarRequestOptions, this.Configuration, cancellationToken).ConfigureAwait(false);
+            var localVarResponse = await this.AsynchronousClient.PostAsync<InitiateRemoteUpload201Response>("/{workspaceUuid}/media/remote/initiate", localVarRequestOptions, this.Configuration, cancellationToken).ConfigureAwait(false);
 
             if (this.ExceptionFactory != null)
             {
@@ -2181,10 +2181,10 @@ namespace PostBoost.Client.Api
         /// <param name="chunk"></param>
         /// <param name="chunkIndex">Zero-based index of this chunk.</param>
         /// <param name="operationIndex">Index associated with the operation.</param>
-        /// <returns>UploadChunk200Response</returns>
-        public UploadChunk200Response UploadChunk(Guid workspaceUuid, Guid uploadUuid, System.IO.Stream chunk, int chunkIndex, int operationIndex = 0)
+        /// <returns>UploadChunk201Response</returns>
+        public UploadChunk201Response UploadChunk(Guid workspaceUuid, Guid uploadUuid, System.IO.Stream chunk, int chunkIndex, int operationIndex = 0)
         {
-            PostBoost.Client.Client.ApiResponse<UploadChunk200Response> localVarResponse = UploadChunkWithHttpInfo(workspaceUuid, uploadUuid, chunk, chunkIndex);
+            PostBoost.Client.Client.ApiResponse<UploadChunk201Response> localVarResponse = UploadChunkWithHttpInfo(workspaceUuid, uploadUuid, chunk, chunkIndex);
             return localVarResponse.Data;
         }
 
@@ -2197,8 +2197,8 @@ namespace PostBoost.Client.Api
         /// <param name="chunk"></param>
         /// <param name="chunkIndex">Zero-based index of this chunk.</param>
         /// <param name="operationIndex">Index associated with the operation.</param>
-        /// <returns>ApiResponse of UploadChunk200Response</returns>
-        public PostBoost.Client.Client.ApiResponse<UploadChunk200Response> UploadChunkWithHttpInfo(Guid workspaceUuid, Guid uploadUuid, System.IO.Stream chunk, int chunkIndex, int operationIndex = 0)
+        /// <returns>ApiResponse of UploadChunk201Response</returns>
+        public PostBoost.Client.Client.ApiResponse<UploadChunk201Response> UploadChunkWithHttpInfo(Guid workspaceUuid, Guid uploadUuid, System.IO.Stream chunk, int chunkIndex, int operationIndex = 0)
         {
             // verify the required parameter 'chunk' is set
             if (chunk == null)
@@ -2245,7 +2245,7 @@ namespace PostBoost.Client.Api
             }
 
             // make the HTTP request
-            var localVarResponse = this.Client.Post<UploadChunk200Response>("/{workspaceUuid}/media/chunked/{uploadUuid}/upload", localVarRequestOptions, this.Configuration);
+            var localVarResponse = this.Client.Post<UploadChunk201Response>("/{workspaceUuid}/media/chunked/{uploadUuid}/upload", localVarRequestOptions, this.Configuration);
             if (this.ExceptionFactory != null)
             {
                 Exception _exception = this.ExceptionFactory("UploadChunk", localVarResponse);
@@ -2268,10 +2268,10 @@ namespace PostBoost.Client.Api
         /// <param name="chunkIndex">Zero-based index of this chunk.</param>
         /// <param name="operationIndex">Index associated with the operation.</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
-        /// <returns>Task of UploadChunk200Response</returns>
-        public async System.Threading.Tasks.Task<UploadChunk200Response> UploadChunkAsync(Guid workspaceUuid, Guid uploadUuid, System.IO.Stream chunk, int chunkIndex, int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+        /// <returns>Task of UploadChunk201Response</returns>
+        public async System.Threading.Tasks.Task<UploadChunk201Response> UploadChunkAsync(Guid workspaceUuid, Guid uploadUuid, System.IO.Stream chunk, int chunkIndex, int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
         {
-            PostBoost.Client.Client.ApiResponse<UploadChunk200Response> localVarResponse = await UploadChunkWithHttpInfoAsync(workspaceUuid, uploadUuid, chunk, chunkIndex, operationIndex, cancellationToken).ConfigureAwait(false);
+            PostBoost.Client.Client.ApiResponse<UploadChunk201Response> localVarResponse = await UploadChunkWithHttpInfoAsync(workspaceUuid, uploadUuid, chunk, chunkIndex, operationIndex, cancellationToken).ConfigureAwait(false);
             return localVarResponse.Data;
         }
 
@@ -2285,8 +2285,8 @@ namespace PostBoost.Client.Api
         /// <param name="chunkIndex">Zero-based index of this chunk.</param>
         /// <param name="operationIndex">Index associated with the operation.</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
-        /// <returns>Task of ApiResponse (UploadChunk200Response)</returns>
-        public async System.Threading.Tasks.Task<PostBoost.Client.Client.ApiResponse<UploadChunk200Response>> UploadChunkWithHttpInfoAsync(Guid workspaceUuid, Guid uploadUuid, System.IO.Stream chunk, int chunkIndex, int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+        /// <returns>Task of ApiResponse (UploadChunk201Response)</returns>
+        public async System.Threading.Tasks.Task<PostBoost.Client.Client.ApiResponse<UploadChunk201Response>> UploadChunkWithHttpInfoAsync(Guid workspaceUuid, Guid uploadUuid, System.IO.Stream chunk, int chunkIndex, int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
         {
             // verify the required parameter 'chunk' is set
             if (chunk == null)
@@ -2334,7 +2334,7 @@ namespace PostBoost.Client.Api
             }
 
             // make the HTTP request
-            var localVarResponse = await this.AsynchronousClient.PostAsync<UploadChunk200Response>("/{workspaceUuid}/media/chunked/{uploadUuid}/upload", localVarRequestOptions, this.Configuration, cancellationToken).ConfigureAwait(false);
+            var localVarResponse = await this.AsynchronousClient.PostAsync<UploadChunk201Response>("/{workspaceUuid}/media/chunked/{uploadUuid}/upload", localVarRequestOptions, this.Configuration, cancellationToken).ConfigureAwait(false);
 
             if (this.ExceptionFactory != null)
             {

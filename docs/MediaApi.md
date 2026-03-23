@@ -201,7 +201,7 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **200** | Completed media object |  -  |
+| **201** | Completed media object |  -  |
 | **401** |  |  -  |
 | **422** |  |  -  |
 
@@ -501,7 +501,7 @@ catch (ApiException e)
 
 <a id="initiatechunkedupload"></a>
 # **InitiateChunkedUpload**
-> InitiateChunkedUpload200Response InitiateChunkedUpload (Guid workspaceUuid, InitiateChunkedUploadRequest initiateChunkedUploadRequest)
+> InitiateChunkedUpload201Response InitiateChunkedUpload (Guid workspaceUuid, InitiateChunkedUploadRequest initiateChunkedUploadRequest)
 
 Initiate chunked upload
 
@@ -533,7 +533,7 @@ namespace Example
             try
             {
                 // Initiate chunked upload
-                InitiateChunkedUpload200Response result = apiInstance.InitiateChunkedUpload(workspaceUuid, initiateChunkedUploadRequest);
+                InitiateChunkedUpload201Response result = apiInstance.InitiateChunkedUpload(workspaceUuid, initiateChunkedUploadRequest);
                 Debug.WriteLine(result);
             }
             catch (ApiException  e)
@@ -554,7 +554,7 @@ This returns an ApiResponse object which contains the response data, status code
 try
 {
     // Initiate chunked upload
-    ApiResponse<InitiateChunkedUpload200Response> response = apiInstance.InitiateChunkedUploadWithHttpInfo(workspaceUuid, initiateChunkedUploadRequest);
+    ApiResponse<InitiateChunkedUpload201Response> response = apiInstance.InitiateChunkedUploadWithHttpInfo(workspaceUuid, initiateChunkedUploadRequest);
     Debug.Write("Status Code: " + response.StatusCode);
     Debug.Write("Response Headers: " + response.Headers);
     Debug.Write("Response Body: " + response.Data);
@@ -576,7 +576,7 @@ catch (ApiException e)
 
 ### Return type
 
-[**InitiateChunkedUpload200Response**](InitiateChunkedUpload200Response.md)
+[**InitiateChunkedUpload201Response**](InitiateChunkedUpload201Response.md)
 
 ### Authorization
 
@@ -591,7 +591,7 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **200** | Chunked upload session details |  -  |
+| **201** | Chunked upload session details |  -  |
 | **401** |  |  -  |
 | **422** |  |  -  |
 
@@ -599,7 +599,7 @@ catch (ApiException e)
 
 <a id="initiateremoteupload"></a>
 # **InitiateRemoteUpload**
-> InitiateRemoteUpload200Response InitiateRemoteUpload (Guid workspaceUuid, InitiateRemoteUploadRequest initiateRemoteUploadRequest)
+> InitiateRemoteUpload201Response InitiateRemoteUpload (Guid workspaceUuid, InitiateRemoteUploadRequest initiateRemoteUploadRequest)
 
 Initiate remote upload
 
@@ -631,7 +631,7 @@ namespace Example
             try
             {
                 // Initiate remote upload
-                InitiateRemoteUpload200Response result = apiInstance.InitiateRemoteUpload(workspaceUuid, initiateRemoteUploadRequest);
+                InitiateRemoteUpload201Response result = apiInstance.InitiateRemoteUpload(workspaceUuid, initiateRemoteUploadRequest);
                 Debug.WriteLine(result);
             }
             catch (ApiException  e)
@@ -652,7 +652,7 @@ This returns an ApiResponse object which contains the response data, status code
 try
 {
     // Initiate remote upload
-    ApiResponse<InitiateRemoteUpload200Response> response = apiInstance.InitiateRemoteUploadWithHttpInfo(workspaceUuid, initiateRemoteUploadRequest);
+    ApiResponse<InitiateRemoteUpload201Response> response = apiInstance.InitiateRemoteUploadWithHttpInfo(workspaceUuid, initiateRemoteUploadRequest);
     Debug.Write("Status Code: " + response.StatusCode);
     Debug.Write("Response Headers: " + response.Headers);
     Debug.Write("Response Body: " + response.Data);
@@ -674,7 +674,7 @@ catch (ApiException e)
 
 ### Return type
 
-[**InitiateRemoteUpload200Response**](InitiateRemoteUpload200Response.md)
+[**InitiateRemoteUpload201Response**](InitiateRemoteUpload201Response.md)
 
 ### Authorization
 
@@ -689,7 +689,7 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **200** | Media object or download job |  -  |
+| **201** | Media object or download job |  -  |
 | **401** |  |  -  |
 | **422** |  |  -  |
 
@@ -894,7 +894,7 @@ catch (ApiException e)
 
 <a id="uploadchunk"></a>
 # **UploadChunk**
-> UploadChunk200Response UploadChunk (Guid workspaceUuid, Guid uploadUuid, System.IO.Stream chunk, int chunkIndex)
+> UploadChunk201Response UploadChunk (Guid workspaceUuid, Guid uploadUuid, System.IO.Stream chunk, int chunkIndex)
 
 Upload a chunk
 
@@ -928,7 +928,7 @@ namespace Example
             try
             {
                 // Upload a chunk
-                UploadChunk200Response result = apiInstance.UploadChunk(workspaceUuid, uploadUuid, chunk, chunkIndex);
+                UploadChunk201Response result = apiInstance.UploadChunk(workspaceUuid, uploadUuid, chunk, chunkIndex);
                 Debug.WriteLine(result);
             }
             catch (ApiException  e)
@@ -949,7 +949,7 @@ This returns an ApiResponse object which contains the response data, status code
 try
 {
     // Upload a chunk
-    ApiResponse<UploadChunk200Response> response = apiInstance.UploadChunkWithHttpInfo(workspaceUuid, uploadUuid, chunk, chunkIndex);
+    ApiResponse<UploadChunk201Response> response = apiInstance.UploadChunkWithHttpInfo(workspaceUuid, uploadUuid, chunk, chunkIndex);
     Debug.Write("Status Code: " + response.StatusCode);
     Debug.Write("Response Headers: " + response.Headers);
     Debug.Write("Response Body: " + response.Data);
@@ -973,7 +973,7 @@ catch (ApiException e)
 
 ### Return type
 
-[**UploadChunk200Response**](UploadChunk200Response.md)
+[**UploadChunk201Response**](UploadChunk201Response.md)
 
 ### Authorization
 
@@ -988,7 +988,7 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **200** | Chunk received |  -  |
+| **201** | Chunk received |  -  |
 | **401** |  |  -  |
 | **422** |  |  -  |
 
@@ -1088,7 +1088,7 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **200** | Uploaded media object |  -  |
+| **201** | Uploaded media object |  -  |
 | **401** |  |  -  |
 | **422** |  |  -  |
 

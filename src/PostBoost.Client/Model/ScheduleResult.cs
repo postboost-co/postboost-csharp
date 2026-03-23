@@ -35,7 +35,12 @@ namespace PostBoost.Client.Model
         /// <summary>
         /// Initializes a new instance of the <see cref="ScheduleResult" /> class.
         /// </summary>
-        /// <param name="success">success.</param>
+        [JsonConstructorAttribute]
+        protected ScheduleResult() { }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ScheduleResult" /> class.
+        /// </summary>
+        /// <param name="success">success (required).</param>
         /// <param name="scheduledAt">scheduledAt.</param>
         public ScheduleResult(bool success = default(bool), DateTime scheduledAt = default(DateTime))
         {
@@ -46,7 +51,7 @@ namespace PostBoost.Client.Model
         /// <summary>
         /// Gets or Sets Success
         /// </summary>
-        [DataMember(Name = "success", EmitDefaultValue = true)]
+        [DataMember(Name = "success", IsRequired = true, EmitDefaultValue = true)]
         public bool Success { get; set; }
 
         /// <summary>

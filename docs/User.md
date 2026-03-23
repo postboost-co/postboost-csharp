@@ -4,12 +4,12 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Id** | **int** |  | [optional] 
-**Name** | **string** |  | [optional] 
-**Email** | **string** |  | [optional] 
-**IsAdmin** | **bool** |  | [optional] 
+**Id** | **int** |  | 
+**Name** | **string** |  | 
+**Email** | **string** |  | 
+**IsAdmin** | **bool** |  | 
 **EmailVerifiedAt** | **DateTime** |  | [optional] 
-**CreatedAt** | **DateTime** |  | [optional] 
+**CreatedAt** | **DateTime** |  | 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 

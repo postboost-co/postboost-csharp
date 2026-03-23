@@ -35,64 +35,84 @@ namespace PostBoost.Client.Model
         /// <summary>
         /// Initializes a new instance of the <see cref="Receipt" /> class.
         /// </summary>
-        /// <param name="uuid">uuid.</param>
-        /// <param name="transactionId">transactionId.</param>
-        /// <param name="invoiceNumber">invoiceNumber.</param>
-        /// <param name="amount">amount.</param>
-        /// <param name="tax">tax.</param>
-        /// <param name="currency">currency.</param>
+        [JsonConstructorAttribute]
+        protected Receipt() { }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Receipt" /> class.
+        /// </summary>
+        /// <param name="uuid">uuid (required).</param>
+        /// <param name="transactionId">transactionId (required).</param>
+        /// <param name="invoiceNumber">invoiceNumber (required).</param>
+        /// <param name="amount">amount (required).</param>
+        /// <param name="tax">tax (required).</param>
+        /// <param name="currency">currency (required).</param>
         /// <param name="receiptUrl">receiptUrl.</param>
         /// <param name="description">description.</param>
-        /// <param name="paidAt">paidAt.</param>
-        /// <param name="createdAt">createdAt.</param>
+        /// <param name="paidAt">paidAt (required).</param>
+        /// <param name="createdAt">createdAt (required).</param>
         public Receipt(Guid uuid = default(Guid), string transactionId = default(string), string invoiceNumber = default(string), decimal amount = default(decimal), decimal tax = default(decimal), string currency = default(string), string receiptUrl = default(string), string description = default(string), DateTime paidAt = default(DateTime), DateTime createdAt = default(DateTime))
         {
             this.Uuid = uuid;
+            // to ensure "transactionId" is required (not null)
+            if (transactionId == null)
+            {
+                throw new ArgumentNullException("transactionId is a required property for Receipt and cannot be null");
+            }
             this.TransactionId = transactionId;
+            // to ensure "invoiceNumber" is required (not null)
+            if (invoiceNumber == null)
+            {
+                throw new ArgumentNullException("invoiceNumber is a required property for Receipt and cannot be null");
+            }
             this.InvoiceNumber = invoiceNumber;
             this.Amount = amount;
             this.Tax = tax;
+            // to ensure "currency" is required (not null)
+            if (currency == null)
+            {
+                throw new ArgumentNullException("currency is a required property for Receipt and cannot be null");
+            }
             this.Currency = currency;
-            this.ReceiptUrl = receiptUrl;
-            this.Description = description;
             this.PaidAt = paidAt;
             this.CreatedAt = createdAt;
+            this.ReceiptUrl = receiptUrl;
+            this.Description = description;
         }
 
         /// <summary>
         /// Gets or Sets Uuid
         /// </summary>
-        [DataMember(Name = "uuid", EmitDefaultValue = false)]
+        [DataMember(Name = "uuid", IsRequired = true, EmitDefaultValue = true)]
         public Guid Uuid { get; set; }
 
         /// <summary>
         /// Gets or Sets TransactionId
         /// </summary>
-        [DataMember(Name = "transaction_id", EmitDefaultValue = false)]
+        [DataMember(Name = "transaction_id", IsRequired = true, EmitDefaultValue = true)]
         public string TransactionId { get; set; }
 
         /// <summary>
         /// Gets or Sets InvoiceNumber
         /// </summary>
-        [DataMember(Name = "invoice_number", EmitDefaultValue = false)]
+        [DataMember(Name = "invoice_number", IsRequired = true, EmitDefaultValue = true)]
         public string InvoiceNumber { get; set; }
 
         /// <summary>
         /// Gets or Sets Amount
         /// </summary>
-        [DataMember(Name = "amount", EmitDefaultValue = false)]
+        [DataMember(Name = "amount", IsRequired = true, EmitDefaultValue = true)]
         public decimal Amount { get; set; }
 
         /// <summary>
         /// Gets or Sets Tax
         /// </summary>
-        [DataMember(Name = "tax", EmitDefaultValue = false)]
+        [DataMember(Name = "tax", IsRequired = true, EmitDefaultValue = true)]
         public decimal Tax { get; set; }
 
         /// <summary>
         /// Gets or Sets Currency
         /// </summary>
-        [DataMember(Name = "currency", EmitDefaultValue = false)]
+        [DataMember(Name = "currency", IsRequired = true, EmitDefaultValue = true)]
         public string Currency { get; set; }
 
         /// <summary>
@@ -110,13 +130,13 @@ namespace PostBoost.Client.Model
         /// <summary>
         /// Gets or Sets PaidAt
         /// </summary>
-        [DataMember(Name = "paid_at", EmitDefaultValue = false)]
+        [DataMember(Name = "paid_at", IsRequired = true, EmitDefaultValue = true)]
         public DateTime PaidAt { get; set; }
 
         /// <summary>
         /// Gets or Sets CreatedAt
         /// </summary>
-        [DataMember(Name = "created_at", EmitDefaultValue = false)]
+        [DataMember(Name = "created_at", IsRequired = true, EmitDefaultValue = true)]
         public DateTime CreatedAt { get; set; }
 
         /// <summary>

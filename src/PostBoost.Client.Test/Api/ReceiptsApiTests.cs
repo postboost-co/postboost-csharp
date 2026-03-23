@@ -112,7 +112,8 @@ namespace PostBoost.Client.Test.Api
             // TODO uncomment below to test the method and replace null with proper value
             //Guid? workspaceUuid = null;
             //string? invoiceNumber = null;
-            //var response = instance.ListReceipts(workspaceUuid, invoiceNumber);
+            //int? page = null;
+            //var response = instance.ListReceipts(workspaceUuid, invoiceNumber, page);
             //Assert.IsType<ListReceipts200Response>(response);
         }
 

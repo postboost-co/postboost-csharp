@@ -17,6 +17,8 @@ All URIs are relative to *https://postboost.co/app/api*
 
 Create receipt
 
+Creates a billing receipt record for a workspace. Admin only.
+
 ### Example
 ```csharp
 using System.Collections.Generic;
@@ -99,8 +101,9 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **200** | Created receipt |  -  |
+| **201** | Created receipt |  -  |
 | **401** |  |  -  |
+| **403** |  |  -  |
 | **422** |  |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
@@ -110,6 +113,8 @@ catch (ApiException e)
 > Object DeleteReceipt (Guid receiptUuid)
 
 Delete receipt
+
+Permanently deletes a single receipt. Admin only.
 
 ### Example
 ```csharp
@@ -195,6 +200,7 @@ catch (ApiException e)
 |-------------|-------------|------------------|
 | **200** |  |  -  |
 | **401** |  |  -  |
+| **403** |  |  -  |
 | **404** |  |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
@@ -204,6 +210,8 @@ catch (ApiException e)
 > Object DeleteReceiptsBulk (DeleteReceiptsBulkRequest deleteReceiptsBulkRequest)
 
 Delete receipts (bulk)
+
+Permanently deletes one or more receipt records. Admin only.
 
 ### Example
 ```csharp
@@ -289,6 +297,7 @@ catch (ApiException e)
 |-------------|-------------|------------------|
 | **200** |  |  -  |
 | **401** |  |  -  |
+| **403** |  |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
@@ -297,6 +306,8 @@ catch (ApiException e)
 > Receipt GetReceipt (Guid receiptUuid)
 
 Get receipt
+
+Returns a single receipt by UUID. Admin only.
 
 ### Example
 ```csharp
@@ -382,15 +393,18 @@ catch (ApiException e)
 |-------------|-------------|------------------|
 | **200** | Receipt details |  -  |
 | **401** |  |  -  |
+| **403** |  |  -  |
 | **404** |  |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 <a id="listreceipts"></a>
 # **ListReceipts**
-> ListReceipts200Response ListReceipts (Guid? workspaceUuid = null, string? invoiceNumber = null)
+> ListReceipts200Response ListReceipts (Guid? workspaceUuid = null, string? invoiceNumber = null, int? page = null)
 
 List receipts
+
+Returns a paginated list of billing receipts. Filter by workspace UUID or invoice number. Admin only.
 
 ### Example
 ```csharp
@@ -414,11 +428,12 @@ namespace Example
             var apiInstance = new ReceiptsApi(config);
             var workspaceUuid = "workspaceUuid_example";  // Guid? |  (optional) 
             var invoiceNumber = "invoiceNumber_example";  // string? |  (optional) 
+            var page = 1;  // int? | Page number (15 items per page). (optional)  (default to 1)
 
             try
             {
                 // List receipts
-                ListReceipts200Response result = apiInstance.ListReceipts(workspaceUuid, invoiceNumber);
+                ListReceipts200Response result = apiInstance.ListReceipts(workspaceUuid, invoiceNumber, page);
                 Debug.WriteLine(result);
             }
             catch (ApiException  e)
@@ -439,7 +454,7 @@ This returns an ApiResponse object which contains the response data, status code
 try
 {
     // List receipts
-    ApiResponse<ListReceipts200Response> response = apiInstance.ListReceiptsWithHttpInfo(workspaceUuid, invoiceNumber);
+    ApiResponse<ListReceipts200Response> response = apiInstance.ListReceiptsWithHttpInfo(workspaceUuid, invoiceNumber, page);
     Debug.Write("Status Code: " + response.StatusCode);
     Debug.Write("Response Headers: " + response.Headers);
     Debug.Write("Response Body: " + response.Data);
@@ -458,6 +473,7 @@ catch (ApiException e)
 |------|------|-------------|-------|
 | **workspaceUuid** | **Guid?** |  | [optional]  |
 | **invoiceNumber** | **string?** |  | [optional]  |
+| **page** | **int?** | Page number (15 items per page). | [optional] [default to 1] |
 
 ### Return type
 
@@ -478,6 +494,7 @@ catch (ApiException e)
 |-------------|-------------|------------------|
 | **200** | Paginated list of receipts |  -  |
 | **401** |  |  -  |
+| **403** |  |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
@@ -486,6 +503,8 @@ catch (ApiException e)
 > Object UpdateReceipt (Guid receiptUuid, ReceiptUpdateInput receiptUpdateInput)
 
 Update receipt
+
+Updates a receipt's transaction details, amount, or payment date. Admin only.
 
 ### Example
 ```csharp
@@ -573,6 +592,7 @@ catch (ApiException e)
 |-------------|-------------|------------------|
 | **200** |  |  -  |
 | **401** |  |  -  |
+| **403** |  |  -  |
 | **404** |  |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)

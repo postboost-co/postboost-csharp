@@ -20,6 +20,8 @@ All URIs are relative to *https://postboost.co/app/api*
 
 Add user to workspace
 
+Adds an existing user to the workspace with a specified role. Admin only.
+
 ### Example
 ```csharp
 using System.Collections.Generic;
@@ -104,8 +106,9 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **200** |  |  -  |
+| **201** |  |  -  |
 | **401** |  |  -  |
+| **403** |  |  -  |
 | **422** |  |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
@@ -200,7 +203,7 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **200** | Created workspace |  -  |
+| **201** | Created workspace |  -  |
 | **401** |  |  -  |
 | **403** |  |  -  |
 | **422** |  |  -  |
@@ -212,6 +215,8 @@ catch (ApiException e)
 > Object DeleteWorkspace (Guid workspaceUuid)
 
 Delete workspace
+
+Permanently deletes a single workspace and all its associated data. Admin only.
 
 ### Example
 ```csharp
@@ -297,6 +302,7 @@ catch (ApiException e)
 |-------------|-------------|------------------|
 | **200** |  |  -  |
 | **401** |  |  -  |
+| **403** |  |  -  |
 | **404** |  |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
@@ -306,6 +312,8 @@ catch (ApiException e)
 > Object DeleteWorkspacesBulk (DeleteWorkspacesBulkRequest deleteWorkspacesBulkRequest)
 
 Delete workspaces (bulk)
+
+Permanently deletes one or more workspaces and all their associated data. Admin only.
 
 ### Example
 ```csharp
@@ -401,6 +409,8 @@ catch (ApiException e)
 
 Get workspace
 
+Returns a single workspace by UUID including its subscription status. Admin only.
+
 ### Example
 ```csharp
 using System.Collections.Generic;
@@ -485,13 +495,14 @@ catch (ApiException e)
 |-------------|-------------|------------------|
 | **200** | Workspace details |  -  |
 | **401** |  |  -  |
+| **403** |  |  -  |
 | **404** |  |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 <a id="listworkspaces"></a>
 # **ListWorkspaces**
-> ListWorkspaces200Response ListWorkspaces (string? keyword = null, string? subscriptionStatus = null, string? accessStatus = null)
+> ListWorkspaces200Response ListWorkspaces (string? keyword = null, string? subscriptionStatus = null, string? accessStatus = null, int? page = null)
 
 List workspaces
 
@@ -520,11 +531,12 @@ namespace Example
             var keyword = "keyword_example";  // string? |  (optional) 
             var subscriptionStatus = "active";  // string? |  (optional) 
             var accessStatus = "subscription";  // string? |  (optional) 
+            var page = 1;  // int? | Page number (15 items per page). (optional)  (default to 1)
 
             try
             {
                 // List workspaces
-                ListWorkspaces200Response result = apiInstance.ListWorkspaces(keyword, subscriptionStatus, accessStatus);
+                ListWorkspaces200Response result = apiInstance.ListWorkspaces(keyword, subscriptionStatus, accessStatus, page);
                 Debug.WriteLine(result);
             }
             catch (ApiException  e)
@@ -545,7 +557,7 @@ This returns an ApiResponse object which contains the response data, status code
 try
 {
     // List workspaces
-    ApiResponse<ListWorkspaces200Response> response = apiInstance.ListWorkspacesWithHttpInfo(keyword, subscriptionStatus, accessStatus);
+    ApiResponse<ListWorkspaces200Response> response = apiInstance.ListWorkspacesWithHttpInfo(keyword, subscriptionStatus, accessStatus, page);
     Debug.Write("Status Code: " + response.StatusCode);
     Debug.Write("Response Headers: " + response.Headers);
     Debug.Write("Response Body: " + response.Data);
@@ -565,6 +577,7 @@ catch (ApiException e)
 | **keyword** | **string?** |  | [optional]  |
 | **subscriptionStatus** | **string?** |  | [optional]  |
 | **accessStatus** | **string?** |  | [optional]  |
+| **page** | **int?** | Page number (15 items per page). | [optional] [default to 1] |
 
 ### Return type
 
@@ -594,6 +607,8 @@ catch (ApiException e)
 > Object RemoveUserFromWorkspace (Guid workspaceUuid, RemoveUserFromWorkspaceRequest removeUserFromWorkspaceRequest)
 
 Remove user from workspace
+
+Removes a user's access to the workspace. The user account is not deleted. Admin only.
 
 ### Example
 ```csharp
@@ -681,6 +696,7 @@ catch (ApiException e)
 |-------------|-------------|------------------|
 | **200** |  |  -  |
 | **401** |  |  -  |
+| **403** |  |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
@@ -689,6 +705,8 @@ catch (ApiException e)
 > Object UpdateWorkspace (Guid workspaceUuid, WorkspaceInput workspaceInput)
 
 Update workspace
+
+Updates a workspace's name, color, or access status. Admin only.
 
 ### Example
 ```csharp
@@ -776,6 +794,7 @@ catch (ApiException e)
 |-------------|-------------|------------------|
 | **200** |  |  -  |
 | **401** |  |  -  |
+| **403** |  |  -  |
 | **404** |  |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
@@ -785,6 +804,8 @@ catch (ApiException e)
 > Object UpdateWorkspaceUser (Guid workspaceUuid, WorkspaceUserInput workspaceUserInput)
 
 Update user role in workspace
+
+Changes a user's role or permissions within the workspace. Admin only.
 
 ### Example
 ```csharp
@@ -872,6 +893,7 @@ catch (ApiException e)
 |-------------|-------------|------------------|
 | **200** |  |  -  |
 | **401** |  |  -  |
+| **403** |  |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 

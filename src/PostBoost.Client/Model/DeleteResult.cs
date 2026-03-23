@@ -35,9 +35,14 @@ namespace PostBoost.Client.Model
         /// <summary>
         /// Initializes a new instance of the <see cref="DeleteResult" /> class.
         /// </summary>
-        /// <param name="deleted">deleted.</param>
-        /// <param name="deletedFromApp">deletedFromApp.</param>
-        /// <param name="toTrash">toTrash.</param>
+        [JsonConstructorAttribute]
+        protected DeleteResult() { }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DeleteResult" /> class.
+        /// </summary>
+        /// <param name="deleted">deleted (required).</param>
+        /// <param name="deletedFromApp">deletedFromApp (required).</param>
+        /// <param name="toTrash">toTrash (required).</param>
         public DeleteResult(bool deleted = default(bool), bool deletedFromApp = default(bool), bool toTrash = default(bool))
         {
             this.Deleted = deleted;
@@ -48,19 +53,19 @@ namespace PostBoost.Client.Model
         /// <summary>
         /// Gets or Sets Deleted
         /// </summary>
-        [DataMember(Name = "deleted", EmitDefaultValue = true)]
+        [DataMember(Name = "deleted", IsRequired = true, EmitDefaultValue = true)]
         public bool Deleted { get; set; }
 
         /// <summary>
         /// Gets or Sets DeletedFromApp
         /// </summary>
-        [DataMember(Name = "deleted_from_app", EmitDefaultValue = true)]
+        [DataMember(Name = "deleted_from_app", IsRequired = true, EmitDefaultValue = true)]
         public bool DeletedFromApp { get; set; }
 
         /// <summary>
         /// Gets or Sets ToTrash
         /// </summary>
-        [DataMember(Name = "to_trash", EmitDefaultValue = true)]
+        [DataMember(Name = "to_trash", IsRequired = true, EmitDefaultValue = true)]
         public bool ToTrash { get; set; }
 
         /// <summary>

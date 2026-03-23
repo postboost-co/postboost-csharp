@@ -36,63 +36,83 @@ namespace PostBoost.Client.Model
         /// <summary>
         /// Gets or Sets Status
         /// </summary>
-        [DataMember(Name = "status", EmitDefaultValue = false)]
-        public PostStatus? Status { get; set; }
+        [DataMember(Name = "status", IsRequired = true, EmitDefaultValue = true)]
+        public PostStatus Status { get; set; }
         /// <summary>
         /// Initializes a new instance of the <see cref="Post" /> class.
         /// </summary>
-        /// <param name="id">id.</param>
-        /// <param name="uuid">uuid.</param>
-        /// <param name="status">status.</param>
-        /// <param name="accounts">accounts.</param>
-        /// <param name="versions">versions.</param>
-        /// <param name="tags">tags.</param>
+        [JsonConstructorAttribute]
+        protected Post() { }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Post" /> class.
+        /// </summary>
+        /// <param name="id">id (required).</param>
+        /// <param name="uuid">uuid (required).</param>
+        /// <param name="status">status (required).</param>
+        /// <param name="accounts">accounts (required).</param>
+        /// <param name="versions">versions (required).</param>
+        /// <param name="tags">tags (required).</param>
         /// <param name="scheduledAt">scheduledAt.</param>
         /// <param name="publishedAt">publishedAt.</param>
-        /// <param name="createdAt">createdAt.</param>
-        /// <param name="trashed">trashed.</param>
-        public Post(int id = default(int), Guid uuid = default(Guid), PostStatus? status = default(PostStatus?), List<Account> accounts = default(List<Account>), List<PostVersion> versions = default(List<PostVersion>), List<Tag> tags = default(List<Tag>), DateTime scheduledAt = default(DateTime), DateTime publishedAt = default(DateTime), DateTime createdAt = default(DateTime), bool trashed = default(bool))
+        /// <param name="createdAt">createdAt (required).</param>
+        /// <param name="trashed">trashed (required).</param>
+        public Post(int id = default(int), Guid uuid = default(Guid), PostStatus status = default(PostStatus), List<Account> accounts = default(List<Account>), List<PostVersion> versions = default(List<PostVersion>), List<Tag> tags = default(List<Tag>), DateTime scheduledAt = default(DateTime), DateTime publishedAt = default(DateTime), DateTime createdAt = default(DateTime), bool trashed = default(bool))
         {
             this.Id = id;
             this.Uuid = uuid;
             this.Status = status;
+            // to ensure "accounts" is required (not null)
+            if (accounts == null)
+            {
+                throw new ArgumentNullException("accounts is a required property for Post and cannot be null");
+            }
             this.Accounts = accounts;
+            // to ensure "versions" is required (not null)
+            if (versions == null)
+            {
+                throw new ArgumentNullException("versions is a required property for Post and cannot be null");
+            }
             this.Versions = versions;
+            // to ensure "tags" is required (not null)
+            if (tags == null)
+            {
+                throw new ArgumentNullException("tags is a required property for Post and cannot be null");
+            }
             this.Tags = tags;
-            this.ScheduledAt = scheduledAt;
-            this.PublishedAt = publishedAt;
             this.CreatedAt = createdAt;
             this.Trashed = trashed;
+            this.ScheduledAt = scheduledAt;
+            this.PublishedAt = publishedAt;
         }
 
         /// <summary>
         /// Gets or Sets Id
         /// </summary>
-        [DataMember(Name = "id", EmitDefaultValue = false)]
+        [DataMember(Name = "id", IsRequired = true, EmitDefaultValue = true)]
         public int Id { get; set; }
 
         /// <summary>
         /// Gets or Sets Uuid
         /// </summary>
-        [DataMember(Name = "uuid", EmitDefaultValue = false)]
+        [DataMember(Name = "uuid", IsRequired = true, EmitDefaultValue = true)]
         public Guid Uuid { get; set; }
 
         /// <summary>
         /// Gets or Sets Accounts
         /// </summary>
-        [DataMember(Name = "accounts", EmitDefaultValue = false)]
+        [DataMember(Name = "accounts", IsRequired = true, EmitDefaultValue = true)]
         public List<Account> Accounts { get; set; }
 
         /// <summary>
         /// Gets or Sets Versions
         /// </summary>
-        [DataMember(Name = "versions", EmitDefaultValue = false)]
+        [DataMember(Name = "versions", IsRequired = true, EmitDefaultValue = true)]
         public List<PostVersion> Versions { get; set; }
 
         /// <summary>
         /// Gets or Sets Tags
         /// </summary>
-        [DataMember(Name = "tags", EmitDefaultValue = false)]
+        [DataMember(Name = "tags", IsRequired = true, EmitDefaultValue = true)]
         public List<Tag> Tags { get; set; }
 
         /// <summary>
@@ -110,13 +130,13 @@ namespace PostBoost.Client.Model
         /// <summary>
         /// Gets or Sets CreatedAt
         /// </summary>
-        [DataMember(Name = "created_at", EmitDefaultValue = false)]
+        [DataMember(Name = "created_at", IsRequired = true, EmitDefaultValue = true)]
         public DateTime CreatedAt { get; set; }
 
         /// <summary>
         /// Gets or Sets Trashed
         /// </summary>
-        [DataMember(Name = "trashed", EmitDefaultValue = true)]
+        [DataMember(Name = "trashed", IsRequired = true, EmitDefaultValue = true)]
         public bool Trashed { get; set; }
 
         /// <summary>

@@ -28,18 +28,18 @@ using System.Reflection;
 namespace PostBoost.Client.Model
 {
     /// <summary>
-    /// InitiateRemoteUpload200Response
+    /// InitiateRemoteUpload201Response
     /// </summary>
-    [JsonConverter(typeof(InitiateRemoteUpload200ResponseJsonConverter))]
-    [DataContract(Name = "initiateRemoteUpload_200_response")]
-    public partial class InitiateRemoteUpload200Response : AbstractOpenAPISchema, IValidatableObject
+    [JsonConverter(typeof(InitiateRemoteUpload201ResponseJsonConverter))]
+    [DataContract(Name = "initiateRemoteUpload_201_response")]
+    public partial class InitiateRemoteUpload201Response : AbstractOpenAPISchema, IValidatableObject
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="InitiateRemoteUpload200Response" /> class
+        /// Initializes a new instance of the <see cref="InitiateRemoteUpload201Response" /> class
         /// with the <see cref="Media" /> class
         /// </summary>
         /// <param name="actualInstance">An instance of Media.</param>
-        public InitiateRemoteUpload200Response(Media actualInstance)
+        public InitiateRemoteUpload201Response(Media actualInstance)
         {
             this.IsNullable = false;
             this.SchemaType= "oneOf";
@@ -47,11 +47,11 @@ namespace PostBoost.Client.Model
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="InitiateRemoteUpload200Response" /> class
-        /// with the <see cref="InitiateRemoteUpload200ResponseOneOf" /> class
+        /// Initializes a new instance of the <see cref="InitiateRemoteUpload201Response" /> class
+        /// with the <see cref="InitiateRemoteUpload201ResponseOneOf" /> class
         /// </summary>
-        /// <param name="actualInstance">An instance of InitiateRemoteUpload200ResponseOneOf.</param>
-        public InitiateRemoteUpload200Response(InitiateRemoteUpload200ResponseOneOf actualInstance)
+        /// <param name="actualInstance">An instance of InitiateRemoteUpload201ResponseOneOf.</param>
+        public InitiateRemoteUpload201Response(InitiateRemoteUpload201ResponseOneOf actualInstance)
         {
             this.IsNullable = false;
             this.SchemaType= "oneOf";
@@ -72,7 +72,7 @@ namespace PostBoost.Client.Model
             }
             set
             {
-                if (value.GetType() == typeof(InitiateRemoteUpload200ResponseOneOf) || value is InitiateRemoteUpload200ResponseOneOf)
+                if (value.GetType() == typeof(InitiateRemoteUpload201ResponseOneOf) || value is InitiateRemoteUpload201ResponseOneOf)
                 {
                     this._actualInstance = value;
                 }
@@ -82,7 +82,7 @@ namespace PostBoost.Client.Model
                 }
                 else
                 {
-                    throw new ArgumentException("Invalid instance found. Must be the following types: InitiateRemoteUpload200ResponseOneOf, Media");
+                    throw new ArgumentException("Invalid instance found. Must be the following types: InitiateRemoteUpload201ResponseOneOf, Media");
                 }
             }
         }
@@ -98,13 +98,13 @@ namespace PostBoost.Client.Model
         }
 
         /// <summary>
-        /// Get the actual instance of `InitiateRemoteUpload200ResponseOneOf`. If the actual instance is not `InitiateRemoteUpload200ResponseOneOf`,
+        /// Get the actual instance of `InitiateRemoteUpload201ResponseOneOf`. If the actual instance is not `InitiateRemoteUpload201ResponseOneOf`,
         /// the InvalidClassException will be thrown
         /// </summary>
-        /// <returns>An instance of InitiateRemoteUpload200ResponseOneOf</returns>
-        public InitiateRemoteUpload200ResponseOneOf GetInitiateRemoteUpload200ResponseOneOf()
+        /// <returns>An instance of InitiateRemoteUpload201ResponseOneOf</returns>
+        public InitiateRemoteUpload201ResponseOneOf GetInitiateRemoteUpload201ResponseOneOf()
         {
-            return (InitiateRemoteUpload200ResponseOneOf)this.ActualInstance;
+            return (InitiateRemoteUpload201ResponseOneOf)this.ActualInstance;
         }
 
         /// <summary>
@@ -114,7 +114,7 @@ namespace PostBoost.Client.Model
         public override string ToString()
         {
             var sb = new StringBuilder();
-            sb.Append("class InitiateRemoteUpload200Response {\n");
+            sb.Append("class InitiateRemoteUpload201Response {\n");
             sb.Append("  ActualInstance: ").Append(this.ActualInstance).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
@@ -126,21 +126,21 @@ namespace PostBoost.Client.Model
         /// <returns>JSON string presentation of the object</returns>
         public override string ToJson()
         {
-            return JsonConvert.SerializeObject(this.ActualInstance, InitiateRemoteUpload200Response.SerializerSettings);
+            return JsonConvert.SerializeObject(this.ActualInstance, InitiateRemoteUpload201Response.SerializerSettings);
         }
 
         /// <summary>
-        /// Converts the JSON string into an instance of InitiateRemoteUpload200Response
+        /// Converts the JSON string into an instance of InitiateRemoteUpload201Response
         /// </summary>
         /// <param name="jsonString">JSON string</param>
-        /// <returns>An instance of InitiateRemoteUpload200Response</returns>
-        public static InitiateRemoteUpload200Response FromJson(string jsonString)
+        /// <returns>An instance of InitiateRemoteUpload201Response</returns>
+        public static InitiateRemoteUpload201Response FromJson(string jsonString)
         {
-            InitiateRemoteUpload200Response newInitiateRemoteUpload200Response = null;
+            InitiateRemoteUpload201Response newInitiateRemoteUpload201Response = null;
 
             if (string.IsNullOrEmpty(jsonString))
             {
-                return newInitiateRemoteUpload200Response;
+                return newInitiateRemoteUpload201Response;
             }
             int match = 0;
             List<string> matchedTypes = new List<string>();
@@ -148,21 +148,21 @@ namespace PostBoost.Client.Model
             try
             {
                 // if it does not contains "AdditionalProperties", use SerializerSettings to deserialize
-                if (typeof(InitiateRemoteUpload200ResponseOneOf).GetProperty("AdditionalProperties") == null)
+                if (typeof(InitiateRemoteUpload201ResponseOneOf).GetProperty("AdditionalProperties") == null)
                 {
-                    newInitiateRemoteUpload200Response = new InitiateRemoteUpload200Response(JsonConvert.DeserializeObject<InitiateRemoteUpload200ResponseOneOf>(jsonString, InitiateRemoteUpload200Response.SerializerSettings));
+                    newInitiateRemoteUpload201Response = new InitiateRemoteUpload201Response(JsonConvert.DeserializeObject<InitiateRemoteUpload201ResponseOneOf>(jsonString, InitiateRemoteUpload201Response.SerializerSettings));
                 }
                 else
                 {
-                    newInitiateRemoteUpload200Response = new InitiateRemoteUpload200Response(JsonConvert.DeserializeObject<InitiateRemoteUpload200ResponseOneOf>(jsonString, InitiateRemoteUpload200Response.AdditionalPropertiesSerializerSettings));
+                    newInitiateRemoteUpload201Response = new InitiateRemoteUpload201Response(JsonConvert.DeserializeObject<InitiateRemoteUpload201ResponseOneOf>(jsonString, InitiateRemoteUpload201Response.AdditionalPropertiesSerializerSettings));
                 }
-                matchedTypes.Add("InitiateRemoteUpload200ResponseOneOf");
+                matchedTypes.Add("InitiateRemoteUpload201ResponseOneOf");
                 match++;
             }
             catch (Exception exception)
             {
                 // deserialization failed, try the next one
-                System.Diagnostics.Debug.WriteLine(string.Format("Failed to deserialize `{0}` into InitiateRemoteUpload200ResponseOneOf: {1}", jsonString, exception.ToString()));
+                System.Diagnostics.Debug.WriteLine(string.Format("Failed to deserialize `{0}` into InitiateRemoteUpload201ResponseOneOf: {1}", jsonString, exception.ToString()));
             }
 
             try
@@ -170,11 +170,11 @@ namespace PostBoost.Client.Model
                 // if it does not contains "AdditionalProperties", use SerializerSettings to deserialize
                 if (typeof(Media).GetProperty("AdditionalProperties") == null)
                 {
-                    newInitiateRemoteUpload200Response = new InitiateRemoteUpload200Response(JsonConvert.DeserializeObject<Media>(jsonString, InitiateRemoteUpload200Response.SerializerSettings));
+                    newInitiateRemoteUpload201Response = new InitiateRemoteUpload201Response(JsonConvert.DeserializeObject<Media>(jsonString, InitiateRemoteUpload201Response.SerializerSettings));
                 }
                 else
                 {
-                    newInitiateRemoteUpload200Response = new InitiateRemoteUpload200Response(JsonConvert.DeserializeObject<Media>(jsonString, InitiateRemoteUpload200Response.AdditionalPropertiesSerializerSettings));
+                    newInitiateRemoteUpload201Response = new InitiateRemoteUpload201Response(JsonConvert.DeserializeObject<Media>(jsonString, InitiateRemoteUpload201Response.AdditionalPropertiesSerializerSettings));
                 }
                 matchedTypes.Add("Media");
                 match++;
@@ -195,7 +195,7 @@ namespace PostBoost.Client.Model
             }
 
             // deserialization is considered successful at this point if no exception has been thrown.
-            return newInitiateRemoteUpload200Response;
+            return newInitiateRemoteUpload201Response;
         }
 
 
@@ -211,9 +211,9 @@ namespace PostBoost.Client.Model
     }
 
     /// <summary>
-    /// Custom JSON converter for InitiateRemoteUpload200Response
+    /// Custom JSON converter for InitiateRemoteUpload201Response
     /// </summary>
-    public class InitiateRemoteUpload200ResponseJsonConverter : JsonConverter
+    public class InitiateRemoteUpload201ResponseJsonConverter : JsonConverter
     {
         /// <summary>
         /// To write the JSON string
@@ -223,7 +223,7 @@ namespace PostBoost.Client.Model
         /// <param name="serializer">JSON Serializer</param>
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            writer.WriteRawValue((string)(typeof(InitiateRemoteUpload200Response).GetMethod("ToJson").Invoke(value, null)));
+            writer.WriteRawValue((string)(typeof(InitiateRemoteUpload201Response).GetMethod("ToJson").Invoke(value, null)));
         }
 
         /// <summary>
@@ -239,9 +239,9 @@ namespace PostBoost.Client.Model
             switch(reader.TokenType) 
             {
                 case JsonToken.StartObject:
-                    return InitiateRemoteUpload200Response.FromJson(JObject.Load(reader).ToString(Formatting.None));
+                    return InitiateRemoteUpload201Response.FromJson(JObject.Load(reader).ToString(Formatting.None));
                 case JsonToken.StartArray:
-                    return InitiateRemoteUpload200Response.FromJson(JArray.Load(reader).ToString(Formatting.None));
+                    return InitiateRemoteUpload201Response.FromJson(JArray.Load(reader).ToString(Formatting.None));
                 default:
                     return null;
             }

@@ -129,7 +129,7 @@ namespace PostBoost.Client.Test.Api
             //Guid workspaceUuid = null;
             //InitiateChunkedUploadRequest initiateChunkedUploadRequest = null;
             //var response = instance.InitiateChunkedUpload(workspaceUuid, initiateChunkedUploadRequest);
-            //Assert.IsType<InitiateChunkedUpload200Response>(response);
+            //Assert.IsType<InitiateChunkedUpload201Response>(response);
         }
 
         /// <summary>
@@ -142,7 +142,7 @@ namespace PostBoost.Client.Test.Api
             //Guid workspaceUuid = null;
             //InitiateRemoteUploadRequest initiateRemoteUploadRequest = null;
             //var response = instance.InitiateRemoteUpload(workspaceUuid, initiateRemoteUploadRequest);
-            //Assert.IsType<InitiateRemoteUpload200Response>(response);
+            //Assert.IsType<InitiateRemoteUpload201Response>(response);
         }
 
         /// <summary>
@@ -184,7 +184,7 @@ namespace PostBoost.Client.Test.Api
             //System.IO.Stream chunk = null;
             //int chunkIndex = null;
             //var response = instance.UploadChunk(workspaceUuid, uploadUuid, chunk, chunkIndex);
-            //Assert.IsType<UploadChunk200Response>(response);
+            //Assert.IsType<UploadChunk201Response>(response);
         }
 
         /// <summary>

@@ -111,7 +111,8 @@ namespace PostBoost.Client.Test.Api
         {
             // TODO uncomment below to test the method and replace null with proper value
             //string? keyword = null;
-            //var response = instance.ListUsers(keyword);
+            //int? page = null;
+            //var response = instance.ListUsers(keyword, page);
             //Assert.IsType<ListUsers200Response>(response);
         }
 

@@ -17,6 +17,8 @@ All URIs are relative to *https://postboost.co/app/api*
 
 Create user
 
+Creates a new user account on the platform. Admin only.
+
 ### Example
 ```csharp
 using System.Collections.Generic;
@@ -99,8 +101,9 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **200** | Created user |  -  |
+| **201** | Created user |  -  |
 | **401** |  |  -  |
+| **403** |  |  -  |
 | **422** |  |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
@@ -110,6 +113,8 @@ catch (ApiException e)
 > Object DeleteUser (int userId)
 
 Delete user
+
+Permanently deletes a user account. Returns 400 if you attempt to delete your own account. Admin only.
 
 ### Example
 ```csharp
@@ -196,6 +201,7 @@ catch (ApiException e)
 | **200** |  |  -  |
 | **400** | Cannot delete own account |  -  |
 | **401** |  |  -  |
+| **403** |  |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
@@ -204,6 +210,8 @@ catch (ApiException e)
 > Object DeleteUsersBulk (DeleteUsersBulkRequest deleteUsersBulkRequest)
 
 Delete users (bulk)
+
+Permanently deletes one or more user accounts. You cannot delete your own account. Admin only.
 
 ### Example
 ```csharp
@@ -289,6 +297,7 @@ catch (ApiException e)
 |-------------|-------------|------------------|
 | **200** |  |  -  |
 | **401** |  |  -  |
+| **403** |  |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
@@ -297,6 +306,8 @@ catch (ApiException e)
 > User GetUser (int userId)
 
 Get user
+
+Returns a single user account by ID. Admin only.
 
 ### Example
 ```csharp
@@ -382,15 +393,18 @@ catch (ApiException e)
 |-------------|-------------|------------------|
 | **200** | User details |  -  |
 | **401** |  |  -  |
+| **403** |  |  -  |
 | **404** |  |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 <a id="listusers"></a>
 # **ListUsers**
-> ListUsers200Response ListUsers (string? keyword = null)
+> ListUsers200Response ListUsers (string? keyword = null, int? page = null)
 
 List users
+
+Returns a paginated list of all users on the platform. Optionally filter by name or email. Admin only.
 
 ### Example
 ```csharp
@@ -413,11 +427,12 @@ namespace Example
 
             var apiInstance = new UsersApi(config);
             var keyword = "keyword_example";  // string? | Search by name or email. (optional) 
+            var page = 1;  // int? | Page number (15 items per page). (optional)  (default to 1)
 
             try
             {
                 // List users
-                ListUsers200Response result = apiInstance.ListUsers(keyword);
+                ListUsers200Response result = apiInstance.ListUsers(keyword, page);
                 Debug.WriteLine(result);
             }
             catch (ApiException  e)
@@ -438,7 +453,7 @@ This returns an ApiResponse object which contains the response data, status code
 try
 {
     // List users
-    ApiResponse<ListUsers200Response> response = apiInstance.ListUsersWithHttpInfo(keyword);
+    ApiResponse<ListUsers200Response> response = apiInstance.ListUsersWithHttpInfo(keyword, page);
     Debug.Write("Status Code: " + response.StatusCode);
     Debug.Write("Response Headers: " + response.Headers);
     Debug.Write("Response Body: " + response.Data);
@@ -456,6 +471,7 @@ catch (ApiException e)
 | Name | Type | Description | Notes |
 |------|------|-------------|-------|
 | **keyword** | **string?** | Search by name or email. | [optional]  |
+| **page** | **int?** | Page number (15 items per page). | [optional] [default to 1] |
 
 ### Return type
 
@@ -485,6 +501,8 @@ catch (ApiException e)
 > Object UpdateUser (int userId, UserUpdateInput userUpdateInput)
 
 Update user
+
+Updates a user's name, email, admin status, or password. Admin only.
 
 ### Example
 ```csharp
@@ -572,6 +590,7 @@ catch (ApiException e)
 |-------------|-------------|------------------|
 | **200** |  |  -  |
 | **401** |  |  -  |
+| **403** |  |  -  |
 | **422** |  |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)

@@ -27,18 +27,18 @@ using OpenAPIDateConverter = PostBoost.Client.Client.OpenAPIDateConverter;
 namespace PostBoost.Client.Model
 {
     /// <summary>
-    /// InitiateChunkedUpload200Response
+    /// InitiateChunkedUpload201Response
     /// </summary>
-    [DataContract(Name = "initiateChunkedUpload_200_response")]
-    public partial class InitiateChunkedUpload200Response : IValidatableObject
+    [DataContract(Name = "initiateChunkedUpload_201_response")]
+    public partial class InitiateChunkedUpload201Response : IValidatableObject
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="InitiateChunkedUpload200Response" /> class.
+        /// Initializes a new instance of the <see cref="InitiateChunkedUpload201Response" /> class.
         /// </summary>
         /// <param name="uploadUuid">uploadUuid.</param>
         /// <param name="chunkSize">chunkSize.</param>
         /// <param name="totalChunks">totalChunks.</param>
-        public InitiateChunkedUpload200Response(Guid uploadUuid = default(Guid), int chunkSize = default(int), int totalChunks = default(int))
+        public InitiateChunkedUpload201Response(Guid uploadUuid = default(Guid), int chunkSize = default(int), int totalChunks = default(int))
         {
             this.UploadUuid = uploadUuid;
             this.ChunkSize = chunkSize;
@@ -70,7 +70,7 @@ namespace PostBoost.Client.Model
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
-            sb.Append("class InitiateChunkedUpload200Response {\n");
+            sb.Append("class InitiateChunkedUpload201Response {\n");
             sb.Append("  UploadUuid: ").Append(UploadUuid).Append("\n");
             sb.Append("  ChunkSize: ").Append(ChunkSize).Append("\n");
             sb.Append("  TotalChunks: ").Append(TotalChunks).Append("\n");

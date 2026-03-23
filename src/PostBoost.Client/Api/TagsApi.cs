@@ -30,6 +30,9 @@ namespace PostBoost.Client.Api
         /// <summary>
         /// Create tag
         /// </summary>
+        /// <remarks>
+        /// Creates a new color-coded tag in the workspace for organizing posts.
+        /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
         /// <param name="tagInput"></param>
@@ -41,7 +44,7 @@ namespace PostBoost.Client.Api
         /// Create tag
         /// </summary>
         /// <remarks>
-        /// 
+        /// Creates a new color-coded tag in the workspace for organizing posts.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -52,6 +55,9 @@ namespace PostBoost.Client.Api
         /// <summary>
         /// Delete tag
         /// </summary>
+        /// <remarks>
+        /// Permanently deletes a tag. Posts that had this tag attached are unaffected.
+        /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
         /// <param name="tagUuid">UUID of the tag.</param>
@@ -63,7 +69,7 @@ namespace PostBoost.Client.Api
         /// Delete tag
         /// </summary>
         /// <remarks>
-        /// 
+        /// Permanently deletes a tag. Posts that had this tag attached are unaffected.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -74,6 +80,9 @@ namespace PostBoost.Client.Api
         /// <summary>
         /// Get tag
         /// </summary>
+        /// <remarks>
+        /// Returns a single tag by UUID.
+        /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
         /// <param name="tagUuid">UUID of the tag.</param>
@@ -85,7 +94,7 @@ namespace PostBoost.Client.Api
         /// Get tag
         /// </summary>
         /// <remarks>
-        /// 
+        /// Returns a single tag by UUID.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -96,6 +105,9 @@ namespace PostBoost.Client.Api
         /// <summary>
         /// List tags
         /// </summary>
+        /// <remarks>
+        /// Returns all tags defined in the workspace.
+        /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
         /// <param name="operationIndex">Index associated with the operation.</param>
@@ -106,7 +118,7 @@ namespace PostBoost.Client.Api
         /// List tags
         /// </summary>
         /// <remarks>
-        /// 
+        /// Returns all tags defined in the workspace.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -116,6 +128,9 @@ namespace PostBoost.Client.Api
         /// <summary>
         /// Update tag
         /// </summary>
+        /// <remarks>
+        /// Updates a tag&#39;s name or color.
+        /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
         /// <param name="tagUuid">UUID of the tag.</param>
@@ -128,7 +143,7 @@ namespace PostBoost.Client.Api
         /// Update tag
         /// </summary>
         /// <remarks>
-        /// 
+        /// Updates a tag&#39;s name or color.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -150,7 +165,7 @@ namespace PostBoost.Client.Api
         /// Create tag
         /// </summary>
         /// <remarks>
-        /// 
+        /// Creates a new color-coded tag in the workspace for organizing posts.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -164,7 +179,7 @@ namespace PostBoost.Client.Api
         /// Create tag
         /// </summary>
         /// <remarks>
-        /// 
+        /// Creates a new color-coded tag in the workspace for organizing posts.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -177,7 +192,7 @@ namespace PostBoost.Client.Api
         /// Delete tag
         /// </summary>
         /// <remarks>
-        /// 
+        /// Permanently deletes a tag. Posts that had this tag attached are unaffected.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -191,7 +206,7 @@ namespace PostBoost.Client.Api
         /// Delete tag
         /// </summary>
         /// <remarks>
-        /// 
+        /// Permanently deletes a tag. Posts that had this tag attached are unaffected.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -204,7 +219,7 @@ namespace PostBoost.Client.Api
         /// Get tag
         /// </summary>
         /// <remarks>
-        /// 
+        /// Returns a single tag by UUID.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -218,7 +233,7 @@ namespace PostBoost.Client.Api
         /// Get tag
         /// </summary>
         /// <remarks>
-        /// 
+        /// Returns a single tag by UUID.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -231,7 +246,7 @@ namespace PostBoost.Client.Api
         /// List tags
         /// </summary>
         /// <remarks>
-        /// 
+        /// Returns all tags defined in the workspace.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -244,7 +259,7 @@ namespace PostBoost.Client.Api
         /// List tags
         /// </summary>
         /// <remarks>
-        /// 
+        /// Returns all tags defined in the workspace.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -256,7 +271,7 @@ namespace PostBoost.Client.Api
         /// Update tag
         /// </summary>
         /// <remarks>
-        /// 
+        /// Updates a tag&#39;s name or color.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -271,7 +286,7 @@ namespace PostBoost.Client.Api
         /// Update tag
         /// </summary>
         /// <remarks>
-        /// 
+        /// Updates a tag&#39;s name or color.
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -402,7 +417,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Create tag 
+        /// Create tag Creates a new color-coded tag in the workspace for organizing posts.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -416,7 +431,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Create tag 
+        /// Create tag Creates a new color-coded tag in the workspace for organizing posts.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -482,7 +497,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Create tag 
+        /// Create tag Creates a new color-coded tag in the workspace for organizing posts.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -497,7 +512,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Create tag 
+        /// Create tag Creates a new color-coded tag in the workspace for organizing posts.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -566,7 +581,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Delete tag 
+        /// Delete tag Permanently deletes a tag. Posts that had this tag attached are unaffected.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -580,7 +595,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Delete tag 
+        /// Delete tag Permanently deletes a tag. Posts that had this tag attached are unaffected.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -639,7 +654,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Delete tag 
+        /// Delete tag Permanently deletes a tag. Posts that had this tag attached are unaffected.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -654,7 +669,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Delete tag 
+        /// Delete tag Permanently deletes a tag. Posts that had this tag attached are unaffected.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -716,7 +731,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Get tag 
+        /// Get tag Returns a single tag by UUID.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -730,7 +745,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Get tag 
+        /// Get tag Returns a single tag by UUID.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -789,7 +804,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Get tag 
+        /// Get tag Returns a single tag by UUID.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -804,7 +819,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Get tag 
+        /// Get tag Returns a single tag by UUID.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -866,7 +881,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// List tags 
+        /// List tags Returns all tags defined in the workspace.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -879,7 +894,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// List tags 
+        /// List tags Returns all tags defined in the workspace.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -936,7 +951,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// List tags 
+        /// List tags Returns all tags defined in the workspace.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -950,7 +965,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// List tags 
+        /// List tags Returns all tags defined in the workspace.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -1010,7 +1025,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Update tag 
+        /// Update tag Updates a tag&#39;s name or color.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -1025,7 +1040,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Update tag 
+        /// Update tag Updates a tag&#39;s name or color.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -1093,7 +1108,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Update tag 
+        /// Update tag Updates a tag&#39;s name or color.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -1109,7 +1124,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Update tag 
+        /// Update tag Updates a tag&#39;s name or color.
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>

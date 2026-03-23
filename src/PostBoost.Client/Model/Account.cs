@@ -91,43 +91,63 @@ namespace PostBoost.Client.Model
         /// <summary>
         /// Gets or Sets Provider
         /// </summary>
-        [DataMember(Name = "provider", EmitDefaultValue = false)]
-        public ProviderEnum? Provider { get; set; }
+        [DataMember(Name = "provider", IsRequired = true, EmitDefaultValue = true)]
+        public ProviderEnum Provider { get; set; }
         /// <summary>
         /// Initializes a new instance of the <see cref="Account" /> class.
         /// </summary>
-        /// <param name="id">id.</param>
-        /// <param name="uuid">uuid.</param>
-        /// <param name="name">name.</param>
-        /// <param name="username">username.</param>
+        [JsonConstructorAttribute]
+        protected Account() { }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Account" /> class.
+        /// </summary>
+        /// <param name="id">id (required).</param>
+        /// <param name="uuid">uuid (required).</param>
+        /// <param name="name">name (required).</param>
+        /// <param name="username">username (required).</param>
         /// <param name="image">image.</param>
-        /// <param name="provider">provider.</param>
-        /// <param name="data">Provider-specific metadata..</param>
-        /// <param name="authorized">authorized.</param>
-        /// <param name="createdAt">createdAt.</param>
-        public Account(int id = default(int), Guid uuid = default(Guid), string name = default(string), string username = default(string), string image = default(string), ProviderEnum? provider = default(ProviderEnum?), Object data = default(Object), bool authorized = default(bool), DateTime createdAt = default(DateTime))
+        /// <param name="provider">provider (required).</param>
+        /// <param name="data">Provider-specific metadata. (required).</param>
+        /// <param name="authorized">authorized (required).</param>
+        /// <param name="createdAt">createdAt (required).</param>
+        public Account(int id = default(int), Guid uuid = default(Guid), string name = default(string), string username = default(string), string image = default(string), ProviderEnum provider = default(ProviderEnum), Object data = default(Object), bool authorized = default(bool), DateTime createdAt = default(DateTime))
         {
             this.Id = id;
             this.Uuid = uuid;
+            // to ensure "name" is required (not null)
+            if (name == null)
+            {
+                throw new ArgumentNullException("name is a required property for Account and cannot be null");
+            }
             this.Name = name;
+            // to ensure "username" is required (not null)
+            if (username == null)
+            {
+                throw new ArgumentNullException("username is a required property for Account and cannot be null");
+            }
             this.Username = username;
-            this.Image = image;
             this.Provider = provider;
+            // to ensure "data" is required (not null)
+            if (data == null)
+            {
+                throw new ArgumentNullException("data is a required property for Account and cannot be null");
+            }
             this.Data = data;
             this.Authorized = authorized;
             this.CreatedAt = createdAt;
+            this.Image = image;
         }
 
         /// <summary>
         /// Gets or Sets Id
         /// </summary>
-        [DataMember(Name = "id", EmitDefaultValue = false)]
+        [DataMember(Name = "id", IsRequired = true, EmitDefaultValue = true)]
         public int Id { get; set; }
 
         /// <summary>
         /// Gets or Sets Uuid
         /// </summary>
-        [DataMember(Name = "uuid", EmitDefaultValue = false)]
+        [DataMember(Name = "uuid", IsRequired = true, EmitDefaultValue = true)]
         public Guid Uuid { get; set; }
 
         /// <summary>
@@ -136,7 +156,7 @@ namespace PostBoost.Client.Model
         /*
         <example>My Instagram</example>
         */
-        [DataMember(Name = "name", EmitDefaultValue = false)]
+        [DataMember(Name = "name", IsRequired = true, EmitDefaultValue = true)]
         public string Name { get; set; }
 
         /// <summary>
@@ -145,7 +165,7 @@ namespace PostBoost.Client.Model
         /*
         <example>myhandle</example>
         */
-        [DataMember(Name = "username", EmitDefaultValue = false)]
+        [DataMember(Name = "username", IsRequired = true, EmitDefaultValue = true)]
         public string Username { get; set; }
 
         /// <summary>
@@ -158,19 +178,19 @@ namespace PostBoost.Client.Model
         /// Provider-specific metadata.
         /// </summary>
         /// <value>Provider-specific metadata.</value>
-        [DataMember(Name = "data", EmitDefaultValue = false)]
+        [DataMember(Name = "data", IsRequired = true, EmitDefaultValue = true)]
         public Object Data { get; set; }
 
         /// <summary>
         /// Gets or Sets Authorized
         /// </summary>
-        [DataMember(Name = "authorized", EmitDefaultValue = true)]
+        [DataMember(Name = "authorized", IsRequired = true, EmitDefaultValue = true)]
         public bool Authorized { get; set; }
 
         /// <summary>
         /// Gets or Sets CreatedAt
         /// </summary>
-        [DataMember(Name = "created_at", EmitDefaultValue = false)]
+        [DataMember(Name = "created_at", IsRequired = true, EmitDefaultValue = true)]
         public DateTime CreatedAt { get; set; }
 
         /// <summary>

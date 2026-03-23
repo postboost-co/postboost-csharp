@@ -61,49 +61,69 @@ namespace PostBoost.Client.Model
         /// <summary>
         /// Gets or Sets Type
         /// </summary>
-        [DataMember(Name = "type", EmitDefaultValue = false)]
-        public TypeEnum? Type { get; set; }
+        [DataMember(Name = "type", IsRequired = true, EmitDefaultValue = true)]
+        public TypeEnum Type { get; set; }
         /// <summary>
         /// Initializes a new instance of the <see cref="Media" /> class.
         /// </summary>
-        /// <param name="id">id.</param>
-        /// <param name="uuid">uuid.</param>
-        /// <param name="name">name.</param>
-        /// <param name="mimeType">mimeType.</param>
-        /// <param name="type">type.</param>
-        /// <param name="url">url.</param>
+        [JsonConstructorAttribute]
+        protected Media() { }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Media" /> class.
+        /// </summary>
+        /// <param name="id">id (required).</param>
+        /// <param name="uuid">uuid (required).</param>
+        /// <param name="name">name (required).</param>
+        /// <param name="mimeType">mimeType (required).</param>
+        /// <param name="type">type (required).</param>
+        /// <param name="url">url (required).</param>
         /// <param name="thumbUrl">thumbUrl.</param>
-        /// <param name="isVideo">isVideo.</param>
-        /// <param name="createdAt">createdAt.</param>
-        public Media(int id = default(int), Guid uuid = default(Guid), string name = default(string), string mimeType = default(string), TypeEnum? type = default(TypeEnum?), string url = default(string), string thumbUrl = default(string), bool isVideo = default(bool), DateTime createdAt = default(DateTime))
+        /// <param name="isVideo">isVideo (required).</param>
+        /// <param name="createdAt">createdAt (required).</param>
+        public Media(int id = default(int), Guid uuid = default(Guid), string name = default(string), string mimeType = default(string), TypeEnum type = default(TypeEnum), string url = default(string), string thumbUrl = default(string), bool isVideo = default(bool), DateTime createdAt = default(DateTime))
         {
             this.Id = id;
             this.Uuid = uuid;
+            // to ensure "name" is required (not null)
+            if (name == null)
+            {
+                throw new ArgumentNullException("name is a required property for Media and cannot be null");
+            }
             this.Name = name;
+            // to ensure "mimeType" is required (not null)
+            if (mimeType == null)
+            {
+                throw new ArgumentNullException("mimeType is a required property for Media and cannot be null");
+            }
             this.MimeType = mimeType;
             this.Type = type;
+            // to ensure "url" is required (not null)
+            if (url == null)
+            {
+                throw new ArgumentNullException("url is a required property for Media and cannot be null");
+            }
             this.Url = url;
-            this.ThumbUrl = thumbUrl;
             this.IsVideo = isVideo;
             this.CreatedAt = createdAt;
+            this.ThumbUrl = thumbUrl;
         }
 
         /// <summary>
         /// Gets or Sets Id
         /// </summary>
-        [DataMember(Name = "id", EmitDefaultValue = false)]
+        [DataMember(Name = "id", IsRequired = true, EmitDefaultValue = true)]
         public int Id { get; set; }
 
         /// <summary>
         /// Gets or Sets Uuid
         /// </summary>
-        [DataMember(Name = "uuid", EmitDefaultValue = false)]
+        [DataMember(Name = "uuid", IsRequired = true, EmitDefaultValue = true)]
         public Guid Uuid { get; set; }
 
         /// <summary>
         /// Gets or Sets Name
         /// </summary>
-        [DataMember(Name = "name", EmitDefaultValue = false)]
+        [DataMember(Name = "name", IsRequired = true, EmitDefaultValue = true)]
         public string Name { get; set; }
 
         /// <summary>
@@ -112,13 +132,13 @@ namespace PostBoost.Client.Model
         /*
         <example>image/jpeg</example>
         */
-        [DataMember(Name = "mime_type", EmitDefaultValue = false)]
+        [DataMember(Name = "mime_type", IsRequired = true, EmitDefaultValue = true)]
         public string MimeType { get; set; }
 
         /// <summary>
         /// Gets or Sets Url
         /// </summary>
-        [DataMember(Name = "url", EmitDefaultValue = false)]
+        [DataMember(Name = "url", IsRequired = true, EmitDefaultValue = true)]
         public string Url { get; set; }
 
         /// <summary>
@@ -130,13 +150,13 @@ namespace PostBoost.Client.Model
         /// <summary>
         /// Gets or Sets IsVideo
         /// </summary>
-        [DataMember(Name = "is_video", EmitDefaultValue = true)]
+        [DataMember(Name = "is_video", IsRequired = true, EmitDefaultValue = true)]
         public bool IsVideo { get; set; }
 
         /// <summary>
         /// Gets or Sets CreatedAt
         /// </summary>
-        [DataMember(Name = "created_at", EmitDefaultValue = false)]
+        [DataMember(Name = "created_at", IsRequired = true, EmitDefaultValue = true)]
         public DateTime CreatedAt { get; set; }
 
         /// <summary>
