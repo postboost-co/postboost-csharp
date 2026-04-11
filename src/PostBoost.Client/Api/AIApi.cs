@@ -52,6 +52,131 @@ namespace PostBoost.Client.Api
         /// <param name="operationIndex">Index associated with the operation.</param>
         /// <returns>ApiResponse of BlogToSocial200Response</returns>
         ApiResponse<BlogToSocial200Response> BlogToSocialWithHttpInfo(Guid workspaceUuid, BlogToSocialInput blogToSocialInput, int operationIndex = 0);
+        /// <summary>
+        /// Generate alt text for a media image using AI
+        /// </summary>
+        /// <remarks>
+        /// Analyzes an existing workspace media item and generates accessible alt text. The alt text is saved back to the media record. Costs 1 AI credit per call. 
+        /// </remarks>
+        /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="workspaceUuid">UUID of the workspace.</param>
+        /// <param name="imageAltTextInput"></param>
+        /// <param name="operationIndex">Index associated with the operation.</param>
+        /// <returns>ImageAltText200Response</returns>
+        ImageAltText200Response ImageAltText(Guid workspaceUuid, ImageAltTextInput imageAltTextInput, int operationIndex = 0);
+
+        /// <summary>
+        /// Generate alt text for a media image using AI
+        /// </summary>
+        /// <remarks>
+        /// Analyzes an existing workspace media item and generates accessible alt text. The alt text is saved back to the media record. Costs 1 AI credit per call. 
+        /// </remarks>
+        /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="workspaceUuid">UUID of the workspace.</param>
+        /// <param name="imageAltTextInput"></param>
+        /// <param name="operationIndex">Index associated with the operation.</param>
+        /// <returns>ApiResponse of ImageAltText200Response</returns>
+        ApiResponse<ImageAltText200Response> ImageAltTextWithHttpInfo(Guid workspaceUuid, ImageAltTextInput imageAltTextInput, int operationIndex = 0);
+        /// <summary>
+        /// Edit an existing media image using AI
+        /// </summary>
+        /// <remarks>
+        /// Edits an existing workspace media item using the source image and a text prompt. Optionally accepts a mask (transparent areas are replaced). Saves results to the media library. Credits: &#x60;count × credit_weight&#x60;. 
+        /// </remarks>
+        /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="workspaceUuid">UUID of the workspace.</param>
+        /// <param name="imageEditInput"></param>
+        /// <param name="operationIndex">Index associated with the operation.</param>
+        /// <returns>ImageGenerate200Response</returns>
+        ImageGenerate200Response ImageEdit(Guid workspaceUuid, ImageEditInput imageEditInput, int operationIndex = 0);
+
+        /// <summary>
+        /// Edit an existing media image using AI
+        /// </summary>
+        /// <remarks>
+        /// Edits an existing workspace media item using the source image and a text prompt. Optionally accepts a mask (transparent areas are replaced). Saves results to the media library. Credits: &#x60;count × credit_weight&#x60;. 
+        /// </remarks>
+        /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="workspaceUuid">UUID of the workspace.</param>
+        /// <param name="imageEditInput"></param>
+        /// <param name="operationIndex">Index associated with the operation.</param>
+        /// <returns>ApiResponse of ImageGenerate200Response</returns>
+        ApiResponse<ImageGenerate200Response> ImageEditWithHttpInfo(Guid workspaceUuid, ImageEditInput imageEditInput, int operationIndex = 0);
+        /// <summary>
+        /// Generate social media images from a caption
+        /// </summary>
+        /// <remarks>
+        /// Generates one or more images and saves them immediately to the workspace media library.  **Standard mode** (recommended): provide &#x60;caption&#x60; + &#x60;platform&#x60;. PostBoost builds a professional image prompt internally using platform-specific templates. No prompt engineering required.  **Developer mode**: provide &#x60;prompt&#x60; directly to bypass prompt building. If both &#x60;caption&#x60; and &#x60;prompt&#x60; are sent, standard mode runs.  Credits: &#x60;count x credit_weight&#x60; (default: 5 per image). 
+        /// </remarks>
+        /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="workspaceUuid">UUID of the workspace.</param>
+        /// <param name="imageGenerateInput"></param>
+        /// <param name="operationIndex">Index associated with the operation.</param>
+        /// <returns>ImageGenerate200Response</returns>
+        ImageGenerate200Response ImageGenerate(Guid workspaceUuid, ImageGenerateInput imageGenerateInput, int operationIndex = 0);
+
+        /// <summary>
+        /// Generate social media images from a caption
+        /// </summary>
+        /// <remarks>
+        /// Generates one or more images and saves them immediately to the workspace media library.  **Standard mode** (recommended): provide &#x60;caption&#x60; + &#x60;platform&#x60;. PostBoost builds a professional image prompt internally using platform-specific templates. No prompt engineering required.  **Developer mode**: provide &#x60;prompt&#x60; directly to bypass prompt building. If both &#x60;caption&#x60; and &#x60;prompt&#x60; are sent, standard mode runs.  Credits: &#x60;count x credit_weight&#x60; (default: 5 per image). 
+        /// </remarks>
+        /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="workspaceUuid">UUID of the workspace.</param>
+        /// <param name="imageGenerateInput"></param>
+        /// <param name="operationIndex">Index associated with the operation.</param>
+        /// <returns>ApiResponse of ImageGenerate200Response</returns>
+        ApiResponse<ImageGenerate200Response> ImageGenerateWithHttpInfo(Guid workspaceUuid, ImageGenerateInput imageGenerateInput, int operationIndex = 0);
+        /// <summary>
+        /// Build an optimized image prompt from a social media caption
+        /// </summary>
+        /// <remarks>
+        /// Builds a professional image generation prompt from a caption and platform. No image is generated. Use this to preview the prompt before calling &#x60;image-generate&#x60;. Costs 1 AI credit per call.  When &#x60;image-generate&#x60; builds the prompt internally (standard mode), no credit is charged for the prompt step. 
+        /// </remarks>
+        /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="workspaceUuid">UUID of the workspace.</param>
+        /// <param name="imagePromptInput"></param>
+        /// <param name="operationIndex">Index associated with the operation.</param>
+        /// <returns>ImagePrompt200Response</returns>
+        ImagePrompt200Response ImagePrompt(Guid workspaceUuid, ImagePromptInput imagePromptInput, int operationIndex = 0);
+
+        /// <summary>
+        /// Build an optimized image prompt from a social media caption
+        /// </summary>
+        /// <remarks>
+        /// Builds a professional image generation prompt from a caption and platform. No image is generated. Use this to preview the prompt before calling &#x60;image-generate&#x60;. Costs 1 AI credit per call.  When &#x60;image-generate&#x60; builds the prompt internally (standard mode), no credit is charged for the prompt step. 
+        /// </remarks>
+        /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="workspaceUuid">UUID of the workspace.</param>
+        /// <param name="imagePromptInput"></param>
+        /// <param name="operationIndex">Index associated with the operation.</param>
+        /// <returns>ApiResponse of ImagePrompt200Response</returns>
+        ApiResponse<ImagePrompt200Response> ImagePromptWithHttpInfo(Guid workspaceUuid, ImagePromptInput imagePromptInput, int operationIndex = 0);
+        /// <summary>
+        /// Generate variations of an existing media image
+        /// </summary>
+        /// <remarks>
+        /// Creates one or more variations of an existing workspace media item. Saves results to the media library. Credits: &#x60;count × credit_weight&#x60;. 
+        /// </remarks>
+        /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="workspaceUuid">UUID of the workspace.</param>
+        /// <param name="imageVariationsInput"></param>
+        /// <param name="operationIndex">Index associated with the operation.</param>
+        /// <returns>ImageVariations200Response</returns>
+        ImageVariations200Response ImageVariations(Guid workspaceUuid, ImageVariationsInput imageVariationsInput, int operationIndex = 0);
+
+        /// <summary>
+        /// Generate variations of an existing media image
+        /// </summary>
+        /// <remarks>
+        /// Creates one or more variations of an existing workspace media item. Saves results to the media library. Credits: &#x60;count × credit_weight&#x60;. 
+        /// </remarks>
+        /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="workspaceUuid">UUID of the workspace.</param>
+        /// <param name="imageVariationsInput"></param>
+        /// <param name="operationIndex">Index associated with the operation.</param>
+        /// <returns>ApiResponse of ImageVariations200Response</returns>
+        ApiResponse<ImageVariations200Response> ImageVariationsWithHttpInfo(Guid workspaceUuid, ImageVariationsInput imageVariationsInput, int operationIndex = 0);
         #endregion Synchronous Operations
     }
 
@@ -88,6 +213,141 @@ namespace PostBoost.Client.Api
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns>Task of ApiResponse (BlogToSocial200Response)</returns>
         System.Threading.Tasks.Task<ApiResponse<BlogToSocial200Response>> BlogToSocialWithHttpInfoAsync(Guid workspaceUuid, BlogToSocialInput blogToSocialInput, int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken));
+        /// <summary>
+        /// Generate alt text for a media image using AI
+        /// </summary>
+        /// <remarks>
+        /// Analyzes an existing workspace media item and generates accessible alt text. The alt text is saved back to the media record. Costs 1 AI credit per call. 
+        /// </remarks>
+        /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="workspaceUuid">UUID of the workspace.</param>
+        /// <param name="imageAltTextInput"></param>
+        /// <param name="operationIndex">Index associated with the operation.</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns>Task of ImageAltText200Response</returns>
+        System.Threading.Tasks.Task<ImageAltText200Response> ImageAltTextAsync(Guid workspaceUuid, ImageAltTextInput imageAltTextInput, int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken));
+
+        /// <summary>
+        /// Generate alt text for a media image using AI
+        /// </summary>
+        /// <remarks>
+        /// Analyzes an existing workspace media item and generates accessible alt text. The alt text is saved back to the media record. Costs 1 AI credit per call. 
+        /// </remarks>
+        /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="workspaceUuid">UUID of the workspace.</param>
+        /// <param name="imageAltTextInput"></param>
+        /// <param name="operationIndex">Index associated with the operation.</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns>Task of ApiResponse (ImageAltText200Response)</returns>
+        System.Threading.Tasks.Task<ApiResponse<ImageAltText200Response>> ImageAltTextWithHttpInfoAsync(Guid workspaceUuid, ImageAltTextInput imageAltTextInput, int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken));
+        /// <summary>
+        /// Edit an existing media image using AI
+        /// </summary>
+        /// <remarks>
+        /// Edits an existing workspace media item using the source image and a text prompt. Optionally accepts a mask (transparent areas are replaced). Saves results to the media library. Credits: &#x60;count × credit_weight&#x60;. 
+        /// </remarks>
+        /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="workspaceUuid">UUID of the workspace.</param>
+        /// <param name="imageEditInput"></param>
+        /// <param name="operationIndex">Index associated with the operation.</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns>Task of ImageGenerate200Response</returns>
+        System.Threading.Tasks.Task<ImageGenerate200Response> ImageEditAsync(Guid workspaceUuid, ImageEditInput imageEditInput, int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken));
+
+        /// <summary>
+        /// Edit an existing media image using AI
+        /// </summary>
+        /// <remarks>
+        /// Edits an existing workspace media item using the source image and a text prompt. Optionally accepts a mask (transparent areas are replaced). Saves results to the media library. Credits: &#x60;count × credit_weight&#x60;. 
+        /// </remarks>
+        /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="workspaceUuid">UUID of the workspace.</param>
+        /// <param name="imageEditInput"></param>
+        /// <param name="operationIndex">Index associated with the operation.</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns>Task of ApiResponse (ImageGenerate200Response)</returns>
+        System.Threading.Tasks.Task<ApiResponse<ImageGenerate200Response>> ImageEditWithHttpInfoAsync(Guid workspaceUuid, ImageEditInput imageEditInput, int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken));
+        /// <summary>
+        /// Generate social media images from a caption
+        /// </summary>
+        /// <remarks>
+        /// Generates one or more images and saves them immediately to the workspace media library.  **Standard mode** (recommended): provide &#x60;caption&#x60; + &#x60;platform&#x60;. PostBoost builds a professional image prompt internally using platform-specific templates. No prompt engineering required.  **Developer mode**: provide &#x60;prompt&#x60; directly to bypass prompt building. If both &#x60;caption&#x60; and &#x60;prompt&#x60; are sent, standard mode runs.  Credits: &#x60;count x credit_weight&#x60; (default: 5 per image). 
+        /// </remarks>
+        /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="workspaceUuid">UUID of the workspace.</param>
+        /// <param name="imageGenerateInput"></param>
+        /// <param name="operationIndex">Index associated with the operation.</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns>Task of ImageGenerate200Response</returns>
+        System.Threading.Tasks.Task<ImageGenerate200Response> ImageGenerateAsync(Guid workspaceUuid, ImageGenerateInput imageGenerateInput, int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken));
+
+        /// <summary>
+        /// Generate social media images from a caption
+        /// </summary>
+        /// <remarks>
+        /// Generates one or more images and saves them immediately to the workspace media library.  **Standard mode** (recommended): provide &#x60;caption&#x60; + &#x60;platform&#x60;. PostBoost builds a professional image prompt internally using platform-specific templates. No prompt engineering required.  **Developer mode**: provide &#x60;prompt&#x60; directly to bypass prompt building. If both &#x60;caption&#x60; and &#x60;prompt&#x60; are sent, standard mode runs.  Credits: &#x60;count x credit_weight&#x60; (default: 5 per image). 
+        /// </remarks>
+        /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="workspaceUuid">UUID of the workspace.</param>
+        /// <param name="imageGenerateInput"></param>
+        /// <param name="operationIndex">Index associated with the operation.</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns>Task of ApiResponse (ImageGenerate200Response)</returns>
+        System.Threading.Tasks.Task<ApiResponse<ImageGenerate200Response>> ImageGenerateWithHttpInfoAsync(Guid workspaceUuid, ImageGenerateInput imageGenerateInput, int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken));
+        /// <summary>
+        /// Build an optimized image prompt from a social media caption
+        /// </summary>
+        /// <remarks>
+        /// Builds a professional image generation prompt from a caption and platform. No image is generated. Use this to preview the prompt before calling &#x60;image-generate&#x60;. Costs 1 AI credit per call.  When &#x60;image-generate&#x60; builds the prompt internally (standard mode), no credit is charged for the prompt step. 
+        /// </remarks>
+        /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="workspaceUuid">UUID of the workspace.</param>
+        /// <param name="imagePromptInput"></param>
+        /// <param name="operationIndex">Index associated with the operation.</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns>Task of ImagePrompt200Response</returns>
+        System.Threading.Tasks.Task<ImagePrompt200Response> ImagePromptAsync(Guid workspaceUuid, ImagePromptInput imagePromptInput, int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken));
+
+        /// <summary>
+        /// Build an optimized image prompt from a social media caption
+        /// </summary>
+        /// <remarks>
+        /// Builds a professional image generation prompt from a caption and platform. No image is generated. Use this to preview the prompt before calling &#x60;image-generate&#x60;. Costs 1 AI credit per call.  When &#x60;image-generate&#x60; builds the prompt internally (standard mode), no credit is charged for the prompt step. 
+        /// </remarks>
+        /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="workspaceUuid">UUID of the workspace.</param>
+        /// <param name="imagePromptInput"></param>
+        /// <param name="operationIndex">Index associated with the operation.</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns>Task of ApiResponse (ImagePrompt200Response)</returns>
+        System.Threading.Tasks.Task<ApiResponse<ImagePrompt200Response>> ImagePromptWithHttpInfoAsync(Guid workspaceUuid, ImagePromptInput imagePromptInput, int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken));
+        /// <summary>
+        /// Generate variations of an existing media image
+        /// </summary>
+        /// <remarks>
+        /// Creates one or more variations of an existing workspace media item. Saves results to the media library. Credits: &#x60;count × credit_weight&#x60;. 
+        /// </remarks>
+        /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="workspaceUuid">UUID of the workspace.</param>
+        /// <param name="imageVariationsInput"></param>
+        /// <param name="operationIndex">Index associated with the operation.</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns>Task of ImageVariations200Response</returns>
+        System.Threading.Tasks.Task<ImageVariations200Response> ImageVariationsAsync(Guid workspaceUuid, ImageVariationsInput imageVariationsInput, int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken));
+
+        /// <summary>
+        /// Generate variations of an existing media image
+        /// </summary>
+        /// <remarks>
+        /// Creates one or more variations of an existing workspace media item. Saves results to the media library. Credits: &#x60;count × credit_weight&#x60;. 
+        /// </remarks>
+        /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="workspaceUuid">UUID of the workspace.</param>
+        /// <param name="imageVariationsInput"></param>
+        /// <param name="operationIndex">Index associated with the operation.</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns>Task of ApiResponse (ImageVariations200Response)</returns>
+        System.Threading.Tasks.Task<ApiResponse<ImageVariations200Response>> ImageVariationsWithHttpInfoAsync(Guid workspaceUuid, ImageVariationsInput imageVariationsInput, int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken));
         #endregion Asynchronous Operations
     }
 
@@ -363,6 +623,826 @@ namespace PostBoost.Client.Api
             if (this.ExceptionFactory != null)
             {
                 Exception _exception = this.ExceptionFactory("BlogToSocial", localVarResponse);
+                if (_exception != null)
+                {
+                    throw _exception;
+                }
+            }
+
+            return localVarResponse;
+        }
+
+        /// <summary>
+        /// Generate alt text for a media image using AI Analyzes an existing workspace media item and generates accessible alt text. The alt text is saved back to the media record. Costs 1 AI credit per call. 
+        /// </summary>
+        /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="workspaceUuid">UUID of the workspace.</param>
+        /// <param name="imageAltTextInput"></param>
+        /// <param name="operationIndex">Index associated with the operation.</param>
+        /// <returns>ImageAltText200Response</returns>
+        public ImageAltText200Response ImageAltText(Guid workspaceUuid, ImageAltTextInput imageAltTextInput, int operationIndex = 0)
+        {
+            PostBoost.Client.Client.ApiResponse<ImageAltText200Response> localVarResponse = ImageAltTextWithHttpInfo(workspaceUuid, imageAltTextInput);
+            return localVarResponse.Data;
+        }
+
+        /// <summary>
+        /// Generate alt text for a media image using AI Analyzes an existing workspace media item and generates accessible alt text. The alt text is saved back to the media record. Costs 1 AI credit per call. 
+        /// </summary>
+        /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="workspaceUuid">UUID of the workspace.</param>
+        /// <param name="imageAltTextInput"></param>
+        /// <param name="operationIndex">Index associated with the operation.</param>
+        /// <returns>ApiResponse of ImageAltText200Response</returns>
+        public PostBoost.Client.Client.ApiResponse<ImageAltText200Response> ImageAltTextWithHttpInfo(Guid workspaceUuid, ImageAltTextInput imageAltTextInput, int operationIndex = 0)
+        {
+            // verify the required parameter 'imageAltTextInput' is set
+            if (imageAltTextInput == null)
+            {
+                throw new PostBoost.Client.Client.ApiException(400, "Missing required parameter 'imageAltTextInput' when calling AIApi->ImageAltText");
+            }
+
+            PostBoost.Client.Client.RequestOptions localVarRequestOptions = new PostBoost.Client.Client.RequestOptions();
+
+            string[] _contentTypes = new string[] {
+                "application/json"
+            };
+
+            // to determine the Accept header
+            string[] _accepts = new string[] {
+                "application/json"
+            };
+
+            var localVarContentType = PostBoost.Client.Client.ClientUtils.SelectHeaderContentType(_contentTypes);
+            if (localVarContentType != null)
+            {
+                localVarRequestOptions.HeaderParameters.Add("Content-Type", localVarContentType);
+            }
+
+            var localVarAccept = PostBoost.Client.Client.ClientUtils.SelectHeaderAccept(_accepts);
+            if (localVarAccept != null)
+            {
+                localVarRequestOptions.HeaderParameters.Add("Accept", localVarAccept);
+            }
+
+            localVarRequestOptions.PathParameters.Add("workspaceUuid", PostBoost.Client.Client.ClientUtils.ParameterToString(workspaceUuid)); // path parameter
+            localVarRequestOptions.Data = imageAltTextInput;
+
+            localVarRequestOptions.Operation = "AIApi.ImageAltText";
+            localVarRequestOptions.OperationIndex = operationIndex;
+
+            // authentication (bearerAuth) required
+            // bearer authentication required
+            if (!string.IsNullOrEmpty(this.Configuration.AccessToken) && !localVarRequestOptions.HeaderParameters.ContainsKey("Authorization"))
+            {
+                localVarRequestOptions.HeaderParameters.Add("Authorization", "Bearer " + this.Configuration.AccessToken);
+            }
+
+            // make the HTTP request
+            var localVarResponse = this.Client.Post<ImageAltText200Response>("/{workspaceUuid}/ai/image-alt-text", localVarRequestOptions, this.Configuration);
+            if (this.ExceptionFactory != null)
+            {
+                Exception _exception = this.ExceptionFactory("ImageAltText", localVarResponse);
+                if (_exception != null)
+                {
+                    throw _exception;
+                }
+            }
+
+            return localVarResponse;
+        }
+
+        /// <summary>
+        /// Generate alt text for a media image using AI Analyzes an existing workspace media item and generates accessible alt text. The alt text is saved back to the media record. Costs 1 AI credit per call. 
+        /// </summary>
+        /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="workspaceUuid">UUID of the workspace.</param>
+        /// <param name="imageAltTextInput"></param>
+        /// <param name="operationIndex">Index associated with the operation.</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns>Task of ImageAltText200Response</returns>
+        public async System.Threading.Tasks.Task<ImageAltText200Response> ImageAltTextAsync(Guid workspaceUuid, ImageAltTextInput imageAltTextInput, int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+        {
+            PostBoost.Client.Client.ApiResponse<ImageAltText200Response> localVarResponse = await ImageAltTextWithHttpInfoAsync(workspaceUuid, imageAltTextInput, operationIndex, cancellationToken).ConfigureAwait(false);
+            return localVarResponse.Data;
+        }
+
+        /// <summary>
+        /// Generate alt text for a media image using AI Analyzes an existing workspace media item and generates accessible alt text. The alt text is saved back to the media record. Costs 1 AI credit per call. 
+        /// </summary>
+        /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="workspaceUuid">UUID of the workspace.</param>
+        /// <param name="imageAltTextInput"></param>
+        /// <param name="operationIndex">Index associated with the operation.</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns>Task of ApiResponse (ImageAltText200Response)</returns>
+        public async System.Threading.Tasks.Task<PostBoost.Client.Client.ApiResponse<ImageAltText200Response>> ImageAltTextWithHttpInfoAsync(Guid workspaceUuid, ImageAltTextInput imageAltTextInput, int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+        {
+            // verify the required parameter 'imageAltTextInput' is set
+            if (imageAltTextInput == null)
+            {
+                throw new PostBoost.Client.Client.ApiException(400, "Missing required parameter 'imageAltTextInput' when calling AIApi->ImageAltText");
+            }
+
+
+            PostBoost.Client.Client.RequestOptions localVarRequestOptions = new PostBoost.Client.Client.RequestOptions();
+
+            string[] _contentTypes = new string[] {
+                "application/json"
+            };
+
+            // to determine the Accept header
+            string[] _accepts = new string[] {
+                "application/json"
+            };
+
+            var localVarContentType = PostBoost.Client.Client.ClientUtils.SelectHeaderContentType(_contentTypes);
+            if (localVarContentType != null)
+            {
+                localVarRequestOptions.HeaderParameters.Add("Content-Type", localVarContentType);
+            }
+
+            var localVarAccept = PostBoost.Client.Client.ClientUtils.SelectHeaderAccept(_accepts);
+            if (localVarAccept != null)
+            {
+                localVarRequestOptions.HeaderParameters.Add("Accept", localVarAccept);
+            }
+
+            localVarRequestOptions.PathParameters.Add("workspaceUuid", PostBoost.Client.Client.ClientUtils.ParameterToString(workspaceUuid)); // path parameter
+            localVarRequestOptions.Data = imageAltTextInput;
+
+            localVarRequestOptions.Operation = "AIApi.ImageAltText";
+            localVarRequestOptions.OperationIndex = operationIndex;
+
+            // authentication (bearerAuth) required
+            // bearer authentication required
+            if (!string.IsNullOrEmpty(this.Configuration.AccessToken) && !localVarRequestOptions.HeaderParameters.ContainsKey("Authorization"))
+            {
+                localVarRequestOptions.HeaderParameters.Add("Authorization", "Bearer " + this.Configuration.AccessToken);
+            }
+
+            // make the HTTP request
+            var localVarResponse = await this.AsynchronousClient.PostAsync<ImageAltText200Response>("/{workspaceUuid}/ai/image-alt-text", localVarRequestOptions, this.Configuration, cancellationToken).ConfigureAwait(false);
+
+            if (this.ExceptionFactory != null)
+            {
+                Exception _exception = this.ExceptionFactory("ImageAltText", localVarResponse);
+                if (_exception != null)
+                {
+                    throw _exception;
+                }
+            }
+
+            return localVarResponse;
+        }
+
+        /// <summary>
+        /// Edit an existing media image using AI Edits an existing workspace media item using the source image and a text prompt. Optionally accepts a mask (transparent areas are replaced). Saves results to the media library. Credits: &#x60;count × credit_weight&#x60;. 
+        /// </summary>
+        /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="workspaceUuid">UUID of the workspace.</param>
+        /// <param name="imageEditInput"></param>
+        /// <param name="operationIndex">Index associated with the operation.</param>
+        /// <returns>ImageGenerate200Response</returns>
+        public ImageGenerate200Response ImageEdit(Guid workspaceUuid, ImageEditInput imageEditInput, int operationIndex = 0)
+        {
+            PostBoost.Client.Client.ApiResponse<ImageGenerate200Response> localVarResponse = ImageEditWithHttpInfo(workspaceUuid, imageEditInput);
+            return localVarResponse.Data;
+        }
+
+        /// <summary>
+        /// Edit an existing media image using AI Edits an existing workspace media item using the source image and a text prompt. Optionally accepts a mask (transparent areas are replaced). Saves results to the media library. Credits: &#x60;count × credit_weight&#x60;. 
+        /// </summary>
+        /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="workspaceUuid">UUID of the workspace.</param>
+        /// <param name="imageEditInput"></param>
+        /// <param name="operationIndex">Index associated with the operation.</param>
+        /// <returns>ApiResponse of ImageGenerate200Response</returns>
+        public PostBoost.Client.Client.ApiResponse<ImageGenerate200Response> ImageEditWithHttpInfo(Guid workspaceUuid, ImageEditInput imageEditInput, int operationIndex = 0)
+        {
+            // verify the required parameter 'imageEditInput' is set
+            if (imageEditInput == null)
+            {
+                throw new PostBoost.Client.Client.ApiException(400, "Missing required parameter 'imageEditInput' when calling AIApi->ImageEdit");
+            }
+
+            PostBoost.Client.Client.RequestOptions localVarRequestOptions = new PostBoost.Client.Client.RequestOptions();
+
+            string[] _contentTypes = new string[] {
+                "application/json"
+            };
+
+            // to determine the Accept header
+            string[] _accepts = new string[] {
+                "application/json"
+            };
+
+            var localVarContentType = PostBoost.Client.Client.ClientUtils.SelectHeaderContentType(_contentTypes);
+            if (localVarContentType != null)
+            {
+                localVarRequestOptions.HeaderParameters.Add("Content-Type", localVarContentType);
+            }
+
+            var localVarAccept = PostBoost.Client.Client.ClientUtils.SelectHeaderAccept(_accepts);
+            if (localVarAccept != null)
+            {
+                localVarRequestOptions.HeaderParameters.Add("Accept", localVarAccept);
+            }
+
+            localVarRequestOptions.PathParameters.Add("workspaceUuid", PostBoost.Client.Client.ClientUtils.ParameterToString(workspaceUuid)); // path parameter
+            localVarRequestOptions.Data = imageEditInput;
+
+            localVarRequestOptions.Operation = "AIApi.ImageEdit";
+            localVarRequestOptions.OperationIndex = operationIndex;
+
+            // authentication (bearerAuth) required
+            // bearer authentication required
+            if (!string.IsNullOrEmpty(this.Configuration.AccessToken) && !localVarRequestOptions.HeaderParameters.ContainsKey("Authorization"))
+            {
+                localVarRequestOptions.HeaderParameters.Add("Authorization", "Bearer " + this.Configuration.AccessToken);
+            }
+
+            // make the HTTP request
+            var localVarResponse = this.Client.Post<ImageGenerate200Response>("/{workspaceUuid}/ai/image-edit", localVarRequestOptions, this.Configuration);
+            if (this.ExceptionFactory != null)
+            {
+                Exception _exception = this.ExceptionFactory("ImageEdit", localVarResponse);
+                if (_exception != null)
+                {
+                    throw _exception;
+                }
+            }
+
+            return localVarResponse;
+        }
+
+        /// <summary>
+        /// Edit an existing media image using AI Edits an existing workspace media item using the source image and a text prompt. Optionally accepts a mask (transparent areas are replaced). Saves results to the media library. Credits: &#x60;count × credit_weight&#x60;. 
+        /// </summary>
+        /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="workspaceUuid">UUID of the workspace.</param>
+        /// <param name="imageEditInput"></param>
+        /// <param name="operationIndex">Index associated with the operation.</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns>Task of ImageGenerate200Response</returns>
+        public async System.Threading.Tasks.Task<ImageGenerate200Response> ImageEditAsync(Guid workspaceUuid, ImageEditInput imageEditInput, int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+        {
+            PostBoost.Client.Client.ApiResponse<ImageGenerate200Response> localVarResponse = await ImageEditWithHttpInfoAsync(workspaceUuid, imageEditInput, operationIndex, cancellationToken).ConfigureAwait(false);
+            return localVarResponse.Data;
+        }
+
+        /// <summary>
+        /// Edit an existing media image using AI Edits an existing workspace media item using the source image and a text prompt. Optionally accepts a mask (transparent areas are replaced). Saves results to the media library. Credits: &#x60;count × credit_weight&#x60;. 
+        /// </summary>
+        /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="workspaceUuid">UUID of the workspace.</param>
+        /// <param name="imageEditInput"></param>
+        /// <param name="operationIndex">Index associated with the operation.</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns>Task of ApiResponse (ImageGenerate200Response)</returns>
+        public async System.Threading.Tasks.Task<PostBoost.Client.Client.ApiResponse<ImageGenerate200Response>> ImageEditWithHttpInfoAsync(Guid workspaceUuid, ImageEditInput imageEditInput, int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+        {
+            // verify the required parameter 'imageEditInput' is set
+            if (imageEditInput == null)
+            {
+                throw new PostBoost.Client.Client.ApiException(400, "Missing required parameter 'imageEditInput' when calling AIApi->ImageEdit");
+            }
+
+
+            PostBoost.Client.Client.RequestOptions localVarRequestOptions = new PostBoost.Client.Client.RequestOptions();
+
+            string[] _contentTypes = new string[] {
+                "application/json"
+            };
+
+            // to determine the Accept header
+            string[] _accepts = new string[] {
+                "application/json"
+            };
+
+            var localVarContentType = PostBoost.Client.Client.ClientUtils.SelectHeaderContentType(_contentTypes);
+            if (localVarContentType != null)
+            {
+                localVarRequestOptions.HeaderParameters.Add("Content-Type", localVarContentType);
+            }
+
+            var localVarAccept = PostBoost.Client.Client.ClientUtils.SelectHeaderAccept(_accepts);
+            if (localVarAccept != null)
+            {
+                localVarRequestOptions.HeaderParameters.Add("Accept", localVarAccept);
+            }
+
+            localVarRequestOptions.PathParameters.Add("workspaceUuid", PostBoost.Client.Client.ClientUtils.ParameterToString(workspaceUuid)); // path parameter
+            localVarRequestOptions.Data = imageEditInput;
+
+            localVarRequestOptions.Operation = "AIApi.ImageEdit";
+            localVarRequestOptions.OperationIndex = operationIndex;
+
+            // authentication (bearerAuth) required
+            // bearer authentication required
+            if (!string.IsNullOrEmpty(this.Configuration.AccessToken) && !localVarRequestOptions.HeaderParameters.ContainsKey("Authorization"))
+            {
+                localVarRequestOptions.HeaderParameters.Add("Authorization", "Bearer " + this.Configuration.AccessToken);
+            }
+
+            // make the HTTP request
+            var localVarResponse = await this.AsynchronousClient.PostAsync<ImageGenerate200Response>("/{workspaceUuid}/ai/image-edit", localVarRequestOptions, this.Configuration, cancellationToken).ConfigureAwait(false);
+
+            if (this.ExceptionFactory != null)
+            {
+                Exception _exception = this.ExceptionFactory("ImageEdit", localVarResponse);
+                if (_exception != null)
+                {
+                    throw _exception;
+                }
+            }
+
+            return localVarResponse;
+        }
+
+        /// <summary>
+        /// Generate social media images from a caption Generates one or more images and saves them immediately to the workspace media library.  **Standard mode** (recommended): provide &#x60;caption&#x60; + &#x60;platform&#x60;. PostBoost builds a professional image prompt internally using platform-specific templates. No prompt engineering required.  **Developer mode**: provide &#x60;prompt&#x60; directly to bypass prompt building. If both &#x60;caption&#x60; and &#x60;prompt&#x60; are sent, standard mode runs.  Credits: &#x60;count x credit_weight&#x60; (default: 5 per image). 
+        /// </summary>
+        /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="workspaceUuid">UUID of the workspace.</param>
+        /// <param name="imageGenerateInput"></param>
+        /// <param name="operationIndex">Index associated with the operation.</param>
+        /// <returns>ImageGenerate200Response</returns>
+        public ImageGenerate200Response ImageGenerate(Guid workspaceUuid, ImageGenerateInput imageGenerateInput, int operationIndex = 0)
+        {
+            PostBoost.Client.Client.ApiResponse<ImageGenerate200Response> localVarResponse = ImageGenerateWithHttpInfo(workspaceUuid, imageGenerateInput);
+            return localVarResponse.Data;
+        }
+
+        /// <summary>
+        /// Generate social media images from a caption Generates one or more images and saves them immediately to the workspace media library.  **Standard mode** (recommended): provide &#x60;caption&#x60; + &#x60;platform&#x60;. PostBoost builds a professional image prompt internally using platform-specific templates. No prompt engineering required.  **Developer mode**: provide &#x60;prompt&#x60; directly to bypass prompt building. If both &#x60;caption&#x60; and &#x60;prompt&#x60; are sent, standard mode runs.  Credits: &#x60;count x credit_weight&#x60; (default: 5 per image). 
+        /// </summary>
+        /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="workspaceUuid">UUID of the workspace.</param>
+        /// <param name="imageGenerateInput"></param>
+        /// <param name="operationIndex">Index associated with the operation.</param>
+        /// <returns>ApiResponse of ImageGenerate200Response</returns>
+        public PostBoost.Client.Client.ApiResponse<ImageGenerate200Response> ImageGenerateWithHttpInfo(Guid workspaceUuid, ImageGenerateInput imageGenerateInput, int operationIndex = 0)
+        {
+            // verify the required parameter 'imageGenerateInput' is set
+            if (imageGenerateInput == null)
+            {
+                throw new PostBoost.Client.Client.ApiException(400, "Missing required parameter 'imageGenerateInput' when calling AIApi->ImageGenerate");
+            }
+
+            PostBoost.Client.Client.RequestOptions localVarRequestOptions = new PostBoost.Client.Client.RequestOptions();
+
+            string[] _contentTypes = new string[] {
+                "application/json"
+            };
+
+            // to determine the Accept header
+            string[] _accepts = new string[] {
+                "application/json"
+            };
+
+            var localVarContentType = PostBoost.Client.Client.ClientUtils.SelectHeaderContentType(_contentTypes);
+            if (localVarContentType != null)
+            {
+                localVarRequestOptions.HeaderParameters.Add("Content-Type", localVarContentType);
+            }
+
+            var localVarAccept = PostBoost.Client.Client.ClientUtils.SelectHeaderAccept(_accepts);
+            if (localVarAccept != null)
+            {
+                localVarRequestOptions.HeaderParameters.Add("Accept", localVarAccept);
+            }
+
+            localVarRequestOptions.PathParameters.Add("workspaceUuid", PostBoost.Client.Client.ClientUtils.ParameterToString(workspaceUuid)); // path parameter
+            localVarRequestOptions.Data = imageGenerateInput;
+
+            localVarRequestOptions.Operation = "AIApi.ImageGenerate";
+            localVarRequestOptions.OperationIndex = operationIndex;
+
+            // authentication (bearerAuth) required
+            // bearer authentication required
+            if (!string.IsNullOrEmpty(this.Configuration.AccessToken) && !localVarRequestOptions.HeaderParameters.ContainsKey("Authorization"))
+            {
+                localVarRequestOptions.HeaderParameters.Add("Authorization", "Bearer " + this.Configuration.AccessToken);
+            }
+
+            // make the HTTP request
+            var localVarResponse = this.Client.Post<ImageGenerate200Response>("/{workspaceUuid}/ai/image-generate", localVarRequestOptions, this.Configuration);
+            if (this.ExceptionFactory != null)
+            {
+                Exception _exception = this.ExceptionFactory("ImageGenerate", localVarResponse);
+                if (_exception != null)
+                {
+                    throw _exception;
+                }
+            }
+
+            return localVarResponse;
+        }
+
+        /// <summary>
+        /// Generate social media images from a caption Generates one or more images and saves them immediately to the workspace media library.  **Standard mode** (recommended): provide &#x60;caption&#x60; + &#x60;platform&#x60;. PostBoost builds a professional image prompt internally using platform-specific templates. No prompt engineering required.  **Developer mode**: provide &#x60;prompt&#x60; directly to bypass prompt building. If both &#x60;caption&#x60; and &#x60;prompt&#x60; are sent, standard mode runs.  Credits: &#x60;count x credit_weight&#x60; (default: 5 per image). 
+        /// </summary>
+        /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="workspaceUuid">UUID of the workspace.</param>
+        /// <param name="imageGenerateInput"></param>
+        /// <param name="operationIndex">Index associated with the operation.</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns>Task of ImageGenerate200Response</returns>
+        public async System.Threading.Tasks.Task<ImageGenerate200Response> ImageGenerateAsync(Guid workspaceUuid, ImageGenerateInput imageGenerateInput, int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+        {
+            PostBoost.Client.Client.ApiResponse<ImageGenerate200Response> localVarResponse = await ImageGenerateWithHttpInfoAsync(workspaceUuid, imageGenerateInput, operationIndex, cancellationToken).ConfigureAwait(false);
+            return localVarResponse.Data;
+        }
+
+        /// <summary>
+        /// Generate social media images from a caption Generates one or more images and saves them immediately to the workspace media library.  **Standard mode** (recommended): provide &#x60;caption&#x60; + &#x60;platform&#x60;. PostBoost builds a professional image prompt internally using platform-specific templates. No prompt engineering required.  **Developer mode**: provide &#x60;prompt&#x60; directly to bypass prompt building. If both &#x60;caption&#x60; and &#x60;prompt&#x60; are sent, standard mode runs.  Credits: &#x60;count x credit_weight&#x60; (default: 5 per image). 
+        /// </summary>
+        /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="workspaceUuid">UUID of the workspace.</param>
+        /// <param name="imageGenerateInput"></param>
+        /// <param name="operationIndex">Index associated with the operation.</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns>Task of ApiResponse (ImageGenerate200Response)</returns>
+        public async System.Threading.Tasks.Task<PostBoost.Client.Client.ApiResponse<ImageGenerate200Response>> ImageGenerateWithHttpInfoAsync(Guid workspaceUuid, ImageGenerateInput imageGenerateInput, int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+        {
+            // verify the required parameter 'imageGenerateInput' is set
+            if (imageGenerateInput == null)
+            {
+                throw new PostBoost.Client.Client.ApiException(400, "Missing required parameter 'imageGenerateInput' when calling AIApi->ImageGenerate");
+            }
+
+
+            PostBoost.Client.Client.RequestOptions localVarRequestOptions = new PostBoost.Client.Client.RequestOptions();
+
+            string[] _contentTypes = new string[] {
+                "application/json"
+            };
+
+            // to determine the Accept header
+            string[] _accepts = new string[] {
+                "application/json"
+            };
+
+            var localVarContentType = PostBoost.Client.Client.ClientUtils.SelectHeaderContentType(_contentTypes);
+            if (localVarContentType != null)
+            {
+                localVarRequestOptions.HeaderParameters.Add("Content-Type", localVarContentType);
+            }
+
+            var localVarAccept = PostBoost.Client.Client.ClientUtils.SelectHeaderAccept(_accepts);
+            if (localVarAccept != null)
+            {
+                localVarRequestOptions.HeaderParameters.Add("Accept", localVarAccept);
+            }
+
+            localVarRequestOptions.PathParameters.Add("workspaceUuid", PostBoost.Client.Client.ClientUtils.ParameterToString(workspaceUuid)); // path parameter
+            localVarRequestOptions.Data = imageGenerateInput;
+
+            localVarRequestOptions.Operation = "AIApi.ImageGenerate";
+            localVarRequestOptions.OperationIndex = operationIndex;
+
+            // authentication (bearerAuth) required
+            // bearer authentication required
+            if (!string.IsNullOrEmpty(this.Configuration.AccessToken) && !localVarRequestOptions.HeaderParameters.ContainsKey("Authorization"))
+            {
+                localVarRequestOptions.HeaderParameters.Add("Authorization", "Bearer " + this.Configuration.AccessToken);
+            }
+
+            // make the HTTP request
+            var localVarResponse = await this.AsynchronousClient.PostAsync<ImageGenerate200Response>("/{workspaceUuid}/ai/image-generate", localVarRequestOptions, this.Configuration, cancellationToken).ConfigureAwait(false);
+
+            if (this.ExceptionFactory != null)
+            {
+                Exception _exception = this.ExceptionFactory("ImageGenerate", localVarResponse);
+                if (_exception != null)
+                {
+                    throw _exception;
+                }
+            }
+
+            return localVarResponse;
+        }
+
+        /// <summary>
+        /// Build an optimized image prompt from a social media caption Builds a professional image generation prompt from a caption and platform. No image is generated. Use this to preview the prompt before calling &#x60;image-generate&#x60;. Costs 1 AI credit per call.  When &#x60;image-generate&#x60; builds the prompt internally (standard mode), no credit is charged for the prompt step. 
+        /// </summary>
+        /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="workspaceUuid">UUID of the workspace.</param>
+        /// <param name="imagePromptInput"></param>
+        /// <param name="operationIndex">Index associated with the operation.</param>
+        /// <returns>ImagePrompt200Response</returns>
+        public ImagePrompt200Response ImagePrompt(Guid workspaceUuid, ImagePromptInput imagePromptInput, int operationIndex = 0)
+        {
+            PostBoost.Client.Client.ApiResponse<ImagePrompt200Response> localVarResponse = ImagePromptWithHttpInfo(workspaceUuid, imagePromptInput);
+            return localVarResponse.Data;
+        }
+
+        /// <summary>
+        /// Build an optimized image prompt from a social media caption Builds a professional image generation prompt from a caption and platform. No image is generated. Use this to preview the prompt before calling &#x60;image-generate&#x60;. Costs 1 AI credit per call.  When &#x60;image-generate&#x60; builds the prompt internally (standard mode), no credit is charged for the prompt step. 
+        /// </summary>
+        /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="workspaceUuid">UUID of the workspace.</param>
+        /// <param name="imagePromptInput"></param>
+        /// <param name="operationIndex">Index associated with the operation.</param>
+        /// <returns>ApiResponse of ImagePrompt200Response</returns>
+        public PostBoost.Client.Client.ApiResponse<ImagePrompt200Response> ImagePromptWithHttpInfo(Guid workspaceUuid, ImagePromptInput imagePromptInput, int operationIndex = 0)
+        {
+            // verify the required parameter 'imagePromptInput' is set
+            if (imagePromptInput == null)
+            {
+                throw new PostBoost.Client.Client.ApiException(400, "Missing required parameter 'imagePromptInput' when calling AIApi->ImagePrompt");
+            }
+
+            PostBoost.Client.Client.RequestOptions localVarRequestOptions = new PostBoost.Client.Client.RequestOptions();
+
+            string[] _contentTypes = new string[] {
+                "application/json"
+            };
+
+            // to determine the Accept header
+            string[] _accepts = new string[] {
+                "application/json"
+            };
+
+            var localVarContentType = PostBoost.Client.Client.ClientUtils.SelectHeaderContentType(_contentTypes);
+            if (localVarContentType != null)
+            {
+                localVarRequestOptions.HeaderParameters.Add("Content-Type", localVarContentType);
+            }
+
+            var localVarAccept = PostBoost.Client.Client.ClientUtils.SelectHeaderAccept(_accepts);
+            if (localVarAccept != null)
+            {
+                localVarRequestOptions.HeaderParameters.Add("Accept", localVarAccept);
+            }
+
+            localVarRequestOptions.PathParameters.Add("workspaceUuid", PostBoost.Client.Client.ClientUtils.ParameterToString(workspaceUuid)); // path parameter
+            localVarRequestOptions.Data = imagePromptInput;
+
+            localVarRequestOptions.Operation = "AIApi.ImagePrompt";
+            localVarRequestOptions.OperationIndex = operationIndex;
+
+            // authentication (bearerAuth) required
+            // bearer authentication required
+            if (!string.IsNullOrEmpty(this.Configuration.AccessToken) && !localVarRequestOptions.HeaderParameters.ContainsKey("Authorization"))
+            {
+                localVarRequestOptions.HeaderParameters.Add("Authorization", "Bearer " + this.Configuration.AccessToken);
+            }
+
+            // make the HTTP request
+            var localVarResponse = this.Client.Post<ImagePrompt200Response>("/{workspaceUuid}/ai/image-prompt", localVarRequestOptions, this.Configuration);
+            if (this.ExceptionFactory != null)
+            {
+                Exception _exception = this.ExceptionFactory("ImagePrompt", localVarResponse);
+                if (_exception != null)
+                {
+                    throw _exception;
+                }
+            }
+
+            return localVarResponse;
+        }
+
+        /// <summary>
+        /// Build an optimized image prompt from a social media caption Builds a professional image generation prompt from a caption and platform. No image is generated. Use this to preview the prompt before calling &#x60;image-generate&#x60;. Costs 1 AI credit per call.  When &#x60;image-generate&#x60; builds the prompt internally (standard mode), no credit is charged for the prompt step. 
+        /// </summary>
+        /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="workspaceUuid">UUID of the workspace.</param>
+        /// <param name="imagePromptInput"></param>
+        /// <param name="operationIndex">Index associated with the operation.</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns>Task of ImagePrompt200Response</returns>
+        public async System.Threading.Tasks.Task<ImagePrompt200Response> ImagePromptAsync(Guid workspaceUuid, ImagePromptInput imagePromptInput, int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+        {
+            PostBoost.Client.Client.ApiResponse<ImagePrompt200Response> localVarResponse = await ImagePromptWithHttpInfoAsync(workspaceUuid, imagePromptInput, operationIndex, cancellationToken).ConfigureAwait(false);
+            return localVarResponse.Data;
+        }
+
+        /// <summary>
+        /// Build an optimized image prompt from a social media caption Builds a professional image generation prompt from a caption and platform. No image is generated. Use this to preview the prompt before calling &#x60;image-generate&#x60;. Costs 1 AI credit per call.  When &#x60;image-generate&#x60; builds the prompt internally (standard mode), no credit is charged for the prompt step. 
+        /// </summary>
+        /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="workspaceUuid">UUID of the workspace.</param>
+        /// <param name="imagePromptInput"></param>
+        /// <param name="operationIndex">Index associated with the operation.</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns>Task of ApiResponse (ImagePrompt200Response)</returns>
+        public async System.Threading.Tasks.Task<PostBoost.Client.Client.ApiResponse<ImagePrompt200Response>> ImagePromptWithHttpInfoAsync(Guid workspaceUuid, ImagePromptInput imagePromptInput, int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+        {
+            // verify the required parameter 'imagePromptInput' is set
+            if (imagePromptInput == null)
+            {
+                throw new PostBoost.Client.Client.ApiException(400, "Missing required parameter 'imagePromptInput' when calling AIApi->ImagePrompt");
+            }
+
+
+            PostBoost.Client.Client.RequestOptions localVarRequestOptions = new PostBoost.Client.Client.RequestOptions();
+
+            string[] _contentTypes = new string[] {
+                "application/json"
+            };
+
+            // to determine the Accept header
+            string[] _accepts = new string[] {
+                "application/json"
+            };
+
+            var localVarContentType = PostBoost.Client.Client.ClientUtils.SelectHeaderContentType(_contentTypes);
+            if (localVarContentType != null)
+            {
+                localVarRequestOptions.HeaderParameters.Add("Content-Type", localVarContentType);
+            }
+
+            var localVarAccept = PostBoost.Client.Client.ClientUtils.SelectHeaderAccept(_accepts);
+            if (localVarAccept != null)
+            {
+                localVarRequestOptions.HeaderParameters.Add("Accept", localVarAccept);
+            }
+
+            localVarRequestOptions.PathParameters.Add("workspaceUuid", PostBoost.Client.Client.ClientUtils.ParameterToString(workspaceUuid)); // path parameter
+            localVarRequestOptions.Data = imagePromptInput;
+
+            localVarRequestOptions.Operation = "AIApi.ImagePrompt";
+            localVarRequestOptions.OperationIndex = operationIndex;
+
+            // authentication (bearerAuth) required
+            // bearer authentication required
+            if (!string.IsNullOrEmpty(this.Configuration.AccessToken) && !localVarRequestOptions.HeaderParameters.ContainsKey("Authorization"))
+            {
+                localVarRequestOptions.HeaderParameters.Add("Authorization", "Bearer " + this.Configuration.AccessToken);
+            }
+
+            // make the HTTP request
+            var localVarResponse = await this.AsynchronousClient.PostAsync<ImagePrompt200Response>("/{workspaceUuid}/ai/image-prompt", localVarRequestOptions, this.Configuration, cancellationToken).ConfigureAwait(false);
+
+            if (this.ExceptionFactory != null)
+            {
+                Exception _exception = this.ExceptionFactory("ImagePrompt", localVarResponse);
+                if (_exception != null)
+                {
+                    throw _exception;
+                }
+            }
+
+            return localVarResponse;
+        }
+
+        /// <summary>
+        /// Generate variations of an existing media image Creates one or more variations of an existing workspace media item. Saves results to the media library. Credits: &#x60;count × credit_weight&#x60;. 
+        /// </summary>
+        /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="workspaceUuid">UUID of the workspace.</param>
+        /// <param name="imageVariationsInput"></param>
+        /// <param name="operationIndex">Index associated with the operation.</param>
+        /// <returns>ImageVariations200Response</returns>
+        public ImageVariations200Response ImageVariations(Guid workspaceUuid, ImageVariationsInput imageVariationsInput, int operationIndex = 0)
+        {
+            PostBoost.Client.Client.ApiResponse<ImageVariations200Response> localVarResponse = ImageVariationsWithHttpInfo(workspaceUuid, imageVariationsInput);
+            return localVarResponse.Data;
+        }
+
+        /// <summary>
+        /// Generate variations of an existing media image Creates one or more variations of an existing workspace media item. Saves results to the media library. Credits: &#x60;count × credit_weight&#x60;. 
+        /// </summary>
+        /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="workspaceUuid">UUID of the workspace.</param>
+        /// <param name="imageVariationsInput"></param>
+        /// <param name="operationIndex">Index associated with the operation.</param>
+        /// <returns>ApiResponse of ImageVariations200Response</returns>
+        public PostBoost.Client.Client.ApiResponse<ImageVariations200Response> ImageVariationsWithHttpInfo(Guid workspaceUuid, ImageVariationsInput imageVariationsInput, int operationIndex = 0)
+        {
+            // verify the required parameter 'imageVariationsInput' is set
+            if (imageVariationsInput == null)
+            {
+                throw new PostBoost.Client.Client.ApiException(400, "Missing required parameter 'imageVariationsInput' when calling AIApi->ImageVariations");
+            }
+
+            PostBoost.Client.Client.RequestOptions localVarRequestOptions = new PostBoost.Client.Client.RequestOptions();
+
+            string[] _contentTypes = new string[] {
+                "application/json"
+            };
+
+            // to determine the Accept header
+            string[] _accepts = new string[] {
+                "application/json"
+            };
+
+            var localVarContentType = PostBoost.Client.Client.ClientUtils.SelectHeaderContentType(_contentTypes);
+            if (localVarContentType != null)
+            {
+                localVarRequestOptions.HeaderParameters.Add("Content-Type", localVarContentType);
+            }
+
+            var localVarAccept = PostBoost.Client.Client.ClientUtils.SelectHeaderAccept(_accepts);
+            if (localVarAccept != null)
+            {
+                localVarRequestOptions.HeaderParameters.Add("Accept", localVarAccept);
+            }
+
+            localVarRequestOptions.PathParameters.Add("workspaceUuid", PostBoost.Client.Client.ClientUtils.ParameterToString(workspaceUuid)); // path parameter
+            localVarRequestOptions.Data = imageVariationsInput;
+
+            localVarRequestOptions.Operation = "AIApi.ImageVariations";
+            localVarRequestOptions.OperationIndex = operationIndex;
+
+            // authentication (bearerAuth) required
+            // bearer authentication required
+            if (!string.IsNullOrEmpty(this.Configuration.AccessToken) && !localVarRequestOptions.HeaderParameters.ContainsKey("Authorization"))
+            {
+                localVarRequestOptions.HeaderParameters.Add("Authorization", "Bearer " + this.Configuration.AccessToken);
+            }
+
+            // make the HTTP request
+            var localVarResponse = this.Client.Post<ImageVariations200Response>("/{workspaceUuid}/ai/image-variations", localVarRequestOptions, this.Configuration);
+            if (this.ExceptionFactory != null)
+            {
+                Exception _exception = this.ExceptionFactory("ImageVariations", localVarResponse);
+                if (_exception != null)
+                {
+                    throw _exception;
+                }
+            }
+
+            return localVarResponse;
+        }
+
+        /// <summary>
+        /// Generate variations of an existing media image Creates one or more variations of an existing workspace media item. Saves results to the media library. Credits: &#x60;count × credit_weight&#x60;. 
+        /// </summary>
+        /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="workspaceUuid">UUID of the workspace.</param>
+        /// <param name="imageVariationsInput"></param>
+        /// <param name="operationIndex">Index associated with the operation.</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns>Task of ImageVariations200Response</returns>
+        public async System.Threading.Tasks.Task<ImageVariations200Response> ImageVariationsAsync(Guid workspaceUuid, ImageVariationsInput imageVariationsInput, int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+        {
+            PostBoost.Client.Client.ApiResponse<ImageVariations200Response> localVarResponse = await ImageVariationsWithHttpInfoAsync(workspaceUuid, imageVariationsInput, operationIndex, cancellationToken).ConfigureAwait(false);
+            return localVarResponse.Data;
+        }
+
+        /// <summary>
+        /// Generate variations of an existing media image Creates one or more variations of an existing workspace media item. Saves results to the media library. Credits: &#x60;count × credit_weight&#x60;. 
+        /// </summary>
+        /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="workspaceUuid">UUID of the workspace.</param>
+        /// <param name="imageVariationsInput"></param>
+        /// <param name="operationIndex">Index associated with the operation.</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns>Task of ApiResponse (ImageVariations200Response)</returns>
+        public async System.Threading.Tasks.Task<PostBoost.Client.Client.ApiResponse<ImageVariations200Response>> ImageVariationsWithHttpInfoAsync(Guid workspaceUuid, ImageVariationsInput imageVariationsInput, int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+        {
+            // verify the required parameter 'imageVariationsInput' is set
+            if (imageVariationsInput == null)
+            {
+                throw new PostBoost.Client.Client.ApiException(400, "Missing required parameter 'imageVariationsInput' when calling AIApi->ImageVariations");
+            }
+
+
+            PostBoost.Client.Client.RequestOptions localVarRequestOptions = new PostBoost.Client.Client.RequestOptions();
+
+            string[] _contentTypes = new string[] {
+                "application/json"
+            };
+
+            // to determine the Accept header
+            string[] _accepts = new string[] {
+                "application/json"
+            };
+
+            var localVarContentType = PostBoost.Client.Client.ClientUtils.SelectHeaderContentType(_contentTypes);
+            if (localVarContentType != null)
+            {
+                localVarRequestOptions.HeaderParameters.Add("Content-Type", localVarContentType);
+            }
+
+            var localVarAccept = PostBoost.Client.Client.ClientUtils.SelectHeaderAccept(_accepts);
+            if (localVarAccept != null)
+            {
+                localVarRequestOptions.HeaderParameters.Add("Accept", localVarAccept);
+            }
+
+            localVarRequestOptions.PathParameters.Add("workspaceUuid", PostBoost.Client.Client.ClientUtils.ParameterToString(workspaceUuid)); // path parameter
+            localVarRequestOptions.Data = imageVariationsInput;
+
+            localVarRequestOptions.Operation = "AIApi.ImageVariations";
+            localVarRequestOptions.OperationIndex = operationIndex;
+
+            // authentication (bearerAuth) required
+            // bearer authentication required
+            if (!string.IsNullOrEmpty(this.Configuration.AccessToken) && !localVarRequestOptions.HeaderParameters.ContainsKey("Authorization"))
+            {
+                localVarRequestOptions.HeaderParameters.Add("Authorization", "Bearer " + this.Configuration.AccessToken);
+            }
+
+            // make the HTTP request
+            var localVarResponse = await this.AsynchronousClient.PostAsync<ImageVariations200Response>("/{workspaceUuid}/ai/image-variations", localVarRequestOptions, this.Configuration, cancellationToken).ConfigureAwait(false);
+
+            if (this.ExceptionFactory != null)
+            {
+                Exception _exception = this.ExceptionFactory("ImageVariations", localVarResponse);
                 if (_exception != null)
                 {
                     throw _exception;

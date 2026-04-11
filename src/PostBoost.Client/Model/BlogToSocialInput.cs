@@ -39,34 +39,34 @@ namespace PostBoost.Client.Model
         public enum PlatformsEnum
         {
             /// <summary>
-            /// Enum Facebook for value: facebook
+            /// Enum Twitter for value: twitter
             /// </summary>
-            [EnumMember(Value = "facebook")]
-            Facebook = 1,
+            [EnumMember(Value = "twitter")]
+            Twitter = 1,
+
+            /// <summary>
+            /// Enum FacebookPage for value: facebook_page
+            /// </summary>
+            [EnumMember(Value = "facebook_page")]
+            FacebookPage = 2,
 
             /// <summary>
             /// Enum Instagram for value: instagram
             /// </summary>
             [EnumMember(Value = "instagram")]
-            Instagram = 2,
+            Instagram = 3,
 
             /// <summary>
-            /// Enum X for value: x
+            /// Enum Threads for value: threads
             /// </summary>
-            [EnumMember(Value = "x")]
-            X = 3,
+            [EnumMember(Value = "threads")]
+            Threads = 4,
 
             /// <summary>
-            /// Enum Linkedin for value: linkedin
+            /// Enum Mastodon for value: mastodon
             /// </summary>
-            [EnumMember(Value = "linkedin")]
-            Linkedin = 4,
-
-            /// <summary>
-            /// Enum Pinterest for value: pinterest
-            /// </summary>
-            [EnumMember(Value = "pinterest")]
-            Pinterest = 5,
+            [EnumMember(Value = "mastodon")]
+            Mastodon = 5,
 
             /// <summary>
             /// Enum Youtube for value: youtube
@@ -75,34 +75,40 @@ namespace PostBoost.Client.Model
             Youtube = 6,
 
             /// <summary>
+            /// Enum Gbp for value: gbp
+            /// </summary>
+            [EnumMember(Value = "gbp")]
+            Gbp = 7,
+
+            /// <summary>
+            /// Enum Pinterest for value: pinterest
+            /// </summary>
+            [EnumMember(Value = "pinterest")]
+            Pinterest = 8,
+
+            /// <summary>
+            /// Enum Linkedin for value: linkedin
+            /// </summary>
+            [EnumMember(Value = "linkedin")]
+            Linkedin = 9,
+
+            /// <summary>
+            /// Enum LinkedinPage for value: linkedin_page
+            /// </summary>
+            [EnumMember(Value = "linkedin_page")]
+            LinkedinPage = 10,
+
+            /// <summary>
             /// Enum Tiktok for value: tiktok
             /// </summary>
             [EnumMember(Value = "tiktok")]
-            Tiktok = 7,
-
-            /// <summary>
-            /// Enum Mastodon for value: mastodon
-            /// </summary>
-            [EnumMember(Value = "mastodon")]
-            Mastodon = 8,
-
-            /// <summary>
-            /// Enum Threads for value: threads
-            /// </summary>
-            [EnumMember(Value = "threads")]
-            Threads = 9,
+            Tiktok = 11,
 
             /// <summary>
             /// Enum Bluesky for value: bluesky
             /// </summary>
             [EnumMember(Value = "bluesky")]
-            Bluesky = 10,
-
-            /// <summary>
-            /// Enum GoogleBusiness for value: google_business
-            /// </summary>
-            [EnumMember(Value = "google_business")]
-            GoogleBusiness = 11
+            Bluesky = 12
         }
 
         /// <summary>
@@ -418,7 +424,7 @@ namespace PostBoost.Client.Model
         /// </summary>
         /// <value>Target social media platforms. Only connected accounts matching these platforms are used. If omitted, all connected accounts in the workspace are targeted. </value>
         /*
-        <example>[x, linkedin]</example>
+        <example>[twitter, linkedin]</example>
         */
         [DataMember(Name = "platforms", EmitDefaultValue = false)]
         public List<BlogToSocialInput.PlatformsEnum> Platforms { get; set; }

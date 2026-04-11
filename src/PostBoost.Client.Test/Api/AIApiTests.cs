@@ -67,5 +67,70 @@ namespace PostBoost.Client.Test.Api
             //var response = instance.BlogToSocial(workspaceUuid, blogToSocialInput);
             //Assert.IsType<BlogToSocial200Response>(response);
         }
+
+        /// <summary>
+        /// Test ImageAltText
+        /// </summary>
+        [Fact]
+        public void ImageAltTextTest()
+        {
+            // TODO uncomment below to test the method and replace null with proper value
+            //Guid workspaceUuid = null;
+            //ImageAltTextInput imageAltTextInput = null;
+            //var response = instance.ImageAltText(workspaceUuid, imageAltTextInput);
+            //Assert.IsType<ImageAltText200Response>(response);
+        }
+
+        /// <summary>
+        /// Test ImageEdit
+        /// </summary>
+        [Fact]
+        public void ImageEditTest()
+        {
+            // TODO uncomment below to test the method and replace null with proper value
+            //Guid workspaceUuid = null;
+            //ImageEditInput imageEditInput = null;
+            //var response = instance.ImageEdit(workspaceUuid, imageEditInput);
+            //Assert.IsType<ImageGenerate200Response>(response);
+        }
+
+        /// <summary>
+        /// Test ImageGenerate
+        /// </summary>
+        [Fact]
+        public void ImageGenerateTest()
+        {
+            // TODO uncomment below to test the method and replace null with proper value
+            //Guid workspaceUuid = null;
+            //ImageGenerateInput imageGenerateInput = null;
+            //var response = instance.ImageGenerate(workspaceUuid, imageGenerateInput);
+            //Assert.IsType<ImageGenerate200Response>(response);
+        }
+
+        /// <summary>
+        /// Test ImagePrompt
+        /// </summary>
+        [Fact]
+        public void ImagePromptTest()
+        {
+            // TODO uncomment below to test the method and replace null with proper value
+            //Guid workspaceUuid = null;
+            //ImagePromptInput imagePromptInput = null;
+            //var response = instance.ImagePrompt(workspaceUuid, imagePromptInput);
+            //Assert.IsType<ImagePrompt200Response>(response);
+        }
+
+        /// <summary>
+        /// Test ImageVariations
+        /// </summary>
+        [Fact]
+        public void ImageVariationsTest()
+        {
+            // TODO uncomment below to test the method and replace null with proper value
+            //Guid workspaceUuid = null;
+            //ImageVariationsInput imageVariationsInput = null;
+            //var response = instance.ImageVariations(workspaceUuid, imageVariationsInput);
+            //Assert.IsType<ImageVariations200Response>(response);
+        }
     }
 }

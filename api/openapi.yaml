@@ -1474,7 +1474,7 @@ paths:
                 value:
                   url: https://example.com/blog/my-post
                   platforms:
-                  - x
+                  - twitter
                   - linkedin
                   tone: professional
                   hashtags: few
@@ -1514,6 +1514,195 @@ paths:
                 $ref: '#/components/schemas/blogToSocial_429_response'
           description: AI credits exhausted for this billing period
       summary: Generate social media captions from a blog post
+      tags:
+      - AI
+  /{workspaceUuid}/ai/image-prompt:
+    post:
+      description: |
+        Builds a professional image generation prompt from a caption and platform.
+        No image is generated. Use this to preview the prompt before calling
+        `image-generate`. Costs 1 AI credit per call.
+
+        When `image-generate` builds the prompt internally (standard mode),
+        no credit is charged for the prompt step.
+      operationId: imagePrompt
+      parameters:
+      - $ref: '#/components/parameters/workspaceUuid'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ImagePromptInput'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/imagePrompt_200_response'
+          description: Prompt built successfully
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "422":
+          $ref: '#/components/responses/ValidationError'
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/imagePrompt_429_response'
+          description: AI credits exhausted for this billing period
+      summary: Build an optimized image prompt from a social media caption
+      tags:
+      - AI
+  /{workspaceUuid}/ai/image-generate:
+    post:
+      description: |
+        Generates one or more images and saves them immediately to the workspace
+        media library.
+
+        **Standard mode** (recommended): provide `caption` + `platform`. PostBoost
+        builds a professional image prompt internally using platform-specific
+        templates. No prompt engineering required.
+
+        **Developer mode**: provide `prompt` directly to bypass prompt building.
+        If both `caption` and `prompt` are sent, standard mode runs.
+
+        Credits: `count x credit_weight` (default: 5 per image).
+      operationId: imageGenerate
+      parameters:
+      - $ref: '#/components/parameters/workspaceUuid'
+      requestBody:
+        content:
+          application/json:
+            examples:
+              standard_mode:
+                summary: Standard mode (social media manager)
+                value:
+                  caption: "Our summer sale starts today, 30% off everything!"
+                  platform: instagram
+                  template: product_highlight
+                  aspect_ratio: 1:1
+                  count: 2
+              developer_mode:
+                summary: Developer mode (explicit prompt)
+                value:
+                  prompt: "A vibrant summer beach scene with colorful umbrellas, high\
+                    \ contrast, Instagram-optimized."
+                  aspect_ratio: 1:1
+            schema:
+              $ref: '#/components/schemas/ImageGenerateInput'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/imageGenerate_200_response'
+          description: Images generated and saved to media library
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "422":
+          $ref: '#/components/responses/ValidationError'
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/imageGenerate_429_response'
+          description: AI credits exhausted for this billing period
+      summary: Generate social media images from a caption
+      tags:
+      - AI
+  /{workspaceUuid}/ai/image-edit:
+    post:
+      description: |
+        Edits an existing workspace media item using the source image and a text
+        prompt. Optionally accepts a mask (transparent areas are replaced).
+        Saves results to the media library. Credits: `count × credit_weight`.
+      operationId: imageEdit
+      parameters:
+      - $ref: '#/components/parameters/workspaceUuid'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ImageEditInput'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/imageGenerate_200_response'
+          description: Images edited and saved to media library
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "422":
+          $ref: '#/components/responses/ValidationError'
+        "429":
+          $ref: '#/components/responses/InsufficientCredits'
+      summary: Edit an existing media image using AI
+      tags:
+      - AI
+  /{workspaceUuid}/ai/image-variations:
+    post:
+      description: |
+        Creates one or more variations of an existing workspace media item.
+        Saves results to the media library.
+        Credits: `count × credit_weight`.
+      operationId: imageVariations
+      parameters:
+      - $ref: '#/components/parameters/workspaceUuid'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ImageVariationsInput'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/imageVariations_200_response'
+          description: Variations generated and saved to media library
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "422":
+          $ref: '#/components/responses/ValidationError'
+        "429":
+          $ref: '#/components/responses/InsufficientCredits'
+      summary: Generate variations of an existing media image
+      tags:
+      - AI
+  /{workspaceUuid}/ai/image-alt-text:
+    post:
+      description: |
+        Analyzes an existing workspace media item and generates accessible alt text.
+        The alt text is saved back to the media record.
+        Costs 1 AI credit per call.
+      operationId: imageAltText
+      parameters:
+      - $ref: '#/components/parameters/workspaceUuid'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ImageAltTextInput'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/imageAltText_200_response'
+          description: Alt text generated and saved to media record
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "422":
+          $ref: '#/components/responses/ValidationError'
+        "429":
+          $ref: '#/components/responses/InsufficientCredits'
+      summary: Generate alt text for a media image using AI
       tags:
       - AI
 components:
@@ -1628,6 +1817,16 @@ components:
                   items:
                     type: string
       description: Validation failed.
+    InsufficientCredits:
+      content:
+        application/json:
+          schema:
+            properties:
+              message:
+                example: Insufficient AI credits. You need 5 credits but only have
+                  2 remaining this month.
+                type: string
+      description: AI credits exhausted for this billing period.
     SuccessResponse:
       content:
         application/json:
@@ -1653,7 +1852,7 @@ components:
         title: 10 Tips for Better Social Media
         url: https://example.com/blog/my-post
         platforms:
-        - x
+        - twitter
         - linkedin
         cta: link
         create_post: false
@@ -1690,21 +1889,22 @@ components:
           description: |
             Target social media platforms. Only connected accounts matching these platforms are used. If omitted, all connected accounts in the workspace are targeted.
           example:
-          - x
+          - twitter
           - linkedin
           items:
             enum:
-            - facebook
+            - twitter
+            - facebook_page
             - instagram
-            - x
-            - linkedin
-            - pinterest
-            - youtube
-            - tiktok
-            - mastodon
             - threads
+            - mastodon
+            - youtube
+            - gbp
+            - pinterest
+            - linkedin
+            - linkedin_page
+            - tiktok
             - bluesky
-            - google_business
             type: string
           type: array
           nullable: true
@@ -2779,6 +2979,341 @@ components:
       - tax
       - transaction_id
       - uuid
+    ImagePromptInput:
+      example:
+        template: blog_cover
+        brand_voice: friendly
+        caption: "Our summer sale starts today, 30% off everything!"
+        style: minimalist
+        platform: instagram
+        custom_instructions: custom_instructions
+      properties:
+        caption:
+          example: "Our summer sale starts today, 30% off everything!"
+          maxLength: 2000
+          type: string
+        platform:
+          example: instagram
+          type: string
+        template:
+          enum:
+          - blog_cover
+          - quote_card
+          - stat_card
+          - feature_announcement
+          - product_highlight
+          - event_promo
+          - carousel_slide
+          - ad_creative
+          type: string
+          nullable: true
+        style:
+          example: minimalist
+          type: string
+          nullable: true
+        brand_voice:
+          example: friendly
+          type: string
+          nullable: true
+        custom_instructions:
+          maxLength: 1000
+          type: string
+          nullable: true
+      required:
+      - caption
+      - platform
+    ImagePromptResponse:
+      example:
+        prompt: "Create a vibrant, lifestyle-oriented social media image for Instagram..."
+      properties:
+        prompt:
+          example: "Create a vibrant, lifestyle-oriented social media image for Instagram..."
+          type: string
+      required:
+      - prompt
+    ImageGenerateInput:
+      example:
+        template: blog_cover
+        aspect_ratio: 1:1
+        brand_voice: friendly
+        count: 1
+        caption: caption
+        style: minimalist
+        prompt: prompt
+        platform: instagram
+        custom_instructions: custom_instructions
+        quality: standard
+      properties:
+        caption:
+          description: Social media caption. Triggers standard mode. Takes priority
+            over prompt.
+          maxLength: 2000
+          type: string
+        platform:
+          description: Required when caption is provided.
+          example: instagram
+          type: string
+        template:
+          enum:
+          - blog_cover
+          - quote_card
+          - stat_card
+          - feature_announcement
+          - product_highlight
+          - event_promo
+          - carousel_slide
+          - ad_creative
+          type: string
+          nullable: true
+        style:
+          example: minimalist
+          type: string
+          nullable: true
+        brand_voice:
+          example: friendly
+          type: string
+          nullable: true
+        custom_instructions:
+          maxLength: 1000
+          type: string
+          nullable: true
+        prompt:
+          description: Developer escape hatch. Bypasses internal prompt builder. Ignored
+            if caption is present.
+          maxLength: 4000
+          type: string
+        aspect_ratio:
+          default: 1:1
+          enum:
+          - 1:1
+          - 16:9
+          - 9:16
+          - 4:5
+          type: string
+          nullable: true
+        count:
+          default: 1
+          maximum: 4
+          minimum: 1
+          type: integer
+        quality:
+          default: standard
+          enum:
+          - standard
+          - hd
+          type: string
+    ImageEditInput:
+      example:
+        aspect_ratio: 1:1
+        mask_uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        media_uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        count: 1
+        prompt: Make the background a white studio backdrop
+        quality: standard
+      properties:
+        media_uuid:
+          description: UUID of the source media item to edit
+          format: uuid
+          type: string
+        prompt:
+          description: Describe what to change in the image
+          example: Make the background a white studio backdrop
+          maxLength: 4000
+          type: string
+        mask_uuid:
+          description: UUID of a mask image. Transparent areas will be edited.
+          format: uuid
+          type: string
+          nullable: true
+        aspect_ratio:
+          default: 1:1
+          enum:
+          - 1:1
+          - 16:9
+          - 9:16
+          - 4:5
+          type: string
+          nullable: true
+        count:
+          default: 1
+          maximum: 4
+          minimum: 1
+          type: integer
+        quality:
+          default: standard
+          enum:
+          - standard
+          - hd
+          type: string
+      required:
+      - media_uuid
+      - prompt
+    ImageVariationsInput:
+      example:
+        aspect_ratio: 1:1
+        media_uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        count: 1
+        quality: standard
+      properties:
+        media_uuid:
+          format: uuid
+          type: string
+        aspect_ratio:
+          default: 1:1
+          enum:
+          - 1:1
+          - 16:9
+          - 9:16
+          - 4:5
+          type: string
+          nullable: true
+        count:
+          default: 1
+          maximum: 4
+          minimum: 1
+          type: integer
+        quality:
+          default: standard
+          enum:
+          - standard
+          - hd
+          type: string
+      required:
+      - media_uuid
+    ImageAltTextInput:
+      example:
+        media_uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+      properties:
+        media_uuid:
+          format: uuid
+          type: string
+      required:
+      - media_uuid
+    ImageAltTextResponse:
+      example:
+        alt_text: A developer working at a standing desk with dual monitors in a bright
+          modern office
+        media_uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        credits_remaining: 49
+        credits_used: 1
+      properties:
+        media_uuid:
+          format: uuid
+          type: string
+        alt_text:
+          example: A developer working at a standing desk with dual monitors in a
+            bright modern office
+          type: string
+        credits_used:
+          example: 1
+          type: integer
+        credits_remaining:
+          example: 49
+          type: integer
+          nullable: true
+      required:
+      - alt_text
+      - credits_used
+      - media_uuid
+    ImageVariationsResponse:
+      example:
+        aspect_ratio: 1:1
+        images:
+        - thumb_url: https://openapi-generator.tech
+          media_id: 42
+          url: https://openapi-generator.tech
+        - thumb_url: https://openapi-generator.tech
+          media_id: 42
+          url: https://openapi-generator.tech
+        credits_remaining: 45
+        credits_used: 5
+        quality: standard
+      properties:
+        images:
+          items:
+            $ref: '#/components/schemas/GeneratedImageItem'
+          type: array
+        aspect_ratio:
+          example: 1:1
+          type: string
+        quality:
+          example: standard
+          type: string
+        credits_used:
+          example: 5
+          type: integer
+        credits_remaining:
+          example: 45
+          type: integer
+          nullable: true
+      required:
+      - aspect_ratio
+      - credits_used
+      - images
+      - quality
+    ImageGenerationResponse:
+      example:
+        aspect_ratio: 1:1
+        images:
+        - thumb_url: https://openapi-generator.tech
+          media_id: 42
+          url: https://openapi-generator.tech
+        - thumb_url: https://openapi-generator.tech
+          media_id: 42
+          url: https://openapi-generator.tech
+        prompt_used: prompt_used
+        revised_prompt: revised_prompt
+        credits_remaining: 45
+        credits_used: 5
+        quality: standard
+      properties:
+        images:
+          items:
+            $ref: '#/components/schemas/GeneratedImageItem'
+          type: array
+        prompt_used:
+          type: string
+        revised_prompt:
+          type: string
+          nullable: true
+        aspect_ratio:
+          example: 1:1
+          type: string
+        quality:
+          example: standard
+          type: string
+        credits_used:
+          example: 5
+          type: integer
+        credits_remaining:
+          example: 45
+          type: integer
+          nullable: true
+      required:
+      - aspect_ratio
+      - credits_used
+      - images
+      - prompt_used
+      - quality
+    GeneratedImageItem:
+      example:
+        thumb_url: https://openapi-generator.tech
+        media_id: 42
+        url: https://openapi-generator.tech
+      properties:
+        media_id:
+          example: 42
+          type: integer
+        url:
+          format: uri
+          type: string
+        thumb_url:
+          format: uri
+          type: string
+      required:
+      - media_id
+      - thumb_url
+      - url
     listAccounts_200_response:
       example:
         data:
@@ -3435,6 +3970,86 @@ components:
           example: Insufficient AI credits. You need 3 credits but only have 1 remaining
             this month.
           type: string
+    imagePrompt_200_response:
+      example:
+        data:
+          prompt: "Create a vibrant, lifestyle-oriented social media image for Instagram..."
+      properties:
+        data:
+          $ref: '#/components/schemas/ImagePromptResponse'
+      required:
+      - data
+    imagePrompt_429_response:
+      example:
+        message: Insufficient AI credits. You need 1 credits but only have 0 remaining
+          this month.
+      properties:
+        message:
+          example: Insufficient AI credits. You need 1 credits but only have 0 remaining
+            this month.
+          type: string
+    imageGenerate_200_response:
+      example:
+        data:
+          aspect_ratio: 1:1
+          images:
+          - thumb_url: https://openapi-generator.tech
+            media_id: 42
+            url: https://openapi-generator.tech
+          - thumb_url: https://openapi-generator.tech
+            media_id: 42
+            url: https://openapi-generator.tech
+          prompt_used: prompt_used
+          revised_prompt: revised_prompt
+          credits_remaining: 45
+          credits_used: 5
+          quality: standard
+      properties:
+        data:
+          $ref: '#/components/schemas/ImageGenerationResponse'
+      required:
+      - data
+    imageGenerate_429_response:
+      example:
+        message: Insufficient AI credits. You need 5 credits but only have 2 remaining
+          this month.
+      properties:
+        message:
+          example: Insufficient AI credits. You need 5 credits but only have 2 remaining
+            this month.
+          type: string
+    imageVariations_200_response:
+      example:
+        data:
+          aspect_ratio: 1:1
+          images:
+          - thumb_url: https://openapi-generator.tech
+            media_id: 42
+            url: https://openapi-generator.tech
+          - thumb_url: https://openapi-generator.tech
+            media_id: 42
+            url: https://openapi-generator.tech
+          credits_remaining: 45
+          credits_used: 5
+          quality: standard
+      properties:
+        data:
+          $ref: '#/components/schemas/ImageVariationsResponse'
+      required:
+      - data
+    imageAltText_200_response:
+      example:
+        data:
+          alt_text: A developer working at a standing desk with dual monitors in a
+            bright modern office
+          media_uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          credits_remaining: 49
+          credits_used: 1
+      properties:
+        data:
+          $ref: '#/components/schemas/ImageAltTextResponse'
+      required:
+      - data
     PaginationMeta_links:
       example:
         next: next
