@@ -4,7 +4,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Images** | [**List&lt;GeneratedImageItem&gt;**](GeneratedImageItem.md) |  | 
+**Images** | [**List&lt;Media&gt;**](Media.md) |  | 
 **AspectRatio** | **string** |  | 
 **Quality** | **string** |  | 
 **CreditsUsed** | **int** |  | 

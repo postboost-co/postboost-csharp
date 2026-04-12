@@ -3220,10 +3220,22 @@ components:
         aspect_ratio: 1:1
         images:
         - thumb_url: https://openapi-generator.tech
-          media_id: 42
+          is_video: true
+          mime_type: image/jpeg
+          name: name
+          created_at: 2000-01-23T04:56:07.000+00:00
+          id: 7
+          type: image
+          uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
           url: https://openapi-generator.tech
         - thumb_url: https://openapi-generator.tech
-          media_id: 42
+          is_video: true
+          mime_type: image/jpeg
+          name: name
+          created_at: 2000-01-23T04:56:07.000+00:00
+          id: 7
+          type: image
+          uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
           url: https://openapi-generator.tech
         credits_remaining: 45
         credits_used: 5
@@ -3231,7 +3243,7 @@ components:
       properties:
         images:
           items:
-            $ref: '#/components/schemas/GeneratedImageItem'
+            $ref: '#/components/schemas/Media'
           type: array
         aspect_ratio:
           example: 1:1
@@ -3256,10 +3268,22 @@ components:
         aspect_ratio: 1:1
         images:
         - thumb_url: https://openapi-generator.tech
-          media_id: 42
+          is_video: true
+          mime_type: image/jpeg
+          name: name
+          created_at: 2000-01-23T04:56:07.000+00:00
+          id: 7
+          type: image
+          uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
           url: https://openapi-generator.tech
         - thumb_url: https://openapi-generator.tech
-          media_id: 42
+          is_video: true
+          mime_type: image/jpeg
+          name: name
+          created_at: 2000-01-23T04:56:07.000+00:00
+          id: 7
+          type: image
+          uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
           url: https://openapi-generator.tech
         prompt_used: prompt_used
         revised_prompt: revised_prompt
@@ -3269,7 +3293,7 @@ components:
       properties:
         images:
           items:
-            $ref: '#/components/schemas/GeneratedImageItem'
+            $ref: '#/components/schemas/Media'
           type: array
         prompt_used:
           type: string
@@ -3295,25 +3319,6 @@ components:
       - images
       - prompt_used
       - quality
-    GeneratedImageItem:
-      example:
-        thumb_url: https://openapi-generator.tech
-        media_id: 42
-        url: https://openapi-generator.tech
-      properties:
-        media_id:
-          example: 42
-          type: integer
-        url:
-          format: uri
-          type: string
-        thumb_url:
-          format: uri
-          type: string
-      required:
-      - media_id
-      - thumb_url
-      - url
     listAccounts_200_response:
       example:
         data:
@@ -3994,10 +3999,22 @@ components:
           aspect_ratio: 1:1
           images:
           - thumb_url: https://openapi-generator.tech
-            media_id: 42
+            is_video: true
+            mime_type: image/jpeg
+            name: name
+            created_at: 2000-01-23T04:56:07.000+00:00
+            id: 7
+            type: image
+            uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
             url: https://openapi-generator.tech
           - thumb_url: https://openapi-generator.tech
-            media_id: 42
+            is_video: true
+            mime_type: image/jpeg
+            name: name
+            created_at: 2000-01-23T04:56:07.000+00:00
+            id: 7
+            type: image
+            uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
             url: https://openapi-generator.tech
           prompt_used: prompt_used
           revised_prompt: revised_prompt
@@ -4024,10 +4041,22 @@ components:
           aspect_ratio: 1:1
           images:
           - thumb_url: https://openapi-generator.tech
-            media_id: 42
+            is_video: true
+            mime_type: image/jpeg
+            name: name
+            created_at: 2000-01-23T04:56:07.000+00:00
+            id: 7
+            type: image
+            uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
             url: https://openapi-generator.tech
           - thumb_url: https://openapi-generator.tech
-            media_id: 42
+            is_video: true
+            mime_type: image/jpeg
+            name: name
+            created_at: 2000-01-23T04:56:07.000+00:00
+            id: 7
+            type: image
+            uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
             url: https://openapi-generator.tech
           credits_remaining: 45
           credits_used: 5

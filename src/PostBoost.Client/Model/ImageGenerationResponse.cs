@@ -47,7 +47,7 @@ namespace PostBoost.Client.Model
         /// <param name="quality">quality (required).</param>
         /// <param name="creditsUsed">creditsUsed (required).</param>
         /// <param name="creditsRemaining">creditsRemaining.</param>
-        public ImageGenerationResponse(List<GeneratedImageItem> images = default(List<GeneratedImageItem>), string promptUsed = default(string), string revisedPrompt = default(string), string aspectRatio = default(string), string quality = default(string), int creditsUsed = default(int), int creditsRemaining = default(int))
+        public ImageGenerationResponse(List<Media> images = default(List<Media>), string promptUsed = default(string), string revisedPrompt = default(string), string aspectRatio = default(string), string quality = default(string), int creditsUsed = default(int), int creditsRemaining = default(int))
         {
             // to ensure "images" is required (not null)
             if (images == null)
@@ -82,7 +82,7 @@ namespace PostBoost.Client.Model
         /// Gets or Sets Images
         /// </summary>
         [DataMember(Name = "images", IsRequired = true, EmitDefaultValue = true)]
-        public List<GeneratedImageItem> Images { get; set; }
+        public List<Media> Images { get; set; }
 
         /// <summary>
         /// Gets or Sets PromptUsed
