@@ -48,10 +48,10 @@ namespace PostBoost.Client.Model
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DeleteMediaBulkRequestItemsInner" /> class
-        /// with the <see cref="Guid" /> class
+        /// with the <see cref="string" /> class
         /// </summary>
-        /// <param name="actualInstance">An instance of Guid.</param>
-        public DeleteMediaBulkRequestItemsInner(Guid actualInstance)
+        /// <param name="actualInstance">An instance of string.</param>
+        public DeleteMediaBulkRequestItemsInner(string actualInstance)
         {
             this.IsNullable = false;
             this.SchemaType= "oneOf";
@@ -72,17 +72,17 @@ namespace PostBoost.Client.Model
             }
             set
             {
-                if (value.GetType() == typeof(Guid) || value is Guid)
+                if (value.GetType() == typeof(int) || value is int)
                 {
                     this._actualInstance = value;
                 }
-                else if (value.GetType() == typeof(int) || value is int)
+                else if (value.GetType() == typeof(string) || value is string)
                 {
                     this._actualInstance = value;
                 }
                 else
                 {
-                    throw new ArgumentException("Invalid instance found. Must be the following types: Guid, int");
+                    throw new ArgumentException("Invalid instance found. Must be the following types: int, string");
                 }
             }
         }
@@ -98,13 +98,13 @@ namespace PostBoost.Client.Model
         }
 
         /// <summary>
-        /// Get the actual instance of `Guid`. If the actual instance is not `Guid`,
+        /// Get the actual instance of `string`. If the actual instance is not `string`,
         /// the InvalidClassException will be thrown
         /// </summary>
-        /// <returns>An instance of Guid</returns>
-        public Guid GetGuid()
+        /// <returns>An instance of string</returns>
+        public string GetString()
         {
-            return (Guid)this.ActualInstance;
+            return (string)this.ActualInstance;
         }
 
         /// <summary>
@@ -148,26 +148,6 @@ namespace PostBoost.Client.Model
             try
             {
                 // if it does not contains "AdditionalProperties", use SerializerSettings to deserialize
-                if (typeof(Guid).GetProperty("AdditionalProperties") == null)
-                {
-                    newDeleteMediaBulkRequestItemsInner = new DeleteMediaBulkRequestItemsInner(JsonConvert.DeserializeObject<Guid>(jsonString, DeleteMediaBulkRequestItemsInner.SerializerSettings));
-                }
-                else
-                {
-                    newDeleteMediaBulkRequestItemsInner = new DeleteMediaBulkRequestItemsInner(JsonConvert.DeserializeObject<Guid>(jsonString, DeleteMediaBulkRequestItemsInner.AdditionalPropertiesSerializerSettings));
-                }
-                matchedTypes.Add("Guid");
-                match++;
-            }
-            catch (Exception exception)
-            {
-                // deserialization failed, try the next one
-                System.Diagnostics.Debug.WriteLine(string.Format("Failed to deserialize `{0}` into Guid: {1}", jsonString, exception.ToString()));
-            }
-
-            try
-            {
-                // if it does not contains "AdditionalProperties", use SerializerSettings to deserialize
                 if (typeof(int).GetProperty("AdditionalProperties") == null)
                 {
                     newDeleteMediaBulkRequestItemsInner = new DeleteMediaBulkRequestItemsInner(JsonConvert.DeserializeObject<int>(jsonString, DeleteMediaBulkRequestItemsInner.SerializerSettings));
@@ -183,6 +163,26 @@ namespace PostBoost.Client.Model
             {
                 // deserialization failed, try the next one
                 System.Diagnostics.Debug.WriteLine(string.Format("Failed to deserialize `{0}` into int: {1}", jsonString, exception.ToString()));
+            }
+
+            try
+            {
+                // if it does not contains "AdditionalProperties", use SerializerSettings to deserialize
+                if (typeof(string).GetProperty("AdditionalProperties") == null)
+                {
+                    newDeleteMediaBulkRequestItemsInner = new DeleteMediaBulkRequestItemsInner(JsonConvert.DeserializeObject<string>(jsonString, DeleteMediaBulkRequestItemsInner.SerializerSettings));
+                }
+                else
+                {
+                    newDeleteMediaBulkRequestItemsInner = new DeleteMediaBulkRequestItemsInner(JsonConvert.DeserializeObject<string>(jsonString, DeleteMediaBulkRequestItemsInner.AdditionalPropertiesSerializerSettings));
+                }
+                matchedTypes.Add("string");
+                match++;
+            }
+            catch (Exception exception)
+            {
+                // deserialization failed, try the next one
+                System.Diagnostics.Debug.WriteLine(string.Format("Failed to deserialize `{0}` into string: {1}", jsonString, exception.ToString()));
             }
 
             if (match == 0)

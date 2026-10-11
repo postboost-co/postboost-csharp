@@ -5075,7 +5075,7 @@ components:
     deleteMediaBulk_request_items_inner:
       oneOf:
       - type: integer
-      - format: uuid
+      - description: Media UUID
         type: string
     deleteMediaBulk_request:
       properties:
