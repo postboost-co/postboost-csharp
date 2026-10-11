@@ -5,7 +5,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **Name** | **string** |  | 
-**HexColor** | **string** |  | 
+**HexColor** | **string** | Ignored since v2.0; kept for backward compatibility | [optional] 
 **OwnerId** | **int** |  | [optional] 
 **AccessStatus** | **string** |  | 
 

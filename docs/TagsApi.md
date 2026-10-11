@@ -104,6 +104,7 @@ catch (ApiException e)
 |-------------|-------------|------------------|
 | **201** | Created tag |  -  |
 | **401** |  |  -  |
+| **403** |  |  -  |
 | **422** |  |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
@@ -202,6 +203,7 @@ catch (ApiException e)
 |-------------|-------------|------------------|
 | **200** |  |  -  |
 | **401** |  |  -  |
+| **403** |  |  -  |
 | **404** |  |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
@@ -300,6 +302,7 @@ catch (ApiException e)
 |-------------|-------------|------------------|
 | **200** | Tag details |  -  |
 | **401** |  |  -  |
+| **403** |  |  -  |
 | **404** |  |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
@@ -396,6 +399,7 @@ catch (ApiException e)
 |-------------|-------------|------------------|
 | **200** | List of tags |  -  |
 | **401** |  |  -  |
+| **403** |  |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
@@ -495,6 +499,7 @@ catch (ApiException e)
 |-------------|-------------|------------------|
 | **200** |  |  -  |
 | **401** |  |  -  |
+| **403** |  |  -  |
 | **404** |  |  -  |
 | **422** |  |  -  |
 

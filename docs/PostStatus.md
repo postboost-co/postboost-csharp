@@ -1,4 +1,5 @@
 # PostBoost.Client.Model.PostStatus
+`publishing` is reported while the post is being sent to the networks.
 
 ## Properties
 

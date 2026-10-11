@@ -13,6 +13,14 @@ info:
     All workspace-scoped endpoints are prefixed with `/{workspaceUuid}`.
     Panel/admin endpoints are prefixed with `/panel`.
 
+    ## Plan access
+    Every workspace-scoped endpoint returns `403` when the workspace's plan does not
+    include API access (capability `api`).
+
+    ## Dates and times
+    Post dates and times (`date`, `time`, `accounts_schedule`) are read in the request's
+    `timezone` when one is given, otherwise in the workspace timezone.
+
     ## Authentication
     All requests require a Bearer token in the `Authorization` header.
     Generate tokens in your PostBoost dashboard under **Settings → Access Tokens**.
@@ -24,7 +32,7 @@ info:
     name: Commercial
     url: https://postboost.co/pages/terms
   title: PostBoost API
-  version: 1.0.0
+  version: 1.8.0
 servers:
 - description: Production
   url: https://postboost.co/app/api
@@ -39,7 +47,13 @@ tags:
   name: Tags
 - description: "Create, schedule, and publish posts across platforms."
   name: Posts
-- description: Manage workspaces (admin only).
+- description: "Workspace, account, and post analytics, plus best posting times."
+  name: Analytics
+- description: "The workspace mention book. Reference a mention in a post body with\
+    \ `{{mention:<reference>}}`."
+  name: Mentions
+- description: Workspaces. `GET /workspaces` lists the caller's own workspaces; `/panel/workspaces`
+    endpoints are admin only.
   name: Workspaces
 - description: Manage workspace subscriptions and billing (admin only).
   name: Subscriptions
@@ -51,12 +65,65 @@ tags:
     the workspace AI credit limit.
   name: AI
 paths:
+  /workspaces:
+    get:
+      description: "Returns the workspaces the authenticated user belongs to, most\
+        \ recently updated first, with the caller's role in each. Use a returned `uuid`\
+        \ as `workspaceUuid`."
+      operationId: listMyWorkspaces
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/listMyWorkspaces_200_response'
+          description: The caller's workspaces
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+      summary: List my workspaces
+      tags:
+      - Workspaces
   /{workspaceUuid}/accounts:
     get:
-      description: Returns all social media accounts connected to the workspace.
+      description: "Returns all social media accounts connected to the workspace,\
+        \ newest first. Optional filters narrow the list."
       operationId: listAccounts
       parameters:
       - $ref: '#/components/parameters/workspaceUuid'
+      - description: Match the account name or username.
+        explode: true
+        in: query
+        name: keyword
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Only accounts in this account group.
+        explode: true
+        in: query
+        name: group
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: "Only accounts of these providers (for example `instagram`, `linkedin`)."
+        explode: true
+        in: query
+        name: "providers[]"
+        required: false
+        schema:
+          items:
+            type: string
+          type: array
+        style: form
+      - description: "When `true`, only accounts that need to be reconnected."
+        explode: true
+        in: query
+        name: unauthorized
+        required: false
+        schema:
+          type: boolean
+        style: form
       responses:
         "200":
           content:
@@ -67,7 +134,7 @@ paths:
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
-          $ref: '#/components/responses/Forbidden'
+          $ref: '#/components/responses/WorkspaceForbidden'
       summary: List accounts
       tags:
       - Accounts
@@ -88,15 +155,216 @@ paths:
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
-          $ref: '#/components/responses/Forbidden'
+          $ref: '#/components/responses/WorkspaceForbidden'
         "404":
           $ref: '#/components/responses/NotFound'
       summary: Get account
       tags:
       - Accounts
+  /{workspaceUuid}/analytics:
+    get:
+      description: "Cross-platform summary (followers, growth, posts, leaderboard,\
+        \ posting streak) over every account that supports analytics, for a preset\
+        \ period or a custom date range."
+      operationId: getAnalyticsSummary
+      parameters:
+      - $ref: '#/components/parameters/workspaceUuid'
+      - $ref: '#/components/parameters/analyticsPeriod'
+      - $ref: '#/components/parameters/analyticsDateFrom'
+      - $ref: '#/components/parameters/analyticsDateTo'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnalyticsSummary'
+          description: Analytics summary
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/WorkspaceForbidden'
+        "422":
+          $ref: '#/components/responses/ValidationError'
+      summary: Get analytics summary
+      tags:
+      - Analytics
+  /{workspaceUuid}/analytics/accounts/{accountUuid}:
+    get:
+      description: Analytics for one account. `type` selects one of the tabs the account
+        supports (listed in `tabs` of the response); returns `422` when the account
+        does not support analytics.
+      operationId: getAccountAnalytics
+      parameters:
+      - $ref: '#/components/parameters/workspaceUuid'
+      - $ref: '#/components/parameters/accountUuid'
+      - $ref: '#/components/parameters/analyticsPeriod'
+      - $ref: '#/components/parameters/analyticsDateFrom'
+      - $ref: '#/components/parameters/analyticsDateTo'
+      - description: Analytics tab. Defaults to the account's default tab.
+        explode: true
+        in: query
+        name: type
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Page for list-style tabs (for example per-post metrics).
+        explode: true
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          minimum: 1
+          type: integer
+        style: form
+      - explode: true
+        in: query
+        name: per_page
+        required: false
+        schema:
+          maximum: 50
+          minimum: 1
+          type: integer
+        style: form
+      - explode: true
+        in: query
+        name: sort_by
+        required: false
+        schema:
+          maxLength: 64
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: sort_dir
+        required: false
+        schema:
+          default: desc
+          enum:
+          - asc
+          - desc
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountAnalytics'
+          description: Account analytics
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/WorkspaceForbidden'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "422":
+          $ref: '#/components/responses/ValidationError'
+      summary: Get account analytics
+      tags:
+      - Analytics
+  /{workspaceUuid}/analytics/posting-times:
+    get:
+      description: "Engagement scores per weekday and hour, merged across the given\
+        \ accounts (all accounts when none is given), in the requested timezone. Also\
+        \ returns up to three recommended slots."
+      operationId: getPostingTimes
+      parameters:
+      - $ref: '#/components/parameters/workspaceUuid'
+      - description: Account UUIDs. Defaults to every account in the workspace.
+        explode: true
+        in: query
+        name: "accounts[]"
+        required: false
+        schema:
+          items:
+            format: uuid
+            type: string
+          type: array
+        style: form
+      - description: Timezone the grid is expressed in. Defaults to the workspace
+          timezone.
+        explode: true
+        in: query
+        name: timezone
+        required: false
+        schema:
+          example: Europe/Istanbul
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostingTimes'
+          description: Posting times
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/WorkspaceForbidden'
+        "422":
+          $ref: '#/components/responses/ValidationError'
+      summary: Get posting times heatmap
+      tags:
+      - Analytics
+  /{workspaceUuid}/analytics/best-times:
+    get:
+      description: "The next recommended date and time per account, on or after `from`\
+        \ (never in the past), within the next 14 days."
+      operationId: getBestPostingTimes
+      parameters:
+      - $ref: '#/components/parameters/workspaceUuid'
+      - description: Account UUIDs. Defaults to every account in the workspace.
+        explode: true
+        in: query
+        name: "accounts[]"
+        required: false
+        schema:
+          items:
+            format: uuid
+            type: string
+          type: array
+        style: form
+      - description: Earliest date to recommend (Y-m-d). Defaults to now.
+        explode: true
+        in: query
+        name: from
+        required: false
+        schema:
+          format: date
+          type: string
+        style: form
+      - description: Timezone for `from` and the returned times. Defaults to the workspace
+          timezone.
+        explode: true
+        in: query
+        name: timezone
+        required: false
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BestPostingTimes'
+          description: Best posting times
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/WorkspaceForbidden'
+        "422":
+          $ref: '#/components/responses/ValidationError'
+      summary: Get best posting times
+      tags:
+      - Analytics
   /{workspaceUuid}/media:
     delete:
-      description: Delete one or more media items by their IDs.
+      description: "Delete one or more media items by their numeric IDs or UUIDs (both\
+        \ may be mixed, up to 500 per request)."
       operationId: deleteMediaBulk
       parameters:
       - $ref: '#/components/parameters/workspaceUuid'
@@ -111,15 +379,22 @@ paths:
           $ref: '#/components/responses/SuccessResponse'
         "401":
           $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/WorkspaceForbidden'
+        "422":
+          $ref: '#/components/responses/ValidationError'
       summary: Delete media (bulk)
       tags:
       - Media
     get:
-      description: Returns a paginated list of media assets in the workspace library.
+      description: |
+        Returns a paginated list of media assets in the workspace library. Without `folder`
+        every item is listed, whatever folder it is filed in. A `keyword` search always looks at
+        the whole library and ignores `folder` and `favorite`.
       operationId: listMedia
       parameters:
       - $ref: '#/components/parameters/workspaceUuid'
-      - description: Page number (20 items per page).
+      - description: Page number.
         explode: true
         in: query
         name: page
@@ -127,6 +402,89 @@ paths:
         schema:
           default: 1
           type: integer
+        style: form
+      - description: Items per page. Values below 1 fall back to 50; values above
+          100 are capped at 100.
+        explode: true
+        in: query
+        name: limit
+        required: false
+        schema:
+          default: 50
+          maximum: 100
+          type: integer
+        style: form
+      - description: "Media folder UUID, or `root` for items not filed in any folder."
+        explode: true
+        in: query
+        name: folder
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Only these MIME types (for example `image/png`).
+        explode: true
+        in: query
+        name: "mime_types[]"
+        required: false
+        schema:
+          items:
+            type: string
+          type: array
+        style: form
+      - description: Only this media type.
+        explode: true
+        in: query
+        name: type
+        required: false
+        schema:
+          enum:
+          - image
+          - gif
+          - video
+          type: string
+        style: form
+      - description: Search media by name.
+        explode: true
+        in: query
+        name: keyword
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Filter by how the media is used in posts.
+        explode: true
+        in: query
+        name: usage
+        required: false
+        schema:
+          enum:
+          - unused
+          - draft
+          - scheduled
+          - published
+          type: string
+        style: form
+      - description: "When `true`, only media the caller marked as favorite."
+        explode: true
+        in: query
+        name: favorite
+        required: false
+        schema:
+          type: boolean
+        style: form
+      - explode: true
+        in: query
+        name: sort
+        required: false
+        schema:
+          default: newest
+          enum:
+          - newest
+          - oldest
+          - name
+          - size
+          type: string
         style: form
       responses:
         "200":
@@ -137,6 +495,8 @@ paths:
           description: Paginated list of media
         "401":
           $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/WorkspaceForbidden'
       summary: List media
       tags:
       - Media
@@ -157,9 +517,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Media'
-          description: Uploaded media object
+          description: Uploaded media object. A video may come back with `is_processing`
+            set to `true` while its conversion runs.
         "401":
           $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/WorkspaceForbidden'
         "422":
           $ref: '#/components/responses/ValidationError'
       summary: Upload media (binary)
@@ -181,13 +544,18 @@ paths:
           description: Media asset
         "401":
           $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/WorkspaceForbidden'
         "404":
           $ref: '#/components/responses/NotFound'
       summary: Get media
       tags:
       - Media
     put:
-      description: Update the alt text of a media asset.
+      description: |
+        Update the name, alt text, or folder of a media asset. Only the keys present in the body
+        are written. Sending `folder: null` moves the item to the library root; omitting `folder`
+        leaves it where it is.
       operationId: updateMedia
       parameters:
       - $ref: '#/components/parameters/workspaceUuid'
@@ -203,8 +571,12 @@ paths:
           $ref: '#/components/responses/SuccessResponse'
         "401":
           $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/WorkspaceForbidden'
         "404":
           $ref: '#/components/responses/NotFound'
+        "422":
+          $ref: '#/components/responses/ValidationError'
       summary: Update media
       tags:
       - Media
@@ -231,6 +603,8 @@ paths:
           description: Chunked upload session details
         "401":
           $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/WorkspaceForbidden'
         "422":
           $ref: '#/components/responses/ValidationError'
       summary: Initiate chunked upload
@@ -260,6 +634,8 @@ paths:
           description: Media object or download job
         "401":
           $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/WorkspaceForbidden'
         "422":
           $ref: '#/components/responses/ValidationError'
       summary: Initiate remote upload
@@ -294,6 +670,8 @@ paths:
           description: Chunk received
         "401":
           $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/WorkspaceForbidden'
         "422":
           $ref: '#/components/responses/ValidationError'
       summary: Upload a chunk
@@ -302,7 +680,8 @@ paths:
   /{workspaceUuid}/media/chunked/{uploadUuid}/complete:
     post:
       description: Signal that all chunks have been uploaded. Returns the final media
-        object.
+        object. A video may come back with `is_processing` set to `true` while its
+        conversion runs.
       operationId: completeChunkedUpload
       parameters:
       - $ref: '#/components/parameters/workspaceUuid'
@@ -314,6 +693,12 @@ paths:
           format: uuid
           type: string
         style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/completeChunkedUpload_request'
+        required: false
       responses:
         "201":
           content:
@@ -323,6 +708,8 @@ paths:
           description: Completed media object
         "401":
           $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/WorkspaceForbidden'
         "422":
           $ref: '#/components/responses/ValidationError'
       summary: Complete chunked upload
@@ -348,6 +735,8 @@ paths:
           description: Upload aborted
         "401":
           $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/WorkspaceForbidden'
       summary: Abort chunked upload
       tags:
       - Media
@@ -373,7 +762,119 @@ paths:
           description: Download status
         "401":
           $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/WorkspaceForbidden'
       summary: Get remote upload status
+      tags:
+      - Media
+  /{workspaceUuid}/media/folders:
+    get:
+      description: Returns the whole folder tree of the media library in one response
+        (not paginated). Rebuild the tree from each folder's `parent`.
+      operationId: listMediaFolders
+      parameters:
+      - $ref: '#/components/parameters/workspaceUuid'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/listMediaFolders_200_response'
+          description: All media folders
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/WorkspaceForbidden'
+      summary: List media folders
+      tags:
+      - Media
+    post:
+      description: Creates a folder at the top level or under `parent`. The name must
+        be unique among its siblings.
+      operationId: createMediaFolder
+      parameters:
+      - $ref: '#/components/parameters/workspaceUuid'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/createMediaFolder_request'
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MediaFolder'
+          description: Created folder
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/WorkspaceForbidden'
+        "422":
+          $ref: '#/components/responses/ValidationError'
+      summary: Create media folder
+      tags:
+      - Media
+  /{workspaceUuid}/media/folders/{folderUuid}:
+    delete:
+      description: Deletes a folder. By default its media and sub-folders move up
+        to the folder's parent; with `delete_media` set to true every media item below
+        the folder is deleted as well.
+      operationId: deleteMediaFolder
+      parameters:
+      - $ref: '#/components/parameters/workspaceUuid'
+      - $ref: '#/components/parameters/folderUuid'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/deleteMediaFolder_request'
+        required: false
+      responses:
+        "200":
+          $ref: '#/components/responses/SuccessResponse'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/WorkspaceForbidden'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "422":
+          $ref: '#/components/responses/ValidationError'
+      summary: Delete media folder
+      tags:
+      - Media
+    put:
+      description: Renames a folder and/or moves it. Sending `parent` moves the folder
+        (null = top level); omitting it keeps the current parent. A folder cannot
+        be moved into itself or one of its descendants.
+      operationId: updateMediaFolder
+      parameters:
+      - $ref: '#/components/parameters/workspaceUuid'
+      - $ref: '#/components/parameters/folderUuid'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MediaFolderInput'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MediaFolder'
+          description: Updated folder
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/WorkspaceForbidden'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "422":
+          $ref: '#/components/responses/ValidationError'
+      summary: Update media folder
       tags:
       - Media
   /{workspaceUuid}/tags:
@@ -391,6 +892,8 @@ paths:
           description: List of tags
         "401":
           $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/WorkspaceForbidden'
       summary: List tags
       tags:
       - Tags
@@ -414,6 +917,8 @@ paths:
           description: Created tag
         "401":
           $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/WorkspaceForbidden'
         "422":
           $ref: '#/components/responses/ValidationError'
       summary: Create tag
@@ -432,6 +937,8 @@ paths:
           $ref: '#/components/responses/SuccessResponse'
         "401":
           $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/WorkspaceForbidden'
         "404":
           $ref: '#/components/responses/NotFound'
       summary: Delete tag
@@ -452,6 +959,8 @@ paths:
           description: Tag details
         "401":
           $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/WorkspaceForbidden'
         "404":
           $ref: '#/components/responses/NotFound'
       summary: Get tag
@@ -474,6 +983,8 @@ paths:
           $ref: '#/components/responses/SuccessResponse'
         "401":
           $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/WorkspaceForbidden'
         "404":
           $ref: '#/components/responses/NotFound'
         "422":
@@ -481,6 +992,159 @@ paths:
       summary: Update tag
       tags:
       - Tags
+  /{workspaceUuid}/mentions:
+    get:
+      description: "Returns a paginated list of the workspace's mention book, ranked,\
+        \ with each entry's network identities."
+      operationId: listMentions
+      parameters:
+      - $ref: '#/components/parameters/workspaceUuid'
+      - description: Search keyword.
+        explode: true
+        in: query
+        name: q
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: per_page
+        required: false
+        schema:
+          default: 25
+          type: integer
+        style: form
+      - explode: true
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          type: integer
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/listMentions_200_response'
+          description: Paginated list of mentions
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/WorkspaceForbidden'
+      summary: List mentions
+      tags:
+      - Mentions
+    post:
+      description: |
+        Adds a person or page to the mention book. When one of the submitted identities already
+        belongs to a stored mention, that mention is reused and the identities are added to it
+        (status `200` instead of `201`).
+      operationId: createMention
+      parameters:
+      - $ref: '#/components/parameters/workspaceUuid'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MentionInput'
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/createMention_201_response'
+          description: Created mention
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/createMention_201_response'
+          description: Existing mention reused
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/WorkspaceForbidden'
+        "422":
+          $ref: '#/components/responses/ValidationError'
+      summary: Create mention
+      tags:
+      - Mentions
+  /{workspaceUuid}/mentions/{mentionId}:
+    delete:
+      description: Removes a mention from the mention book. `success` is false when
+        nothing was deleted.
+      operationId: deleteMention
+      parameters:
+      - $ref: '#/components/parameters/workspaceUuid'
+      - $ref: '#/components/parameters/mentionId'
+      responses:
+        "200":
+          $ref: '#/components/responses/SuccessResponse'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/WorkspaceForbidden'
+      summary: Delete mention
+      tags:
+      - Mentions
+    get:
+      description: Returns a single mention with its identities.
+      operationId: getMention
+      parameters:
+      - $ref: '#/components/parameters/workspaceUuid'
+      - $ref: '#/components/parameters/mentionId'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/createMention_201_response'
+          description: Mention
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/WorkspaceForbidden'
+        "404":
+          $ref: '#/components/responses/NotFound'
+      summary: Get mention
+      tags:
+      - Mentions
+    put:
+      description: "Replaces the mention's name, avatar and identities. Identities\
+        \ for providers not in the payload are removed. An identity already held by\
+        \ another mention returns `422`."
+      operationId: updateMention
+      parameters:
+      - $ref: '#/components/parameters/workspaceUuid'
+      - $ref: '#/components/parameters/mentionId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MentionInput'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/createMention_201_response'
+          description: Updated mention
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/WorkspaceForbidden'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "422":
+          $ref: '#/components/responses/ValidationError'
+      summary: Update mention
+      tags:
+      - Mentions
   /{workspaceUuid}/posts:
     delete:
       description: Delete multiple posts at once.
@@ -502,6 +1166,8 @@ paths:
           description: Deletion result
         "401":
           $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/WorkspaceForbidden'
       summary: Delete posts (bulk)
       tags:
       - Posts
@@ -527,6 +1193,8 @@ paths:
           description: Paginated list of posts
         "401":
           $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/WorkspaceForbidden'
       summary: List posts
       tags:
       - Posts
@@ -534,7 +1202,15 @@ paths:
       description: |
         Create a new post. Use `schedule: true` with `date` and `time` to schedule,
         `schedule_now: true` to publish immediately, or `queue: true` to add to the
-        smart publishing queue.
+        smart publishing queue (each account gets its own queue slot).
+
+        `date`, `time` and `accounts_schedule` are read in `timezone` when given,
+        otherwise in the workspace timezone. Use `accounts_schedule` to give individual
+        accounts their own departure time.
+
+        Post bodies may reference mentions with `{{mention:<reference>}}` (see the
+        Mentions endpoints). When the post is scheduled, provider requirements (for example
+        a network that requires media) are validated up front and reported as `422`.
       operationId: createPost
       parameters:
       - $ref: '#/components/parameters/workspaceUuid'
@@ -553,6 +1229,8 @@ paths:
           description: Created post
         "401":
           $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/WorkspaceForbidden'
         "422":
           $ref: '#/components/responses/ValidationError'
       summary: Create post
@@ -580,6 +1258,8 @@ paths:
           description: Deletion result
         "401":
           $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/WorkspaceForbidden'
         "404":
           $ref: '#/components/responses/NotFound'
       summary: Delete post
@@ -600,14 +1280,18 @@ paths:
           description: Post details
         "401":
           $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/WorkspaceForbidden'
         "404":
           $ref: '#/components/responses/NotFound'
       summary: Get post
       tags:
       - Posts
     put:
-      description: "Replaces a post's versions, accounts, tags, and scheduling options.\
-        \ The post must not be in a published state."
+      description: |
+        Replaces a post's versions, accounts, tags, and scheduling options. The post must not be in a published state.
+        `timezone` is honoured: `date`, `time` and `accounts_schedule` are read in it. When the post stays
+        scheduled, provider requirements are validated and reported as `422`.
       operationId: updatePost
       parameters:
       - $ref: '#/components/parameters/workspaceUuid'
@@ -623,6 +1307,8 @@ paths:
           $ref: '#/components/responses/SuccessResponse'
         "401":
           $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/WorkspaceForbidden'
         "404":
           $ref: '#/components/responses/NotFound'
         "422":
@@ -632,7 +1318,11 @@ paths:
       - Posts
   /{workspaceUuid}/posts/schedule/{postUuid}:
     post:
-      description: "Schedule an existing post. Set `postNow: true` to publish immediately."
+      description: |
+        Schedule an existing post. Optionally move it with `date`/`time` (read in `timezone`) and give
+        accounts their own times with `accounts_schedule`. Set `postNow: true` to publish immediately;
+        publishing starts within the request and any per-account times are dropped.
+        Provider requirements are validated and reported as `422`.
       operationId: schedulePost
       parameters:
       - $ref: '#/components/parameters/workspaceUuid'
@@ -652,18 +1342,31 @@ paths:
           description: Schedule confirmation
         "401":
           $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/WorkspaceForbidden'
         "404":
           $ref: '#/components/responses/NotFound'
+        "422":
+          $ref: '#/components/responses/ValidationError'
       summary: Schedule post
       tags:
       - Posts
   /{workspaceUuid}/posts/add-to-queue/{postUuid}:
     post:
-      description: Add an existing post to the smart publishing queue.
+      description: |
+        Add an existing post to the smart publishing queue. Each account of the post gets its own
+        next free queue slot. Returns `422` when the post has no accounts, the posting schedule has no
+        available times, or provider requirements are not met.
       operationId: addPostToQueue
       parameters:
       - $ref: '#/components/parameters/workspaceUuid'
       - $ref: '#/components/parameters/postUuid'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/addPostToQueue_request'
+        required: false
       responses:
         "201":
           content:
@@ -673,18 +1376,31 @@ paths:
           description: Queue confirmation
         "401":
           $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/WorkspaceForbidden'
         "404":
           $ref: '#/components/responses/NotFound'
+        "422":
+          $ref: '#/components/responses/ValidationError'
       summary: Add post to queue
       tags:
       - Posts
   /{workspaceUuid}/posts/approve/{postUuid}:
     post:
-      description: Approve a post that is pending review.
+      description: |
+        Approve a post that is pending review. The approver may move the post with `date`/`time`
+        (read in `timezone`) and set per-account times with `accounts_schedule`; without them the
+        post keeps the time it was submitted with. Provider requirements are validated and reported as `422`.
       operationId: approvePost
       parameters:
       - $ref: '#/components/parameters/workspaceUuid'
       - $ref: '#/components/parameters/postUuid'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/approvePost_request'
+        required: false
       responses:
         "200":
           content:
@@ -695,10 +1411,65 @@ paths:
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
-          $ref: '#/components/responses/Forbidden'
+          $ref: '#/components/responses/WorkspaceForbidden'
         "404":
           $ref: '#/components/responses/NotFound'
+        "422":
+          $ref: '#/components/responses/ValidationError'
       summary: Approve post
+      tags:
+      - Posts
+  /{workspaceUuid}/posts/{postUuid}/analytics:
+    get:
+      description: "Engagement metrics for a published post across its accounts (also\
+        \ works for trashed posts), with totals, trends and the best-performing account."
+      operationId: getPostAnalytics
+      parameters:
+      - $ref: '#/components/parameters/workspaceUuid'
+      - $ref: '#/components/parameters/postUuid'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostAnalytics'
+          description: Post analytics
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/WorkspaceForbidden'
+        "404":
+          $ref: '#/components/responses/NotFound'
+      summary: Get post analytics
+      tags:
+      - Posts
+      - Analytics
+  /{workspaceUuid}/posts/retry/{postUuid}/{accountUuid}:
+    post:
+      description: "Re-publishes a post to a single account whose publishing failed.\
+        \ Returns `422` when the account is not on the post, the post is still publishing,\
+        \ or the account did not fail."
+      operationId: retryPostAccount
+      parameters:
+      - $ref: '#/components/parameters/workspaceUuid'
+      - $ref: '#/components/parameters/postUuid'
+      - $ref: '#/components/parameters/accountUuid'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RetryPostAccountResult'
+          description: Retry started
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/WorkspaceForbidden'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "422":
+          $ref: '#/components/responses/ValidationError'
+      summary: Retry publishing to one account
       tags:
       - Posts
   /panel/workspaces:
@@ -848,7 +1619,8 @@ paths:
       tags:
       - Workspaces
     put:
-      description: "Updates a workspace's name, color, or access status. Admin only."
+      description: "Updates a workspace's name, owner, or access status. Admin only.\
+        \ `hex_color` is accepted but ignored."
       operationId: updateWorkspace
       parameters:
       - $ref: '#/components/parameters/workspaceUuid'
@@ -937,6 +1709,29 @@ paths:
         "403":
           $ref: '#/components/responses/Forbidden'
       summary: Update user role in workspace
+      tags:
+      - Workspaces
+  /panel/workspaces/{workspaceUuid}/ai-credits:
+    get:
+      description: "Returns whether the workspace can use AI credits, its remaining\
+        \ balance, and whether the balance is low. Admin only."
+      operationId: getWorkspaceAICredits
+      parameters:
+      - $ref: '#/components/parameters/workspaceUuid'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AICredits'
+          description: AI credit status
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+        "404":
+          $ref: '#/components/responses/NotFound'
+      summary: Get workspace AI credits
       tags:
       - Workspaces
   /panel/workspaces/{workspaceUuid}/subscription:
@@ -1072,11 +1867,18 @@ paths:
       - Subscriptions
   /panel/workspaces/{workspaceUuid}/subscription/cancel:
     post:
-      description: Cancels the workspace's Stripe subscription at the end of the current
-        billing period. Admin only.
+      description: |
+        Cancels the workspace's Stripe subscription at the end of the current billing period, or right away
+        with `immediately: true`. Works for active and past-due subscriptions. Admin only.
       operationId: cancelSubscription
       parameters:
       - $ref: '#/components/parameters/workspaceUuid'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/cancelSubscription_request'
+        required: false
       responses:
         "200":
           $ref: '#/components/responses/SuccessResponse'
@@ -1084,6 +1886,13 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         "403":
           $ref: '#/components/responses/Forbidden'
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/cancelSubscription_422_response'
+          description: "The workspace has no active or past-due subscription, or the\
+            \ billing provider rejected the cancellation."
       summary: Cancel subscription
       tags:
       - Subscriptions
@@ -1107,7 +1916,7 @@ paths:
   /panel/workspaces/{workspaceUuid}/subscription/generic:
     delete:
       description: Removes the generic (non-Stripe) subscription from the workspace.
-        Admin only.
+        Returns `422` when the workspace has no generic subscription. Admin only.
       operationId: removeGenericSubscription
       parameters:
       - $ref: '#/components/parameters/workspaceUuid'
@@ -1118,6 +1927,12 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         "403":
           $ref: '#/components/responses/Forbidden'
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/removeGenericSubscription_422_response'
+          description: The workspace has no generic subscription.
       summary: Remove generic subscription
       tags:
       - Subscriptions
@@ -1504,7 +2319,7 @@ paths:
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
-          $ref: '#/components/responses/Forbidden'
+          $ref: '#/components/responses/WorkspaceForbidden'
         "422":
           $ref: '#/components/responses/ValidationError'
         "429":
@@ -1543,6 +2358,8 @@ paths:
           description: Prompt built successfully
         "401":
           $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/WorkspaceForbidden'
         "422":
           $ref: '#/components/responses/ValidationError'
         "429":
@@ -1601,6 +2418,8 @@ paths:
           description: Images generated and saved to media library
         "401":
           $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/WorkspaceForbidden'
         "422":
           $ref: '#/components/responses/ValidationError'
         "429":
@@ -1636,6 +2455,8 @@ paths:
           description: Images edited and saved to media library
         "401":
           $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/WorkspaceForbidden'
         "422":
           $ref: '#/components/responses/ValidationError'
         "429":
@@ -1667,6 +2488,8 @@ paths:
           description: Variations generated and saved to media library
         "401":
           $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/WorkspaceForbidden'
         "422":
           $ref: '#/components/responses/ValidationError'
         "429":
@@ -1698,6 +2521,8 @@ paths:
           description: Alt text generated and saved to media record
         "401":
           $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/WorkspaceForbidden'
         "422":
           $ref: '#/components/responses/ValidationError'
         "429":
@@ -1776,6 +2601,66 @@ components:
         format: uuid
         type: string
       style: simple
+    folderUuid:
+      description: UUID of the media folder.
+      explode: false
+      in: path
+      name: folderUuid
+      required: true
+      schema:
+        format: uuid
+        type: string
+      style: simple
+    mentionId:
+      description: The mention's `id` (a UUID).
+      explode: false
+      in: path
+      name: mentionId
+      required: true
+      schema:
+        format: uuid
+        type: string
+      style: simple
+    analyticsPeriod:
+      description: Preset reporting period. Ignored when `date_from` and `date_to`
+        are given.
+      explode: true
+      in: query
+      name: period
+      required: false
+      schema:
+        default: this_month
+        enum:
+        - this_week
+        - last_week
+        - this_month
+        - last_month
+        - last_3_months
+        - this_year
+        type: string
+      style: form
+    analyticsDateFrom:
+      description: Start of a custom range (Y-m-d). Required with `date_to`; the range
+        may span at most 366 days.
+      explode: true
+      in: query
+      name: date_from
+      required: false
+      schema:
+        format: date
+        type: string
+      style: form
+    analyticsDateTo:
+      description: End of a custom range (Y-m-d). Required with `date_from`; must
+        not be before it.
+      explode: true
+      in: query
+      name: date_to
+      required: false
+      schema:
+        format: date
+        type: string
+      style: form
   responses:
     Unauthorized:
       content:
@@ -1795,6 +2680,17 @@ components:
                 example: Access forbidden.
                 type: string
       description: Insufficient permissions.
+    WorkspaceForbidden:
+      content:
+        application/json:
+          schema:
+            properties:
+              message:
+                example: This action is unauthorized.
+                type: string
+      description: |
+        Access denied. Returned when the caller is not a member of the workspace, lacks the role
+        the endpoint needs, or the workspace's plan does not include API access (capability `api`).
     NotFound:
       content:
         application/json:
@@ -2121,11 +3017,14 @@ components:
         image: https://openapi-generator.tech
         data: "{}"
         provider: instagram
+        profile_url: https://openapi-generator.tech
         authorized: true
+        published_parts: 0
         name: My Instagram
         created_at: 2000-01-23T04:56:07.000+00:00
         id: 0
         uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        publish_status: pending
         username: myhandle
       properties:
         id:
@@ -2159,6 +3058,25 @@ components:
           type: object
         authorized:
           type: boolean
+        profile_url:
+          description: "Public URL of the account's profile on the network, when known."
+          format: uri
+          type: string
+          nullable: true
+        publish_status:
+          description: Only present when the account is embedded in a post. Publishing
+            state of this account for the post.
+          enum:
+          - pending
+          - publishing
+          - published
+          - failed
+          type: string
+        published_parts:
+          description: Only present when the account is embedded in a post. How many
+            parts (for example thread items or a first comment) are live on the network.
+          minimum: 0
+          type: integer
         created_at:
           format: date-time
           type: string
@@ -2174,14 +3092,23 @@ components:
     Media:
       example:
         thumb_url: https://openapi-generator.tech
-        is_video: true
-        mime_type: image/jpeg
-        name: name
         created_at: 2000-01-23T04:56:07.000+00:00
-        id: 7
         type: image
         uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
         url: https://openapi-generator.tech
+        duration_ms: 2
+        is_video: true
+        folder:
+          name: name
+          uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        size: 4
+        mime_type: image/jpeg
+        alt_text: alt_text
+        name: name
+        width: 9
+        id: 7
+        is_processing: true
+        height: 3
       properties:
         id:
           type: integer
@@ -2208,6 +3135,30 @@ components:
           nullable: true
         is_video:
           type: boolean
+        is_processing:
+          description: True while an uploaded video is still being converted.
+          type: boolean
+        width:
+          description: "Width in pixels, when stored."
+          type: integer
+          nullable: true
+        height:
+          description: "Height in pixels, when stored."
+          type: integer
+          nullable: true
+        duration_ms:
+          description: Video duration in milliseconds; null for images or videos not
+            read yet.
+          type: integer
+          nullable: true
+        size:
+          description: File size in bytes.
+          type: integer
+        alt_text:
+          type: string
+          nullable: true
+        folder:
+          $ref: '#/components/schemas/MediaFolderRef'
         created_at:
           format: date-time
           type: string
@@ -2220,6 +3171,60 @@ components:
       - type
       - url
       - uuid
+    MediaFolderRef:
+      example:
+        name: name
+        uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+      properties:
+        uuid:
+          format: uuid
+          type: string
+        name:
+          type: string
+      required:
+      - name
+      - uuid
+    MediaFolder:
+      example:
+        parent: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        media_count: 0
+        name: Campaign assets
+        uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+      properties:
+        uuid:
+          format: uuid
+          type: string
+        name:
+          example: Campaign assets
+          type: string
+        parent:
+          description: UUID of the parent folder; null for a top-level folder.
+          format: uuid
+          type: string
+          nullable: true
+        media_count:
+          description: "Media filed anywhere below the folder, including its sub-folders."
+          type: integer
+      required:
+      - media_count
+      - name
+      - parent
+      - uuid
+    MediaFolderInput:
+      example:
+        parent: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        name: name
+      properties:
+        name:
+          description: Folder name; must be unique among its siblings (case-insensitive).
+          maxLength: 255
+          type: string
+        parent:
+          description: "UUID of the parent folder, or null for the top level. Folders\
+            \ nest to a limited depth."
+          format: uuid
+          type: string
+          nullable: true
     Tag:
       example:
         name: Campaign 2025
@@ -2257,11 +3262,54 @@ components:
       - hex_color
       - name
     PostStatus:
+      description: '`publishing` is reported while the post is being sent to the networks.'
       enum:
       - draft
       - scheduled
       - published
+      - failed
+      - needs_approval
+      - publishing
       type: string
+    PublishProgress:
+      example:
+        total: 0
+        published: 6
+        failed: 1
+      properties:
+        total:
+          description: Number of accounts the post goes to.
+          type: integer
+        published:
+          type: integer
+        failed:
+          type: integer
+      required:
+      - failed
+      - published
+      - total
+    AccountSchedule:
+      example:
+        date: 2026-11-01
+        account_id: 1
+        time: 14:30
+      properties:
+        account_id:
+          description: ID of one of the post's accounts. Entries for accounts the
+            post does not carry are ignored.
+          type: integer
+        date:
+          example: 2026-11-01
+          format: date
+          type: string
+        time:
+          description: "H:i, read in the request `timezone`. Must not be in the past."
+          example: 14:30
+          type: string
+      required:
+      - account_id
+      - date
+      - time
     DeleteMode:
       default: app_only
       description: |
@@ -2292,6 +3340,7 @@ components:
     ScheduleResult:
       example:
         success: true
+        needs_approval: true
         scheduled_at: 2025-06-01T10:00:00Z
       properties:
         success:
@@ -2300,6 +3349,10 @@ components:
           example: 2025-06-01T10:00:00Z
           format: date-time
           type: string
+        needs_approval:
+          description: True when the post now waits for approval instead of being
+            scheduled (not returned by approve).
+          type: boolean
       required:
       - success
     PostContent:
@@ -2308,8 +3361,8 @@ components:
         - "{}"
         - "{}"
         media:
-        - 1
-        - 1
+        - 5
+        - 5
         body: body
         url: https://openapi-generator.tech
       properties:
@@ -2332,6 +3385,7 @@ components:
           type: array
     PostVersion:
       example:
+        synced_with: 0
         account_id: 6
         is_original: true
         options: "{}"
@@ -2340,16 +3394,16 @@ components:
           - "{}"
           - "{}"
           media:
-          - 1
-          - 1
+          - 5
+          - 5
           body: body
           url: https://openapi-generator.tech
         - video_thumbs:
           - "{}"
           - "{}"
           media:
-          - 1
-          - 1
+          - 5
+          - 5
           body: body
           url: https://openapi-generator.tech
       properties:
@@ -2359,6 +3413,13 @@ components:
         is_original:
           description: Must be `true` for the first version.
           type: boolean
+        synced_with:
+          description: "Account ID of the version this version follows (`0` = the\
+            \ original), or null when it is edited independently. Ignored on the original\
+            \ version."
+          minimum: 0
+          type: integer
+          nullable: true
         content:
           items:
             $ref: '#/components/schemas/PostContent'
@@ -2376,7 +3437,8 @@ components:
         schedule: true
         schedule_now: true
         versions:
-        - account_id: 6
+        - synced_with: 0
+          account_id: 6
           is_original: true
           options: "{}"
           content:
@@ -2384,19 +3446,20 @@ components:
             - "{}"
             - "{}"
             media:
-            - 1
-            - 1
+            - 5
+            - 5
             body: body
             url: https://openapi-generator.tech
           - video_thumbs:
             - "{}"
             - "{}"
             media:
-            - 1
-            - 1
+            - 5
+            - 5
             body: body
             url: https://openapi-generator.tech
-        - account_id: 6
+        - synced_with: 0
+          account_id: 6
           is_original: true
           options: "{}"
           content:
@@ -2404,16 +3467,16 @@ components:
             - "{}"
             - "{}"
             media:
-            - 1
-            - 1
+            - 5
+            - 5
             body: body
             url: https://openapi-generator.tech
           - video_thumbs:
             - "{}"
             - "{}"
             media:
-            - 1
-            - 1
+            - 5
+            - 5
             body: body
             url: https://openapi-generator.tech
         timezone: America/New_York
@@ -2421,6 +3484,13 @@ components:
         - 0
         - 0
         time: 10:00
+        accounts_schedule:
+        - date: 2026-11-01
+          account_id: 1
+          time: 14:30
+        - date: 2026-11-01
+          account_id: 1
+          time: 14:30
         queue: true
         tags:
         - 6
@@ -2450,8 +3520,16 @@ components:
           example: 10:00
           type: string
         timezone:
+          description: "Timezone `date`, `time` and `accounts_schedule` are read in.\
+            \ Defaults to the workspace timezone."
           example: America/New_York
           type: string
+        accounts_schedule:
+          description: "Per-account departure times. When omitted on update, accounts\
+            \ keep their offsets from the post time."
+          items:
+            $ref: '#/components/schemas/AccountSchedule'
+          type: array
         schedule:
           description: Schedule the post for the given date/time.
           type: boolean
@@ -2465,8 +3543,10 @@ components:
       - versions
     Post:
       example:
+        publish_progress: ""
         versions:
-        - account_id: 6
+        - synced_with: 0
+          account_id: 6
           is_original: true
           options: "{}"
           content:
@@ -2474,19 +3554,20 @@ components:
             - "{}"
             - "{}"
             media:
-            - 1
-            - 1
+            - 5
+            - 5
             body: body
             url: https://openapi-generator.tech
           - video_thumbs:
             - "{}"
             - "{}"
             media:
-            - 1
-            - 1
+            - 5
+            - 5
             body: body
             url: https://openapi-generator.tech
-        - account_id: 6
+        - synced_with: 0
+          account_id: 6
           is_original: true
           options: "{}"
           content:
@@ -2494,16 +3575,16 @@ components:
             - "{}"
             - "{}"
             media:
-            - 1
-            - 1
+            - 5
+            - 5
             body: body
             url: https://openapi-generator.tech
           - video_thumbs:
             - "{}"
             - "{}"
             media:
-            - 1
-            - 1
+            - 5
+            - 5
             body: body
             url: https://openapi-generator.tech
         scheduled_at: 2000-01-23T04:56:07.000+00:00
@@ -2513,20 +3594,26 @@ components:
         - image: https://openapi-generator.tech
           data: "{}"
           provider: instagram
+          profile_url: https://openapi-generator.tech
           authorized: true
+          published_parts: 0
           name: My Instagram
           created_at: 2000-01-23T04:56:07.000+00:00
           id: 0
           uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          publish_status: pending
           username: myhandle
         - image: https://openapi-generator.tech
           data: "{}"
           provider: instagram
+          profile_url: https://openapi-generator.tech
           authorized: true
+          published_parts: 0
           name: My Instagram
           created_at: 2000-01-23T04:56:07.000+00:00
           id: 0
           uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          publish_status: pending
           username: myhandle
         published_at: 2000-01-23T04:56:07.000+00:00
         uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
@@ -2549,6 +3636,10 @@ components:
           type: string
         status:
           $ref: '#/components/schemas/PostStatus'
+        publish_progress:
+          allOf:
+          - $ref: '#/components/schemas/PublishProgress'
+          description: Only present while the post is publishing.
         accounts:
           items:
             $ref: '#/components/schemas/Account'
@@ -2594,6 +3685,8 @@ components:
           maxLength: 60
           type: string
         hex_color:
+          deprecated: true
+          description: Ignored since v2.0; kept for backward compatibility
           example: '#1d4ed8'
           type: string
         owner_id:
@@ -2607,7 +3700,6 @@ components:
           type: string
       required:
       - access_status
-      - hex_color
       - name
     WorkspaceUserInput:
       example:
@@ -2641,11 +3733,13 @@ components:
           created_at: 2000-01-23T04:56:07.000+00:00
           email_verified_at: 2000-01-23T04:56:07.000+00:00
           id: 0
+          avatar: https://openapi-generator.tech
           email: email
         name: name
         access_status: subscription
         created_at: 2000-01-23T04:56:07.000+00:00
-        hex_color: hex_color
+        avatar: https://openapi-generator.tech
+        hex_color: 4f46e5
         uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
       properties:
         uuid:
@@ -2654,7 +3748,18 @@ components:
         name:
           type: string
         hex_color:
+          deprecated: true
+          description: Deprecated. Workspaces no longer have a colour (workspaces
+            now use `avatar`); the API returns the constant `4f46e5` so existing clients
+            keep working. Will be removed in API v2.
+          example: 4f46e5
           type: string
+        avatar:
+          description: "URL of the workspace avatar, or null when none is set. Supersedes\
+            \ `hex_color`."
+          format: uri
+          type: string
+          nullable: true
         owner:
           $ref: '#/components/schemas/User'
         access_status:
@@ -2669,7 +3774,6 @@ components:
       required:
       - access_status
       - created_at
-      - hex_color
       - name
       - uuid
     SubscriptionStatus:
@@ -2825,6 +3929,7 @@ components:
         created_at: 2000-01-23T04:56:07.000+00:00
         email_verified_at: 2000-01-23T04:56:07.000+00:00
         id: 0
+        avatar: https://openapi-generator.tech
         email: email
       properties:
         id:
@@ -2834,6 +3939,11 @@ components:
         email:
           format: email
           type: string
+        avatar:
+          description: "URL of the user's avatar, or null when none is set."
+          format: uri
+          type: string
+          nullable: true
         is_admin:
           type: boolean
         email_verified_at:
@@ -2849,6 +3959,483 @@ components:
       - id
       - is_admin
       - name
+    PublicWorkspace:
+      example:
+        name: Acme Marketing
+        pivot:
+          joined_at: 2026-05-01 09:30:00
+          role: admin
+          can_approve: true
+        id: 0
+        uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+      properties:
+        id:
+          type: integer
+        uuid:
+          format: uuid
+          type: string
+        name:
+          example: Acme Marketing
+          type: string
+        pivot:
+          $ref: '#/components/schemas/PublicWorkspace_pivot'
+      required:
+      - id
+      - name
+      - uuid
+    AICredits:
+      example:
+        balance: 0.8008281904610115
+        low: true
+        available: true
+      properties:
+        available:
+          description: Whether the workspace can spend AI credits now. Always true
+            when no balance is tracked.
+          type: boolean
+        balance:
+          description: "Remaining credit balance (2 decimals), or null when no balance\
+            \ is tracked."
+          type: number
+          nullable: true
+        low:
+          description: True when the balance is above 0 and at most 10.
+          type: boolean
+      required:
+      - available
+      - balance
+      - low
+    MentionIdentity:
+      example:
+        provider: linkedin
+        provider_id: provider_id
+        handle: janedoe
+        label: label
+      properties:
+        provider:
+          description: Mention provider key (network family).
+          example: linkedin
+          type: string
+        provider_id:
+          description: "The profile's network ID, when resolved. Never accepted from\
+            \ clients."
+          type: string
+          nullable: true
+        handle:
+          example: janedoe
+          type: string
+        label:
+          type: string
+          nullable: true
+      required:
+      - handle
+      - provider
+    Mention:
+      example:
+        reference: 0
+        identities:
+        - provider: linkedin
+          provider_id: provider_id
+          handle: janedoe
+          label: label
+        - provider: linkedin
+          provider_id: provider_id
+          handle: janedoe
+          label: label
+        name: Jane Doe
+        created_at: 2000-01-23T04:56:07.000+00:00
+        id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        avatar: avatar
+      properties:
+        id:
+          format: uuid
+          type: string
+        reference:
+          description: "Write `{{mention:<reference>}}` in a post body to mention\
+            \ this entry; it is resolved to each network's identity at publish time."
+          type: integer
+        name:
+          example: Jane Doe
+          type: string
+        avatar:
+          type: string
+          nullable: true
+        identities:
+          items:
+            $ref: '#/components/schemas/MentionIdentity'
+          type: array
+        created_at:
+          format: date-time
+          type: string
+      required:
+      - created_at
+      - id
+      - name
+      - reference
+    MentionIdentityInput:
+      example:
+        account_uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        provider: provider
+        handle: handle
+        label: label
+        token: token
+      properties:
+        provider:
+          description: Mention provider key. One identity per provider.
+          type: string
+        handle:
+          description: Profile handle; a leading `@` is stripped.
+          maxLength: 255
+          type: string
+        label:
+          maxLength: 255
+          type: string
+          nullable: true
+        token:
+          description: Sealed lookup result that names the profile's network ID.
+          maxLength: 2048
+          type: string
+          nullable: true
+        account_uuid:
+          description: A connected account of this workspace that names the profile.
+            Wins over `token` when both are sent.
+          format: uuid
+          type: string
+          nullable: true
+      required:
+      - handle
+      - provider
+    MentionInput:
+      example:
+        identities:
+        - account_uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          provider: provider
+          handle: handle
+          label: label
+          token: token
+        - account_uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          provider: provider
+          handle: handle
+          label: label
+          token: token
+        name: name
+        avatar: avatar
+      properties:
+        name:
+          maxLength: 255
+          type: string
+        avatar:
+          maxLength: 2048
+          type: string
+          nullable: true
+        identities:
+          items:
+            $ref: '#/components/schemas/MentionIdentityInput'
+          type: array
+      required:
+      - name
+    AnalyticsPeriod:
+      example:
+        end_date: 2000-01-23
+        previous_end_date: 2000-01-23
+        previous_start_date: 2000-01-23
+        start_date: 2000-01-23
+      properties:
+        start_date:
+          format: date
+          type: string
+        end_date:
+          format: date
+          type: string
+        previous_start_date:
+          description: "Start of the equally long range before this one, used for\
+            \ comparisons."
+          format: date
+          type: string
+        previous_end_date:
+          format: date
+          type: string
+      required:
+      - end_date
+      - previous_end_date
+      - previous_start_date
+      - start_date
+    AnalyticsSummary:
+      example:
+        period:
+          end_date: 2000-01-23
+          previous_end_date: 2000-01-23
+          previous_start_date: 2000-01-23
+          start_date: 2000-01-23
+        data:
+          posting_streak:
+            key: ""
+          total_posts:
+            key: ""
+          total_followers: 0
+          leaderboard:
+          - key: ""
+          - key: ""
+          follower_growth:
+            key: ""
+          least_active:
+            key: ""
+          follower_distribution:
+          - key: ""
+          - key: ""
+          audience_chart:
+          - key: ""
+          - key: ""
+          best_account:
+            key: ""
+          needs_attention:
+            key: ""
+          most_active:
+            key: ""
+      properties:
+        period:
+          $ref: '#/components/schemas/AnalyticsPeriod'
+        data:
+          $ref: '#/components/schemas/AnalyticsSummary_data'
+      required:
+      - data
+      - period
+    AccountAnalytics:
+      example:
+        initial_sync:
+          in_progress: true
+          progress: ""
+        period:
+          end_date: 2000-01-23
+          previous_end_date: 2000-01-23
+          previous_start_date: 2000-01-23
+          start_date: 2000-01-23
+        data:
+          key: ""
+        tabs:
+        - tabs
+        - tabs
+        type: type
+        account:
+          image: https://openapi-generator.tech
+          data: "{}"
+          provider: instagram
+          profile_url: https://openapi-generator.tech
+          authorized: true
+          published_parts: 0
+          name: My Instagram
+          created_at: 2000-01-23T04:56:07.000+00:00
+          id: 0
+          uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          publish_status: pending
+          username: myhandle
+      properties:
+        account:
+          $ref: '#/components/schemas/Account'
+        type:
+          description: The analytics tab returned.
+          type: string
+        tabs:
+          description: Tabs this account supports; any of them can be passed as `type`.
+          items:
+            type: string
+          type: array
+        period:
+          $ref: '#/components/schemas/AnalyticsPeriod'
+        initial_sync:
+          $ref: '#/components/schemas/AccountAnalytics_initial_sync'
+        data:
+          additionalProperties: true
+          description: "Provider- and tab-specific metrics. Chart series are lists\
+            \ of `{date, value}` points."
+          type: object
+      required:
+      - account
+      - data
+      - initial_sync
+      - period
+      - tabs
+      - type
+    PostingTimeSlot:
+      properties:
+        score:
+          maximum: 100
+          minimum: 0
+          type: integer
+        samples:
+          type: integer
+        confidence:
+          enum:
+          - none
+          - low
+          - medium
+          - high
+          type: string
+      required:
+      - confidence
+      - samples
+      - score
+    PostingTimes:
+      example:
+        has_data: true
+        timezone: Europe/Istanbul
+        offset_hours: 0
+        days:
+        - score: 56
+          confidence: none
+          day: 3
+          samples: 2
+        - score: 56
+          confidence: none
+          day: 3
+          samples: 2
+        best:
+        - score: 1
+          hour: 1
+          day: 7
+          samples: 1
+        - score: 1
+          hour: 1
+          day: 7
+          samples: 1
+        - score: 1
+          hour: 1
+          day: 7
+          samples: 1
+        accounts: 6
+        samples: 1
+        day_intervals:
+        - - score: 20
+            start_hour: 7
+            confidence: none
+            end_hour: 9
+            best_hour: 3
+            samples: 4
+          - score: 20
+            start_hour: 7
+            confidence: none
+            end_hour: 9
+            best_hour: 3
+            samples: 4
+        - - score: 20
+            start_hour: 7
+            confidence: none
+            end_hour: 9
+            best_hour: 3
+            samples: 4
+          - score: 20
+            start_hour: 7
+            confidence: none
+            end_hour: 9
+            best_hour: 3
+            samples: 4
+      properties:
+        has_data:
+          type: boolean
+        timezone:
+          example: Europe/Istanbul
+          type: string
+        offset_hours:
+          type: integer
+        accounts:
+          description: Accounts that contributed scores.
+          type: integer
+        samples:
+          type: integer
+        days:
+          description: One entry per weekday (`day` 0 = Sunday).
+          items:
+            $ref: '#/components/schemas/PostingTimes_days_inner'
+          type: array
+        day_intervals:
+          description: "Per weekday, 2-hour intervals."
+          items:
+            items:
+              $ref: '#/components/schemas/PostingTimes_day_intervals_inner_inner'
+            type: array
+          type: array
+        best:
+          description: "Up to three recommended slots, at most one per weekday."
+          items:
+            $ref: '#/components/schemas/PostingTimes_best_inner'
+          maxItems: 3
+          type: array
+      required:
+      - accounts
+      - best
+      - day_intervals
+      - days
+      - has_data
+      - offset_hours
+      - samples
+      - timezone
+    BestPostingTimes:
+      example:
+        times:
+        - date: 2000-01-23
+          account_id: 0
+          account_uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          time: 18:00
+        - date: 2000-01-23
+          account_id: 0
+          account_uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          time: 18:00
+        timezone: timezone
+      properties:
+        timezone:
+          type: string
+        times:
+          description: The next recommended time per account. Accounts without enough
+            history are left out.
+          items:
+            $ref: '#/components/schemas/BestPostingTimes_times_inner'
+          type: array
+      required:
+      - times
+      - timezone
+    PostAnalytics:
+      example:
+        summary:
+          key: ""
+        winner: ""
+        accounts:
+        - key: ""
+        - key: ""
+      properties:
+        summary:
+          additionalProperties: true
+          description: "Totals (views, likes, comments, shares), trends, engagement\
+            \ rate, breakdown, funnel and peak day across the post's accounts. Empty\
+            \ when nothing is published yet."
+          type: object
+        winner: {}
+        accounts:
+          items:
+            additionalProperties: true
+            type: object
+          type: array
+      required:
+      - accounts
+      - summary
+    RetryPostAccountResult:
+      example:
+        publish_progress:
+          total: 0
+          published: 6
+          failed: 1
+        success: true
+        status: draft
+      properties:
+        success:
+          type: boolean
+        status:
+          $ref: '#/components/schemas/PostStatus'
+        publish_progress:
+          $ref: '#/components/schemas/PublishProgress'
+      required:
+      - publish_progress
+      - status
+      - success
     ReceiptInput:
       example:
         transaction_id: transaction_id
@@ -3220,23 +4807,41 @@ components:
         aspect_ratio: 1:1
         images:
         - thumb_url: https://openapi-generator.tech
-          is_video: true
-          mime_type: image/jpeg
-          name: name
           created_at: 2000-01-23T04:56:07.000+00:00
-          id: 7
           type: image
           uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
           url: https://openapi-generator.tech
+          duration_ms: 2
+          is_video: true
+          folder:
+            name: name
+            uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          size: 4
+          mime_type: image/jpeg
+          alt_text: alt_text
+          name: name
+          width: 9
+          id: 7
+          is_processing: true
+          height: 3
         - thumb_url: https://openapi-generator.tech
-          is_video: true
-          mime_type: image/jpeg
-          name: name
           created_at: 2000-01-23T04:56:07.000+00:00
-          id: 7
           type: image
           uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
           url: https://openapi-generator.tech
+          duration_ms: 2
+          is_video: true
+          folder:
+            name: name
+            uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          size: 4
+          mime_type: image/jpeg
+          alt_text: alt_text
+          name: name
+          width: 9
+          id: 7
+          is_processing: true
+          height: 3
         credits_remaining: 45
         credits_used: 5
         quality: standard
@@ -3268,23 +4873,41 @@ components:
         aspect_ratio: 1:1
         images:
         - thumb_url: https://openapi-generator.tech
-          is_video: true
-          mime_type: image/jpeg
-          name: name
           created_at: 2000-01-23T04:56:07.000+00:00
-          id: 7
           type: image
           uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
           url: https://openapi-generator.tech
+          duration_ms: 2
+          is_video: true
+          folder:
+            name: name
+            uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          size: 4
+          mime_type: image/jpeg
+          alt_text: alt_text
+          name: name
+          width: 9
+          id: 7
+          is_processing: true
+          height: 3
         - thumb_url: https://openapi-generator.tech
-          is_video: true
-          mime_type: image/jpeg
-          name: name
           created_at: 2000-01-23T04:56:07.000+00:00
-          id: 7
           type: image
           uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
           url: https://openapi-generator.tech
+          duration_ms: 2
+          is_video: true
+          folder:
+            name: name
+            uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          size: 4
+          mime_type: image/jpeg
+          alt_text: alt_text
+          name: name
+          width: 9
+          id: 7
+          is_processing: true
+          height: 3
         prompt_used: prompt_used
         revised_prompt: revised_prompt
         credits_remaining: 45
@@ -3319,26 +4942,54 @@ components:
       - images
       - prompt_used
       - quality
+    listMyWorkspaces_200_response:
+      example:
+        data:
+        - name: Acme Marketing
+          pivot:
+            joined_at: 2026-05-01 09:30:00
+            role: admin
+            can_approve: true
+          id: 0
+          uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        - name: Acme Marketing
+          pivot:
+            joined_at: 2026-05-01 09:30:00
+            role: admin
+            can_approve: true
+          id: 0
+          uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+      properties:
+        data:
+          items:
+            $ref: '#/components/schemas/PublicWorkspace'
+          type: array
     listAccounts_200_response:
       example:
         data:
         - image: https://openapi-generator.tech
           data: "{}"
           provider: instagram
+          profile_url: https://openapi-generator.tech
           authorized: true
+          published_parts: 0
           name: My Instagram
           created_at: 2000-01-23T04:56:07.000+00:00
           id: 0
           uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          publish_status: pending
           username: myhandle
         - image: https://openapi-generator.tech
           data: "{}"
           provider: instagram
+          profile_url: https://openapi-generator.tech
           authorized: true
+          published_parts: 0
           name: My Instagram
           created_at: 2000-01-23T04:56:07.000+00:00
           id: 0
           uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          publish_status: pending
           username: myhandle
       properties:
         data:
@@ -3356,23 +5007,41 @@ components:
       example:
         data:
         - thumb_url: https://openapi-generator.tech
-          is_video: true
-          mime_type: image/jpeg
-          name: name
           created_at: 2000-01-23T04:56:07.000+00:00
-          id: 7
           type: image
           uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
           url: https://openapi-generator.tech
+          duration_ms: 2
+          is_video: true
+          folder:
+            name: name
+            uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          size: 4
+          mime_type: image/jpeg
+          alt_text: alt_text
+          name: name
+          width: 9
+          id: 7
+          is_processing: true
+          height: 3
         - thumb_url: https://openapi-generator.tech
-          is_video: true
-          mime_type: image/jpeg
-          name: name
           created_at: 2000-01-23T04:56:07.000+00:00
-          id: 7
           type: image
           uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
           url: https://openapi-generator.tech
+          duration_ms: 2
+          is_video: true
+          folder:
+            name: name
+            uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          size: 4
+          mime_type: image/jpeg
+          alt_text: alt_text
+          name: name
+          width: 9
+          id: 7
+          is_processing: true
+          height: 3
         meta:
           per_page: 5
           total: 2
@@ -3395,24 +5064,46 @@ components:
           description: Alternative text for accessibility.
           maxLength: 255
           type: string
+        folder:
+          description: UUID of the media folder to file the upload in. Omit or null
+            for the library root.
+          format: uuid
+          type: string
+          nullable: true
       required:
       - file
+    deleteMediaBulk_request_items_inner:
+      oneOf:
+      - type: integer
+      - format: uuid
+        type: string
     deleteMediaBulk_request:
       properties:
         items:
-          description: Array of media IDs to delete.
+          description: Array of media IDs or UUIDs to delete.
           items:
-            type: integer
+            $ref: '#/components/schemas/deleteMediaBulk_request_items_inner'
+          maxItems: 500
           type: array
       required:
       - items
     updateMedia_request:
       properties:
+        name:
+          maxLength: 255
+          type: string
+          nullable: true
         alt_text:
           description: Alternative text for accessibility.
+          maxLength: 500
           type: string
-      required:
-      - alt_text
+          nullable: true
+        folder:
+          description: "UUID of the media folder to move the item to, or null for\
+            \ the library root."
+          format: uuid
+          type: string
+          nullable: true
     initiateChunkedUpload_request:
       properties:
         filename:
@@ -3450,6 +5141,12 @@ components:
         alt_text:
           maxLength: 255
           type: string
+        folder:
+          description: UUID of the media folder to file the item in. Omit or null
+            for the library root.
+          format: uuid
+          type: string
+          nullable: true
       required:
       - url
     initiateRemoteUpload_201_response_oneOf:
@@ -3478,18 +5175,39 @@ components:
         received:
           description: Number of chunks received so far.
           type: integer
+    completeChunkedUpload_request:
+      properties:
+        alt_text:
+          maxLength: 255
+          type: string
+          nullable: true
+        folder:
+          description: UUID of the media folder to file the item in. Omit or null
+            for the library root.
+          format: uuid
+          type: string
+          nullable: true
     getRemoteUploadStatus_200_response:
       example:
         media:
           thumb_url: https://openapi-generator.tech
-          is_video: true
-          mime_type: image/jpeg
-          name: name
           created_at: 2000-01-23T04:56:07.000+00:00
-          id: 7
           type: image
           uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
           url: https://openapi-generator.tech
+          duration_ms: 2
+          is_video: true
+          folder:
+            name: name
+            uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          size: 4
+          mime_type: image/jpeg
+          alt_text: alt_text
+          name: name
+          width: 9
+          id: 7
+          is_processing: true
+          height: 3
         status: pending
       properties:
         status:
@@ -3501,6 +5219,33 @@ components:
           type: string
         media:
           $ref: '#/components/schemas/Media'
+    listMediaFolders_200_response:
+      example:
+        data:
+        - parent: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          media_count: 0
+          name: Campaign assets
+          uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        - parent: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          media_count: 0
+          name: Campaign assets
+          uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+      properties:
+        data:
+          items:
+            $ref: '#/components/schemas/MediaFolder'
+          type: array
+    createMediaFolder_request:
+      allOf:
+      - $ref: '#/components/schemas/MediaFolderInput'
+      - required:
+        - name
+        type: object
+    deleteMediaFolder_request:
+      properties:
+        delete_media:
+          default: false
+          type: boolean
     listTags_200_response:
       example:
         data:
@@ -3517,6 +5262,76 @@ components:
           items:
             $ref: '#/components/schemas/Tag'
           type: array
+    listMentions_200_response:
+      allOf:
+      - $ref: '#/components/schemas/PaginationMeta'
+      - properties:
+          data:
+            items:
+              $ref: '#/components/schemas/Mention'
+            type: array
+      example:
+        data:
+        - reference: 0
+          identities:
+          - provider: linkedin
+            provider_id: provider_id
+            handle: janedoe
+            label: label
+          - provider: linkedin
+            provider_id: provider_id
+            handle: janedoe
+            label: label
+          name: Jane Doe
+          created_at: 2000-01-23T04:56:07.000+00:00
+          id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          avatar: avatar
+        - reference: 0
+          identities:
+          - provider: linkedin
+            provider_id: provider_id
+            handle: janedoe
+            label: label
+          - provider: linkedin
+            provider_id: provider_id
+            handle: janedoe
+            label: label
+          name: Jane Doe
+          created_at: 2000-01-23T04:56:07.000+00:00
+          id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          avatar: avatar
+        meta:
+          per_page: 5
+          total: 2
+          last_page: 1
+          from: 6
+          to: 5
+          current_page: 0
+        links:
+          next: next
+          last: last
+          prev: prev
+          first: first
+    createMention_201_response:
+      example:
+        data:
+          reference: 0
+          identities:
+          - provider: linkedin
+            provider_id: provider_id
+            handle: janedoe
+            label: label
+          - provider: linkedin
+            provider_id: provider_id
+            handle: janedoe
+            label: label
+          name: Jane Doe
+          created_at: 2000-01-23T04:56:07.000+00:00
+          id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          avatar: avatar
+      properties:
+        data:
+          $ref: '#/components/schemas/Mention'
     listPosts_200_response:
       allOf:
       - $ref: '#/components/schemas/PaginationMeta'
@@ -3527,8 +5342,10 @@ components:
             type: array
       example:
         data:
-        - versions:
-          - account_id: 6
+        - publish_progress: ""
+          versions:
+          - synced_with: 0
+            account_id: 6
             is_original: true
             options: "{}"
             content:
@@ -3536,19 +5353,20 @@ components:
               - "{}"
               - "{}"
               media:
-              - 1
-              - 1
+              - 5
+              - 5
               body: body
               url: https://openapi-generator.tech
             - video_thumbs:
               - "{}"
               - "{}"
               media:
-              - 1
-              - 1
+              - 5
+              - 5
               body: body
               url: https://openapi-generator.tech
-          - account_id: 6
+          - synced_with: 0
+            account_id: 6
             is_original: true
             options: "{}"
             content:
@@ -3556,16 +5374,16 @@ components:
               - "{}"
               - "{}"
               media:
-              - 1
-              - 1
+              - 5
+              - 5
               body: body
               url: https://openapi-generator.tech
             - video_thumbs:
               - "{}"
               - "{}"
               media:
-              - 1
-              - 1
+              - 5
+              - 5
               body: body
               url: https://openapi-generator.tech
           scheduled_at: 2000-01-23T04:56:07.000+00:00
@@ -3575,20 +5393,26 @@ components:
           - image: https://openapi-generator.tech
             data: "{}"
             provider: instagram
+            profile_url: https://openapi-generator.tech
             authorized: true
+            published_parts: 0
             name: My Instagram
             created_at: 2000-01-23T04:56:07.000+00:00
             id: 0
             uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            publish_status: pending
             username: myhandle
           - image: https://openapi-generator.tech
             data: "{}"
             provider: instagram
+            profile_url: https://openapi-generator.tech
             authorized: true
+            published_parts: 0
             name: My Instagram
             created_at: 2000-01-23T04:56:07.000+00:00
             id: 0
             uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            publish_status: pending
             username: myhandle
           published_at: 2000-01-23T04:56:07.000+00:00
           uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
@@ -3603,8 +5427,10 @@ components:
             hex_color: '#3B82F6'
             uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
           trashed: true
-        - versions:
-          - account_id: 6
+        - publish_progress: ""
+          versions:
+          - synced_with: 0
+            account_id: 6
             is_original: true
             options: "{}"
             content:
@@ -3612,19 +5438,20 @@ components:
               - "{}"
               - "{}"
               media:
-              - 1
-              - 1
+              - 5
+              - 5
               body: body
               url: https://openapi-generator.tech
             - video_thumbs:
               - "{}"
               - "{}"
               media:
-              - 1
-              - 1
+              - 5
+              - 5
               body: body
               url: https://openapi-generator.tech
-          - account_id: 6
+          - synced_with: 0
+            account_id: 6
             is_original: true
             options: "{}"
             content:
@@ -3632,16 +5459,16 @@ components:
               - "{}"
               - "{}"
               media:
-              - 1
-              - 1
+              - 5
+              - 5
               body: body
               url: https://openapi-generator.tech
             - video_thumbs:
               - "{}"
               - "{}"
               media:
-              - 1
-              - 1
+              - 5
+              - 5
               body: body
               url: https://openapi-generator.tech
           scheduled_at: 2000-01-23T04:56:07.000+00:00
@@ -3651,20 +5478,26 @@ components:
           - image: https://openapi-generator.tech
             data: "{}"
             provider: instagram
+            profile_url: https://openapi-generator.tech
             authorized: true
+            published_parts: 0
             name: My Instagram
             created_at: 2000-01-23T04:56:07.000+00:00
             id: 0
             uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            publish_status: pending
             username: myhandle
           - image: https://openapi-generator.tech
             data: "{}"
             provider: instagram
+            profile_url: https://openapi-generator.tech
             authorized: true
+            published_parts: 0
             name: My Instagram
             created_at: 2000-01-23T04:56:07.000+00:00
             id: 0
             uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            publish_status: pending
             username: myhandle
           published_at: 2000-01-23T04:56:07.000+00:00
           uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
@@ -3718,8 +5551,57 @@ components:
       properties:
         postNow:
           type: boolean
+        date:
+          description: New date for the post (Y-m-d). Use together with `time`.
+          example: 2026-11-01
+          format: date
+          type: string
+        time:
+          description: New time for the post (H:i).
+          example: 10:00
+          type: string
+        timezone:
+          description: "Timezone `date`, `time` and `accounts_schedule` are read in.\
+            \ Defaults to the workspace timezone."
+          example: America/New_York
+          type: string
+        accounts_schedule:
+          description: "Per-account departure times. When omitted, accounts keep their\
+            \ offsets from the post time."
+          items:
+            $ref: '#/components/schemas/AccountSchedule'
+          type: array
       required:
       - postNow
+    addPostToQueue_request:
+      properties:
+        timezone:
+          description: Accepted and validated for consistency with the other scheduling
+            endpoints; queue slots are always taken from the workspace posting schedule.
+          example: America/New_York
+          type: string
+    approvePost_request:
+      properties:
+        date:
+          description: New date for the post (Y-m-d). Use together with `time`.
+          example: 2026-11-01
+          format: date
+          type: string
+        time:
+          description: New time for the post (H:i).
+          example: 10:00
+          type: string
+        timezone:
+          description: "Timezone `date`, `time` and `accounts_schedule` are read in.\
+            \ Defaults to the workspace timezone."
+          example: America/New_York
+          type: string
+        accounts_schedule:
+          description: "Per-account departure times. When omitted, accounts keep their\
+            \ offsets from the post time."
+          items:
+            $ref: '#/components/schemas/AccountSchedule'
+          type: array
     listWorkspaces_200_response:
       allOf:
       - $ref: '#/components/schemas/PaginationMeta'
@@ -3736,11 +5618,13 @@ components:
             created_at: 2000-01-23T04:56:07.000+00:00
             email_verified_at: 2000-01-23T04:56:07.000+00:00
             id: 0
+            avatar: https://openapi-generator.tech
             email: email
           name: name
           access_status: subscription
           created_at: 2000-01-23T04:56:07.000+00:00
-          hex_color: hex_color
+          avatar: https://openapi-generator.tech
+          hex_color: 4f46e5
           uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
         - owner:
             is_admin: true
@@ -3748,11 +5632,13 @@ components:
             created_at: 2000-01-23T04:56:07.000+00:00
             email_verified_at: 2000-01-23T04:56:07.000+00:00
             id: 0
+            avatar: https://openapi-generator.tech
             email: email
           name: name
           access_status: subscription
           created_at: 2000-01-23T04:56:07.000+00:00
-          hex_color: hex_color
+          avatar: https://openapi-generator.tech
+          hex_color: 4f46e5
           uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
         meta:
           per_page: 5
@@ -3820,6 +5706,34 @@ components:
       - cycle
       - plan_id
       - prorate
+    cancelSubscription_request:
+      properties:
+        immediately:
+          default: false
+          description: Cancel now instead of at the end of the billing period.
+          type: boolean
+    cancelSubscription_422_response_errors:
+      example:
+        subscription:
+        - subscription
+        - subscription
+      properties:
+        subscription:
+          items:
+            type: string
+          type: array
+    cancelSubscription_422_response:
+      example:
+        message: message
+        errors:
+          subscription:
+          - subscription
+          - subscription
+      properties:
+        message:
+          type: string
+        errors:
+          $ref: '#/components/schemas/cancelSubscription_422_response_errors'
     addGenericSubscription_request:
       properties:
         plan_id:
@@ -3833,6 +5747,13 @@ components:
       required:
       - keep_prev_trial_ends_at
       - plan_id
+    removeGenericSubscription_422_response:
+      example:
+        message: The workspace has no generic subscription.
+      properties:
+        message:
+          example: The workspace has no generic subscription.
+          type: string
     listUsers_200_response:
       allOf:
       - $ref: '#/components/schemas/PaginationMeta'
@@ -3848,12 +5769,14 @@ components:
           created_at: 2000-01-23T04:56:07.000+00:00
           email_verified_at: 2000-01-23T04:56:07.000+00:00
           id: 0
+          avatar: https://openapi-generator.tech
           email: email
         - is_admin: true
           name: name
           created_at: 2000-01-23T04:56:07.000+00:00
           email_verified_at: 2000-01-23T04:56:07.000+00:00
           id: 0
+          avatar: https://openapi-generator.tech
           email: email
         meta:
           per_page: 5
@@ -3999,23 +5922,41 @@ components:
           aspect_ratio: 1:1
           images:
           - thumb_url: https://openapi-generator.tech
-            is_video: true
-            mime_type: image/jpeg
-            name: name
             created_at: 2000-01-23T04:56:07.000+00:00
-            id: 7
             type: image
             uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
             url: https://openapi-generator.tech
+            duration_ms: 2
+            is_video: true
+            folder:
+              name: name
+              uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            size: 4
+            mime_type: image/jpeg
+            alt_text: alt_text
+            name: name
+            width: 9
+            id: 7
+            is_processing: true
+            height: 3
           - thumb_url: https://openapi-generator.tech
-            is_video: true
-            mime_type: image/jpeg
-            name: name
             created_at: 2000-01-23T04:56:07.000+00:00
-            id: 7
             type: image
             uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
             url: https://openapi-generator.tech
+            duration_ms: 2
+            is_video: true
+            folder:
+              name: name
+              uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            size: 4
+            mime_type: image/jpeg
+            alt_text: alt_text
+            name: name
+            width: 9
+            id: 7
+            is_processing: true
+            height: 3
           prompt_used: prompt_used
           revised_prompt: revised_prompt
           credits_remaining: 45
@@ -4041,23 +5982,41 @@ components:
           aspect_ratio: 1:1
           images:
           - thumb_url: https://openapi-generator.tech
-            is_video: true
-            mime_type: image/jpeg
-            name: name
             created_at: 2000-01-23T04:56:07.000+00:00
-            id: 7
             type: image
             uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
             url: https://openapi-generator.tech
+            duration_ms: 2
+            is_video: true
+            folder:
+              name: name
+              uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            size: 4
+            mime_type: image/jpeg
+            alt_text: alt_text
+            name: name
+            width: 9
+            id: 7
+            is_processing: true
+            height: 3
           - thumb_url: https://openapi-generator.tech
-            is_video: true
-            mime_type: image/jpeg
-            name: name
             created_at: 2000-01-23T04:56:07.000+00:00
-            id: 7
             type: image
             uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
             url: https://openapi-generator.tech
+            duration_ms: 2
+            is_video: true
+            folder:
+              name: name
+              uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            size: 4
+            mime_type: image/jpeg
+            alt_text: alt_text
+            name: name
+            width: 9
+            id: 7
+            is_processing: true
+            height: 3
           credits_remaining: 45
           credits_used: 5
           quality: standard
@@ -4117,6 +6076,188 @@ components:
           type: integer
         total:
           type: integer
+    PublicWorkspace_pivot:
+      description: The caller's membership in the workspace.
+      example:
+        joined_at: 2026-05-01 09:30:00
+        role: admin
+        can_approve: true
+      properties:
+        role:
+          enum:
+          - admin
+          - member
+          - viewer
+          type: string
+        can_approve:
+          type: boolean
+        joined_at:
+          example: 2026-05-01 09:30:00
+          type: string
+    AnalyticsSummary_data:
+      additionalProperties: true
+      description: |
+        Cross-platform summary over every account that supports analytics. Chart series are
+        lists of `{date, value}` points (or `{label, value}` when the axis is not a date).
+      example:
+        posting_streak:
+          key: ""
+        total_posts:
+          key: ""
+        total_followers: 0
+        leaderboard:
+        - key: ""
+        - key: ""
+        follower_growth:
+          key: ""
+        least_active:
+          key: ""
+        follower_distribution:
+        - key: ""
+        - key: ""
+        audience_chart:
+        - key: ""
+        - key: ""
+        best_account:
+          key: ""
+        needs_attention:
+          key: ""
+        most_active:
+          key: ""
+      properties:
+        total_followers:
+          type: integer
+        follower_growth:
+          additionalProperties: true
+          description: Growth in the period with the change against the previous period.
+          type: object
+        total_posts:
+          additionalProperties: true
+          description: Posts in the period with the change against the previous period.
+          type: object
+        best_account:
+          additionalProperties: true
+          type: object
+          nullable: true
+        needs_attention:
+          additionalProperties: true
+          type: object
+          nullable: true
+        audience_chart:
+          items:
+            additionalProperties: true
+            type: object
+          type: array
+        leaderboard:
+          items:
+            additionalProperties: true
+            type: object
+          type: array
+        most_active:
+          additionalProperties: true
+          type: object
+          nullable: true
+        least_active:
+          additionalProperties: true
+          type: object
+          nullable: true
+        follower_distribution:
+          items:
+            additionalProperties: true
+            type: object
+          type: array
+        posting_streak:
+          additionalProperties: true
+          type: object
+    AccountAnalytics_initial_sync:
+      example:
+        in_progress: true
+        progress: ""
+      properties:
+        in_progress:
+          type: boolean
+        progress: {}
+      required:
+      - in_progress
+    PostingTimes_days_inner:
+      allOf:
+      - properties:
+          day:
+            maximum: 6
+            minimum: 0
+            type: integer
+        required:
+        - day
+      - $ref: '#/components/schemas/PostingTimeSlot'
+      example:
+        score: 56
+        confidence: none
+        day: 3
+        samples: 2
+    PostingTimes_day_intervals_inner_inner:
+      allOf:
+      - properties:
+          start_hour:
+            type: integer
+          end_hour:
+            type: integer
+          best_hour:
+            type: integer
+        required:
+        - best_hour
+        - end_hour
+        - start_hour
+      - $ref: '#/components/schemas/PostingTimeSlot'
+      example:
+        score: 20
+        start_hour: 7
+        confidence: none
+        end_hour: 9
+        best_hour: 3
+        samples: 4
+    PostingTimes_best_inner:
+      example:
+        score: 1
+        hour: 1
+        day: 7
+        samples: 1
+      properties:
+        day:
+          type: integer
+        hour:
+          type: integer
+        score:
+          type: integer
+        samples:
+          type: integer
+      required:
+      - day
+      - hour
+      - samples
+      - score
+    BestPostingTimes_times_inner:
+      example:
+        date: 2000-01-23
+        account_id: 0
+        account_uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        time: 18:00
+      properties:
+        account_id:
+          type: integer
+        account_uuid:
+          format: uuid
+          type: string
+        date:
+          format: date
+          type: string
+        time:
+          example: 18:00
+          type: string
+      required:
+      - account_id
+      - account_uuid
+      - date
+      - time
   securitySchemes:
     bearerAuth:
       description: |

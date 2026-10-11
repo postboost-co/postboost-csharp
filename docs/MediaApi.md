@@ -6,13 +6,17 @@ All URIs are relative to *https://postboost.co/app/api*
 |--------|--------------|-------------|
 | [**AbortChunkedUpload**](MediaApi.md#abortchunkedupload) | **DELETE** /{workspaceUuid}/media/chunked/{uploadUuid} | Abort chunked upload |
 | [**CompleteChunkedUpload**](MediaApi.md#completechunkedupload) | **POST** /{workspaceUuid}/media/chunked/{uploadUuid}/complete | Complete chunked upload |
+| [**CreateMediaFolder**](MediaApi.md#createmediafolder) | **POST** /{workspaceUuid}/media/folders | Create media folder |
 | [**DeleteMediaBulk**](MediaApi.md#deletemediabulk) | **DELETE** /{workspaceUuid}/media | Delete media (bulk) |
+| [**DeleteMediaFolder**](MediaApi.md#deletemediafolder) | **DELETE** /{workspaceUuid}/media/folders/{folderUuid} | Delete media folder |
 | [**GetMedia**](MediaApi.md#getmedia) | **GET** /{workspaceUuid}/media/{mediaUuid} | Get media |
 | [**GetRemoteUploadStatus**](MediaApi.md#getremoteuploadstatus) | **GET** /{workspaceUuid}/media/remote/{downloadId}/status | Get remote upload status |
 | [**InitiateChunkedUpload**](MediaApi.md#initiatechunkedupload) | **POST** /{workspaceUuid}/media/chunked/initiate | Initiate chunked upload |
 | [**InitiateRemoteUpload**](MediaApi.md#initiateremoteupload) | **POST** /{workspaceUuid}/media/remote/initiate | Initiate remote upload |
 | [**ListMedia**](MediaApi.md#listmedia) | **GET** /{workspaceUuid}/media | List media |
+| [**ListMediaFolders**](MediaApi.md#listmediafolders) | **GET** /{workspaceUuid}/media/folders | List media folders |
 | [**UpdateMedia**](MediaApi.md#updatemedia) | **PUT** /{workspaceUuid}/media/{mediaUuid} | Update media |
+| [**UpdateMediaFolder**](MediaApi.md#updatemediafolder) | **PUT** /{workspaceUuid}/media/folders/{folderUuid} | Update media folder |
 | [**UploadChunk**](MediaApi.md#uploadchunk) | **POST** /{workspaceUuid}/media/chunked/{uploadUuid}/upload | Upload a chunk |
 | [**UploadMedia**](MediaApi.md#uploadmedia) | **POST** /{workspaceUuid}/media | Upload media (binary) |
 
@@ -106,16 +110,17 @@ void (empty response body)
 |-------------|-------------|------------------|
 | **204** | Upload aborted |  -  |
 | **401** |  |  -  |
+| **403** |  |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 <a id="completechunkedupload"></a>
 # **CompleteChunkedUpload**
-> Media CompleteChunkedUpload (Guid workspaceUuid, Guid uploadUuid)
+> Media CompleteChunkedUpload (Guid workspaceUuid, Guid uploadUuid, CompleteChunkedUploadRequest? completeChunkedUploadRequest = null)
 
 Complete chunked upload
 
-Signal that all chunks have been uploaded. Returns the final media object.
+Signal that all chunks have been uploaded. Returns the final media object. A video may come back with `is_processing` set to `true` while its conversion runs.
 
 ### Example
 ```csharp
@@ -139,11 +144,12 @@ namespace Example
             var apiInstance = new MediaApi(config);
             var workspaceUuid = "workspaceUuid_example";  // Guid | UUID of the workspace.
             var uploadUuid = "uploadUuid_example";  // Guid | 
+            var completeChunkedUploadRequest = new CompleteChunkedUploadRequest?(); // CompleteChunkedUploadRequest? |  (optional) 
 
             try
             {
                 // Complete chunked upload
-                Media result = apiInstance.CompleteChunkedUpload(workspaceUuid, uploadUuid);
+                Media result = apiInstance.CompleteChunkedUpload(workspaceUuid, uploadUuid, completeChunkedUploadRequest);
                 Debug.WriteLine(result);
             }
             catch (ApiException  e)
@@ -164,7 +170,7 @@ This returns an ApiResponse object which contains the response data, status code
 try
 {
     // Complete chunked upload
-    ApiResponse<Media> response = apiInstance.CompleteChunkedUploadWithHttpInfo(workspaceUuid, uploadUuid);
+    ApiResponse<Media> response = apiInstance.CompleteChunkedUploadWithHttpInfo(workspaceUuid, uploadUuid, completeChunkedUploadRequest);
     Debug.Write("Status Code: " + response.StatusCode);
     Debug.Write("Response Headers: " + response.Headers);
     Debug.Write("Response Body: " + response.Data);
@@ -183,6 +189,7 @@ catch (ApiException e)
 |------|------|-------------|-------|
 | **workspaceUuid** | **Guid** | UUID of the workspace. |  |
 | **uploadUuid** | **Guid** |  |  |
+| **completeChunkedUploadRequest** | [**CompleteChunkedUploadRequest?**](CompleteChunkedUploadRequest?.md) |  | [optional]  |
 
 ### Return type
 
@@ -194,7 +201,7 @@ catch (ApiException e)
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
+ - **Content-Type**: application/json
  - **Accept**: application/json
 
 
@@ -203,6 +210,106 @@ catch (ApiException e)
 |-------------|-------------|------------------|
 | **201** | Completed media object |  -  |
 | **401** |  |  -  |
+| **403** |  |  -  |
+| **422** |  |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+<a id="createmediafolder"></a>
+# **CreateMediaFolder**
+> MediaFolder CreateMediaFolder (Guid workspaceUuid, CreateMediaFolderRequest createMediaFolderRequest)
+
+Create media folder
+
+Creates a folder at the top level or under `parent`. The name must be unique among its siblings.
+
+### Example
+```csharp
+using System.Collections.Generic;
+using System.Diagnostics;
+using PostBoost.Client.Api;
+using PostBoost.Client.Client;
+using PostBoost.Client.Model;
+
+namespace Example
+{
+    public class CreateMediaFolderExample
+    {
+        public static void Main()
+        {
+            Configuration config = new Configuration();
+            config.BasePath = "https://postboost.co/app/api";
+            // Configure Bearer token for authorization: bearerAuth
+            config.AccessToken = "YOUR_BEARER_TOKEN";
+
+            var apiInstance = new MediaApi(config);
+            var workspaceUuid = "workspaceUuid_example";  // Guid | UUID of the workspace.
+            var createMediaFolderRequest = new CreateMediaFolderRequest(); // CreateMediaFolderRequest | 
+
+            try
+            {
+                // Create media folder
+                MediaFolder result = apiInstance.CreateMediaFolder(workspaceUuid, createMediaFolderRequest);
+                Debug.WriteLine(result);
+            }
+            catch (ApiException  e)
+            {
+                Debug.Print("Exception when calling MediaApi.CreateMediaFolder: " + e.Message);
+                Debug.Print("Status Code: " + e.ErrorCode);
+                Debug.Print(e.StackTrace);
+            }
+        }
+    }
+}
+```
+
+#### Using the CreateMediaFolderWithHttpInfo variant
+This returns an ApiResponse object which contains the response data, status code and headers.
+
+```csharp
+try
+{
+    // Create media folder
+    ApiResponse<MediaFolder> response = apiInstance.CreateMediaFolderWithHttpInfo(workspaceUuid, createMediaFolderRequest);
+    Debug.Write("Status Code: " + response.StatusCode);
+    Debug.Write("Response Headers: " + response.Headers);
+    Debug.Write("Response Body: " + response.Data);
+}
+catch (ApiException e)
+{
+    Debug.Print("Exception when calling MediaApi.CreateMediaFolderWithHttpInfo: " + e.Message);
+    Debug.Print("Status Code: " + e.ErrorCode);
+    Debug.Print(e.StackTrace);
+}
+```
+
+### Parameters
+
+| Name | Type | Description | Notes |
+|------|------|-------------|-------|
+| **workspaceUuid** | **Guid** | UUID of the workspace. |  |
+| **createMediaFolderRequest** | [**CreateMediaFolderRequest**](CreateMediaFolderRequest.md) |  |  |
+
+### Return type
+
+[**MediaFolder**](MediaFolder.md)
+
+### Authorization
+
+[bearerAuth](../README.md#bearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **201** | Created folder |  -  |
+| **401** |  |  -  |
+| **403** |  |  -  |
 | **422** |  |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
@@ -213,7 +320,7 @@ catch (ApiException e)
 
 Delete media (bulk)
 
-Delete one or more media items by their IDs.
+Delete one or more media items by their numeric IDs or UUIDs (both may be mixed, up to 500 per request).
 
 ### Example
 ```csharp
@@ -301,6 +408,110 @@ catch (ApiException e)
 |-------------|-------------|------------------|
 | **200** |  |  -  |
 | **401** |  |  -  |
+| **403** |  |  -  |
+| **422** |  |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+<a id="deletemediafolder"></a>
+# **DeleteMediaFolder**
+> Object DeleteMediaFolder (Guid workspaceUuid, Guid folderUuid, DeleteMediaFolderRequest? deleteMediaFolderRequest = null)
+
+Delete media folder
+
+Deletes a folder. By default its media and sub-folders move up to the folder's parent; with `delete_media` set to true every media item below the folder is deleted as well.
+
+### Example
+```csharp
+using System.Collections.Generic;
+using System.Diagnostics;
+using PostBoost.Client.Api;
+using PostBoost.Client.Client;
+using PostBoost.Client.Model;
+
+namespace Example
+{
+    public class DeleteMediaFolderExample
+    {
+        public static void Main()
+        {
+            Configuration config = new Configuration();
+            config.BasePath = "https://postboost.co/app/api";
+            // Configure Bearer token for authorization: bearerAuth
+            config.AccessToken = "YOUR_BEARER_TOKEN";
+
+            var apiInstance = new MediaApi(config);
+            var workspaceUuid = "workspaceUuid_example";  // Guid | UUID of the workspace.
+            var folderUuid = "folderUuid_example";  // Guid | UUID of the media folder.
+            var deleteMediaFolderRequest = new DeleteMediaFolderRequest?(); // DeleteMediaFolderRequest? |  (optional) 
+
+            try
+            {
+                // Delete media folder
+                Object result = apiInstance.DeleteMediaFolder(workspaceUuid, folderUuid, deleteMediaFolderRequest);
+                Debug.WriteLine(result);
+            }
+            catch (ApiException  e)
+            {
+                Debug.Print("Exception when calling MediaApi.DeleteMediaFolder: " + e.Message);
+                Debug.Print("Status Code: " + e.ErrorCode);
+                Debug.Print(e.StackTrace);
+            }
+        }
+    }
+}
+```
+
+#### Using the DeleteMediaFolderWithHttpInfo variant
+This returns an ApiResponse object which contains the response data, status code and headers.
+
+```csharp
+try
+{
+    // Delete media folder
+    ApiResponse<Object> response = apiInstance.DeleteMediaFolderWithHttpInfo(workspaceUuid, folderUuid, deleteMediaFolderRequest);
+    Debug.Write("Status Code: " + response.StatusCode);
+    Debug.Write("Response Headers: " + response.Headers);
+    Debug.Write("Response Body: " + response.Data);
+}
+catch (ApiException e)
+{
+    Debug.Print("Exception when calling MediaApi.DeleteMediaFolderWithHttpInfo: " + e.Message);
+    Debug.Print("Status Code: " + e.ErrorCode);
+    Debug.Print(e.StackTrace);
+}
+```
+
+### Parameters
+
+| Name | Type | Description | Notes |
+|------|------|-------------|-------|
+| **workspaceUuid** | **Guid** | UUID of the workspace. |  |
+| **folderUuid** | **Guid** | UUID of the media folder. |  |
+| **deleteMediaFolderRequest** | [**DeleteMediaFolderRequest?**](DeleteMediaFolderRequest?.md) |  | [optional]  |
+
+### Return type
+
+**Object**
+
+### Authorization
+
+[bearerAuth](../README.md#bearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** |  |  -  |
+| **401** |  |  -  |
+| **403** |  |  -  |
+| **404** |  |  -  |
+| **422** |  |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
@@ -398,6 +609,7 @@ catch (ApiException e)
 |-------------|-------------|------------------|
 | **200** | Media asset |  -  |
 | **401** |  |  -  |
+| **403** |  |  -  |
 | **404** |  |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
@@ -496,6 +708,7 @@ catch (ApiException e)
 |-------------|-------------|------------------|
 | **200** | Download status |  -  |
 | **401** |  |  -  |
+| **403** |  |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
@@ -593,6 +806,7 @@ catch (ApiException e)
 |-------------|-------------|------------------|
 | **201** | Chunked upload session details |  -  |
 | **401** |  |  -  |
+| **403** |  |  -  |
 | **422** |  |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
@@ -691,17 +905,18 @@ catch (ApiException e)
 |-------------|-------------|------------------|
 | **201** | Media object or download job |  -  |
 | **401** |  |  -  |
+| **403** |  |  -  |
 | **422** |  |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 <a id="listmedia"></a>
 # **ListMedia**
-> ListMedia200Response ListMedia (Guid workspaceUuid, int? page = null)
+> ListMedia200Response ListMedia (Guid workspaceUuid, int? page = null, int? limit = null, string? folder = null, List<string>? mimeTypes = null, string? type = null, string? keyword = null, string? usage = null, bool? favorite = null, string? sort = null)
 
 List media
 
-Returns a paginated list of media assets in the workspace library.
+Returns a paginated list of media assets in the workspace library. Without `folder` every item is listed, whatever folder it is filed in. A `keyword` search always looks at the whole library and ignores `folder` and `favorite`. 
 
 ### Example
 ```csharp
@@ -724,12 +939,20 @@ namespace Example
 
             var apiInstance = new MediaApi(config);
             var workspaceUuid = "workspaceUuid_example";  // Guid | UUID of the workspace.
-            var page = 1;  // int? | Page number (20 items per page). (optional)  (default to 1)
+            var page = 1;  // int? | Page number. (optional)  (default to 1)
+            var limit = 50;  // int? | Items per page. Values below 1 fall back to 50; values above 100 are capped at 100. (optional)  (default to 50)
+            var folder = "folder_example";  // string? | Media folder UUID, or `root` for items not filed in any folder. (optional) 
+            var mimeTypes = new List<string>?(); // List<string>? | Only these MIME types (for example `image/png`). (optional) 
+            var type = "image";  // string? | Only this media type. (optional) 
+            var keyword = "keyword_example";  // string? | Search media by name. (optional) 
+            var usage = "unused";  // string? | Filter by how the media is used in posts. (optional) 
+            var favorite = true;  // bool? | When `true`, only media the caller marked as favorite. (optional) 
+            var sort = "newest";  // string? |  (optional)  (default to newest)
 
             try
             {
                 // List media
-                ListMedia200Response result = apiInstance.ListMedia(workspaceUuid, page);
+                ListMedia200Response result = apiInstance.ListMedia(workspaceUuid, page, limit, folder, mimeTypes, type, keyword, usage, favorite, sort);
                 Debug.WriteLine(result);
             }
             catch (ApiException  e)
@@ -750,7 +973,7 @@ This returns an ApiResponse object which contains the response data, status code
 try
 {
     // List media
-    ApiResponse<ListMedia200Response> response = apiInstance.ListMediaWithHttpInfo(workspaceUuid, page);
+    ApiResponse<ListMedia200Response> response = apiInstance.ListMediaWithHttpInfo(workspaceUuid, page, limit, folder, mimeTypes, type, keyword, usage, favorite, sort);
     Debug.Write("Status Code: " + response.StatusCode);
     Debug.Write("Response Headers: " + response.Headers);
     Debug.Write("Response Body: " + response.Data);
@@ -768,7 +991,15 @@ catch (ApiException e)
 | Name | Type | Description | Notes |
 |------|------|-------------|-------|
 | **workspaceUuid** | **Guid** | UUID of the workspace. |  |
-| **page** | **int?** | Page number (20 items per page). | [optional] [default to 1] |
+| **page** | **int?** | Page number. | [optional] [default to 1] |
+| **limit** | **int?** | Items per page. Values below 1 fall back to 50; values above 100 are capped at 100. | [optional] [default to 50] |
+| **folder** | **string?** | Media folder UUID, or &#x60;root&#x60; for items not filed in any folder. | [optional]  |
+| **mimeTypes** | [**List&lt;string&gt;?**](string.md) | Only these MIME types (for example &#x60;image/png&#x60;). | [optional]  |
+| **type** | **string?** | Only this media type. | [optional]  |
+| **keyword** | **string?** | Search media by name. | [optional]  |
+| **usage** | **string?** | Filter by how the media is used in posts. | [optional]  |
+| **favorite** | **bool?** | When &#x60;true&#x60;, only media the caller marked as favorite. | [optional]  |
+| **sort** | **string?** |  | [optional] [default to newest] |
 
 ### Return type
 
@@ -789,6 +1020,103 @@ catch (ApiException e)
 |-------------|-------------|------------------|
 | **200** | Paginated list of media |  -  |
 | **401** |  |  -  |
+| **403** |  |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+<a id="listmediafolders"></a>
+# **ListMediaFolders**
+> ListMediaFolders200Response ListMediaFolders (Guid workspaceUuid)
+
+List media folders
+
+Returns the whole folder tree of the media library in one response (not paginated). Rebuild the tree from each folder's `parent`.
+
+### Example
+```csharp
+using System.Collections.Generic;
+using System.Diagnostics;
+using PostBoost.Client.Api;
+using PostBoost.Client.Client;
+using PostBoost.Client.Model;
+
+namespace Example
+{
+    public class ListMediaFoldersExample
+    {
+        public static void Main()
+        {
+            Configuration config = new Configuration();
+            config.BasePath = "https://postboost.co/app/api";
+            // Configure Bearer token for authorization: bearerAuth
+            config.AccessToken = "YOUR_BEARER_TOKEN";
+
+            var apiInstance = new MediaApi(config);
+            var workspaceUuid = "workspaceUuid_example";  // Guid | UUID of the workspace.
+
+            try
+            {
+                // List media folders
+                ListMediaFolders200Response result = apiInstance.ListMediaFolders(workspaceUuid);
+                Debug.WriteLine(result);
+            }
+            catch (ApiException  e)
+            {
+                Debug.Print("Exception when calling MediaApi.ListMediaFolders: " + e.Message);
+                Debug.Print("Status Code: " + e.ErrorCode);
+                Debug.Print(e.StackTrace);
+            }
+        }
+    }
+}
+```
+
+#### Using the ListMediaFoldersWithHttpInfo variant
+This returns an ApiResponse object which contains the response data, status code and headers.
+
+```csharp
+try
+{
+    // List media folders
+    ApiResponse<ListMediaFolders200Response> response = apiInstance.ListMediaFoldersWithHttpInfo(workspaceUuid);
+    Debug.Write("Status Code: " + response.StatusCode);
+    Debug.Write("Response Headers: " + response.Headers);
+    Debug.Write("Response Body: " + response.Data);
+}
+catch (ApiException e)
+{
+    Debug.Print("Exception when calling MediaApi.ListMediaFoldersWithHttpInfo: " + e.Message);
+    Debug.Print("Status Code: " + e.ErrorCode);
+    Debug.Print(e.StackTrace);
+}
+```
+
+### Parameters
+
+| Name | Type | Description | Notes |
+|------|------|-------------|-------|
+| **workspaceUuid** | **Guid** | UUID of the workspace. |  |
+
+### Return type
+
+[**ListMediaFolders200Response**](ListMediaFolders200Response.md)
+
+### Authorization
+
+[bearerAuth](../README.md#bearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | All media folders |  -  |
+| **401** |  |  -  |
+| **403** |  |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
@@ -798,7 +1126,7 @@ catch (ApiException e)
 
 Update media
 
-Update the alt text of a media asset.
+Update the name, alt text, or folder of a media asset. Only the keys present in the body are written. Sending `folder: null` moves the item to the library root; omitting `folder` leaves it where it is. 
 
 ### Example
 ```csharp
@@ -888,7 +1216,111 @@ catch (ApiException e)
 |-------------|-------------|------------------|
 | **200** |  |  -  |
 | **401** |  |  -  |
+| **403** |  |  -  |
 | **404** |  |  -  |
+| **422** |  |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+<a id="updatemediafolder"></a>
+# **UpdateMediaFolder**
+> MediaFolder UpdateMediaFolder (Guid workspaceUuid, Guid folderUuid, MediaFolderInput mediaFolderInput)
+
+Update media folder
+
+Renames a folder and/or moves it. Sending `parent` moves the folder (null = top level); omitting it keeps the current parent. A folder cannot be moved into itself or one of its descendants.
+
+### Example
+```csharp
+using System.Collections.Generic;
+using System.Diagnostics;
+using PostBoost.Client.Api;
+using PostBoost.Client.Client;
+using PostBoost.Client.Model;
+
+namespace Example
+{
+    public class UpdateMediaFolderExample
+    {
+        public static void Main()
+        {
+            Configuration config = new Configuration();
+            config.BasePath = "https://postboost.co/app/api";
+            // Configure Bearer token for authorization: bearerAuth
+            config.AccessToken = "YOUR_BEARER_TOKEN";
+
+            var apiInstance = new MediaApi(config);
+            var workspaceUuid = "workspaceUuid_example";  // Guid | UUID of the workspace.
+            var folderUuid = "folderUuid_example";  // Guid | UUID of the media folder.
+            var mediaFolderInput = new MediaFolderInput(); // MediaFolderInput | 
+
+            try
+            {
+                // Update media folder
+                MediaFolder result = apiInstance.UpdateMediaFolder(workspaceUuid, folderUuid, mediaFolderInput);
+                Debug.WriteLine(result);
+            }
+            catch (ApiException  e)
+            {
+                Debug.Print("Exception when calling MediaApi.UpdateMediaFolder: " + e.Message);
+                Debug.Print("Status Code: " + e.ErrorCode);
+                Debug.Print(e.StackTrace);
+            }
+        }
+    }
+}
+```
+
+#### Using the UpdateMediaFolderWithHttpInfo variant
+This returns an ApiResponse object which contains the response data, status code and headers.
+
+```csharp
+try
+{
+    // Update media folder
+    ApiResponse<MediaFolder> response = apiInstance.UpdateMediaFolderWithHttpInfo(workspaceUuid, folderUuid, mediaFolderInput);
+    Debug.Write("Status Code: " + response.StatusCode);
+    Debug.Write("Response Headers: " + response.Headers);
+    Debug.Write("Response Body: " + response.Data);
+}
+catch (ApiException e)
+{
+    Debug.Print("Exception when calling MediaApi.UpdateMediaFolderWithHttpInfo: " + e.Message);
+    Debug.Print("Status Code: " + e.ErrorCode);
+    Debug.Print(e.StackTrace);
+}
+```
+
+### Parameters
+
+| Name | Type | Description | Notes |
+|------|------|-------------|-------|
+| **workspaceUuid** | **Guid** | UUID of the workspace. |  |
+| **folderUuid** | **Guid** | UUID of the media folder. |  |
+| **mediaFolderInput** | [**MediaFolderInput**](MediaFolderInput.md) |  |  |
+
+### Return type
+
+[**MediaFolder**](MediaFolder.md)
+
+### Authorization
+
+[bearerAuth](../README.md#bearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | Updated folder |  -  |
+| **401** |  |  -  |
+| **403** |  |  -  |
+| **404** |  |  -  |
+| **422** |  |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
@@ -990,13 +1422,14 @@ catch (ApiException e)
 |-------------|-------------|------------------|
 | **201** | Chunk received |  -  |
 | **401** |  |  -  |
+| **403** |  |  -  |
 | **422** |  |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 <a id="uploadmedia"></a>
 # **UploadMedia**
-> Media UploadMedia (Guid workspaceUuid, System.IO.Stream file, string? altText = null)
+> Media UploadMedia (Guid workspaceUuid, System.IO.Stream file, string? altText = null, Guid? folder = null)
 
 Upload media (binary)
 
@@ -1025,11 +1458,12 @@ namespace Example
             var workspaceUuid = "workspaceUuid_example";  // Guid | UUID of the workspace.
             var file = new System.IO.MemoryStream(System.IO.File.ReadAllBytes("/path/to/file.txt"));  // System.IO.Stream | The file to upload.
             var altText = "altText_example";  // string? | Alternative text for accessibility. (optional) 
+            var folder = "folder_example";  // Guid? | UUID of the media folder to file the upload in. Omit or null for the library root. (optional) 
 
             try
             {
                 // Upload media (binary)
-                Media result = apiInstance.UploadMedia(workspaceUuid, file, altText);
+                Media result = apiInstance.UploadMedia(workspaceUuid, file, altText, folder);
                 Debug.WriteLine(result);
             }
             catch (ApiException  e)
@@ -1050,7 +1484,7 @@ This returns an ApiResponse object which contains the response data, status code
 try
 {
     // Upload media (binary)
-    ApiResponse<Media> response = apiInstance.UploadMediaWithHttpInfo(workspaceUuid, file, altText);
+    ApiResponse<Media> response = apiInstance.UploadMediaWithHttpInfo(workspaceUuid, file, altText, folder);
     Debug.Write("Status Code: " + response.StatusCode);
     Debug.Write("Response Headers: " + response.Headers);
     Debug.Write("Response Body: " + response.Data);
@@ -1070,6 +1504,7 @@ catch (ApiException e)
 | **workspaceUuid** | **Guid** | UUID of the workspace. |  |
 | **file** | **System.IO.Stream****System.IO.Stream** | The file to upload. |  |
 | **altText** | **string?** | Alternative text for accessibility. | [optional]  |
+| **folder** | **Guid?** | UUID of the media folder to file the upload in. Omit or null for the library root. | [optional]  |
 
 ### Return type
 
@@ -1088,8 +1523,9 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **201** | Uploaded media object |  -  |
+| **201** | Uploaded media object. A video may come back with &#x60;is_processing&#x60; set to &#x60;true&#x60; while its conversion runs. |  -  |
 | **401** |  |  -  |
+| **403** |  |  -  |
 | **422** |  |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)

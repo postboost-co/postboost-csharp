@@ -9,6 +9,8 @@ All URIs are relative to *https://postboost.co/app/api*
 | [**DeleteWorkspace**](WorkspacesApi.md#deleteworkspace) | **DELETE** /panel/workspaces/{workspaceUuid} | Delete workspace |
 | [**DeleteWorkspacesBulk**](WorkspacesApi.md#deleteworkspacesbulk) | **DELETE** /panel/workspaces | Delete workspaces (bulk) |
 | [**GetWorkspace**](WorkspacesApi.md#getworkspace) | **GET** /panel/workspaces/{workspaceUuid} | Get workspace |
+| [**GetWorkspaceAICredits**](WorkspacesApi.md#getworkspaceaicredits) | **GET** /panel/workspaces/{workspaceUuid}/ai-credits | Get workspace AI credits |
+| [**ListMyWorkspaces**](WorkspacesApi.md#listmyworkspaces) | **GET** /workspaces | List my workspaces |
 | [**ListWorkspaces**](WorkspacesApi.md#listworkspaces) | **GET** /panel/workspaces | List workspaces |
 | [**RemoveUserFromWorkspace**](WorkspacesApi.md#removeuserfromworkspace) | **DELETE** /panel/workspaces/{workspaceUuid}/users | Remove user from workspace |
 | [**UpdateWorkspace**](WorkspacesApi.md#updateworkspace) | **PUT** /panel/workspaces/{workspaceUuid} | Update workspace |
@@ -500,6 +502,193 @@ catch (ApiException e)
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
+<a id="getworkspaceaicredits"></a>
+# **GetWorkspaceAICredits**
+> AICredits GetWorkspaceAICredits (Guid workspaceUuid)
+
+Get workspace AI credits
+
+Returns whether the workspace can use AI credits, its remaining balance, and whether the balance is low. Admin only.
+
+### Example
+```csharp
+using System.Collections.Generic;
+using System.Diagnostics;
+using PostBoost.Client.Api;
+using PostBoost.Client.Client;
+using PostBoost.Client.Model;
+
+namespace Example
+{
+    public class GetWorkspaceAICreditsExample
+    {
+        public static void Main()
+        {
+            Configuration config = new Configuration();
+            config.BasePath = "https://postboost.co/app/api";
+            // Configure Bearer token for authorization: bearerAuth
+            config.AccessToken = "YOUR_BEARER_TOKEN";
+
+            var apiInstance = new WorkspacesApi(config);
+            var workspaceUuid = "workspaceUuid_example";  // Guid | UUID of the workspace.
+
+            try
+            {
+                // Get workspace AI credits
+                AICredits result = apiInstance.GetWorkspaceAICredits(workspaceUuid);
+                Debug.WriteLine(result);
+            }
+            catch (ApiException  e)
+            {
+                Debug.Print("Exception when calling WorkspacesApi.GetWorkspaceAICredits: " + e.Message);
+                Debug.Print("Status Code: " + e.ErrorCode);
+                Debug.Print(e.StackTrace);
+            }
+        }
+    }
+}
+```
+
+#### Using the GetWorkspaceAICreditsWithHttpInfo variant
+This returns an ApiResponse object which contains the response data, status code and headers.
+
+```csharp
+try
+{
+    // Get workspace AI credits
+    ApiResponse<AICredits> response = apiInstance.GetWorkspaceAICreditsWithHttpInfo(workspaceUuid);
+    Debug.Write("Status Code: " + response.StatusCode);
+    Debug.Write("Response Headers: " + response.Headers);
+    Debug.Write("Response Body: " + response.Data);
+}
+catch (ApiException e)
+{
+    Debug.Print("Exception when calling WorkspacesApi.GetWorkspaceAICreditsWithHttpInfo: " + e.Message);
+    Debug.Print("Status Code: " + e.ErrorCode);
+    Debug.Print(e.StackTrace);
+}
+```
+
+### Parameters
+
+| Name | Type | Description | Notes |
+|------|------|-------------|-------|
+| **workspaceUuid** | **Guid** | UUID of the workspace. |  |
+
+### Return type
+
+[**AICredits**](AICredits.md)
+
+### Authorization
+
+[bearerAuth](../README.md#bearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | AI credit status |  -  |
+| **401** |  |  -  |
+| **403** |  |  -  |
+| **404** |  |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+<a id="listmyworkspaces"></a>
+# **ListMyWorkspaces**
+> ListMyWorkspaces200Response ListMyWorkspaces ()
+
+List my workspaces
+
+Returns the workspaces the authenticated user belongs to, most recently updated first, with the caller's role in each. Use a returned `uuid` as `workspaceUuid`.
+
+### Example
+```csharp
+using System.Collections.Generic;
+using System.Diagnostics;
+using PostBoost.Client.Api;
+using PostBoost.Client.Client;
+using PostBoost.Client.Model;
+
+namespace Example
+{
+    public class ListMyWorkspacesExample
+    {
+        public static void Main()
+        {
+            Configuration config = new Configuration();
+            config.BasePath = "https://postboost.co/app/api";
+            // Configure Bearer token for authorization: bearerAuth
+            config.AccessToken = "YOUR_BEARER_TOKEN";
+
+            var apiInstance = new WorkspacesApi(config);
+
+            try
+            {
+                // List my workspaces
+                ListMyWorkspaces200Response result = apiInstance.ListMyWorkspaces();
+                Debug.WriteLine(result);
+            }
+            catch (ApiException  e)
+            {
+                Debug.Print("Exception when calling WorkspacesApi.ListMyWorkspaces: " + e.Message);
+                Debug.Print("Status Code: " + e.ErrorCode);
+                Debug.Print(e.StackTrace);
+            }
+        }
+    }
+}
+```
+
+#### Using the ListMyWorkspacesWithHttpInfo variant
+This returns an ApiResponse object which contains the response data, status code and headers.
+
+```csharp
+try
+{
+    // List my workspaces
+    ApiResponse<ListMyWorkspaces200Response> response = apiInstance.ListMyWorkspacesWithHttpInfo();
+    Debug.Write("Status Code: " + response.StatusCode);
+    Debug.Write("Response Headers: " + response.Headers);
+    Debug.Write("Response Body: " + response.Data);
+}
+catch (ApiException e)
+{
+    Debug.Print("Exception when calling WorkspacesApi.ListMyWorkspacesWithHttpInfo: " + e.Message);
+    Debug.Print("Status Code: " + e.ErrorCode);
+    Debug.Print(e.StackTrace);
+}
+```
+
+### Parameters
+This endpoint does not need any parameter.
+### Return type
+
+[**ListMyWorkspaces200Response**](ListMyWorkspaces200Response.md)
+
+### Authorization
+
+[bearerAuth](../README.md#bearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | The caller&#39;s workspaces |  -  |
+| **401** |  |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
 <a id="listworkspaces"></a>
 # **ListWorkspaces**
 > ListWorkspaces200Response ListWorkspaces (string? keyword = null, string? subscriptionStatus = null, string? accessStatus = null, int? page = null)
@@ -706,7 +895,7 @@ catch (ApiException e)
 
 Update workspace
 
-Updates a workspace's name, color, or access status. Admin only.
+Updates a workspace's name, owner, or access status. Admin only. `hex_color` is accepted but ignored.
 
 ### Example
 ```csharp

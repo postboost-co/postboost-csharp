@@ -205,6 +205,7 @@ catch (ApiException e)
 |-------------|-------------|------------------|
 | **200** | Alt text generated and saved to media record |  -  |
 | **401** |  |  -  |
+| **403** |  |  -  |
 | **422** |  |  -  |
 | **429** |  |  -  |
 
@@ -304,6 +305,7 @@ catch (ApiException e)
 |-------------|-------------|------------------|
 | **200** | Images edited and saved to media library |  -  |
 | **401** |  |  -  |
+| **403** |  |  -  |
 | **422** |  |  -  |
 | **429** |  |  -  |
 
@@ -403,6 +405,7 @@ catch (ApiException e)
 |-------------|-------------|------------------|
 | **200** | Images generated and saved to media library |  -  |
 | **401** |  |  -  |
+| **403** |  |  -  |
 | **422** |  |  -  |
 | **429** | AI credits exhausted for this billing period |  -  |
 
@@ -502,6 +505,7 @@ catch (ApiException e)
 |-------------|-------------|------------------|
 | **200** | Prompt built successfully |  -  |
 | **401** |  |  -  |
+| **403** |  |  -  |
 | **422** |  |  -  |
 | **429** | AI credits exhausted for this billing period |  -  |
 
@@ -601,6 +605,7 @@ catch (ApiException e)
 |-------------|-------------|------------------|
 | **200** | Variations generated and saved to media library |  -  |
 | **401** |  |  -  |
+| **403** |  |  -  |
 | **422** |  |  -  |
 | **429** |  |  -  |
 

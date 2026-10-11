@@ -10,17 +10,19 @@ All URIs are relative to *https://postboost.co/app/api*
 | [**DeletePost**](PostsApi.md#deletepost) | **DELETE** /{workspaceUuid}/posts/{postUuid} | Delete post |
 | [**DeletePostsBulk**](PostsApi.md#deletepostsbulk) | **DELETE** /{workspaceUuid}/posts | Delete posts (bulk) |
 | [**GetPost**](PostsApi.md#getpost) | **GET** /{workspaceUuid}/posts/{postUuid} | Get post |
+| [**GetPostAnalytics**](PostsApi.md#getpostanalytics) | **GET** /{workspaceUuid}/posts/{postUuid}/analytics | Get post analytics |
 | [**ListPosts**](PostsApi.md#listposts) | **GET** /{workspaceUuid}/posts | List posts |
+| [**RetryPostAccount**](PostsApi.md#retrypostaccount) | **POST** /{workspaceUuid}/posts/retry/{postUuid}/{accountUuid} | Retry publishing to one account |
 | [**SchedulePost**](PostsApi.md#schedulepost) | **POST** /{workspaceUuid}/posts/schedule/{postUuid} | Schedule post |
 | [**UpdatePost**](PostsApi.md#updatepost) | **PUT** /{workspaceUuid}/posts/{postUuid} | Update post |
 
 <a id="addposttoqueue"></a>
 # **AddPostToQueue**
-> ScheduleResult AddPostToQueue (Guid workspaceUuid, Guid postUuid)
+> ScheduleResult AddPostToQueue (Guid workspaceUuid, Guid postUuid, AddPostToQueueRequest? addPostToQueueRequest = null)
 
 Add post to queue
 
-Add an existing post to the smart publishing queue.
+Add an existing post to the smart publishing queue. Each account of the post gets its own next free queue slot. Returns `422` when the post has no accounts, the posting schedule has no available times, or provider requirements are not met. 
 
 ### Example
 ```csharp
@@ -44,11 +46,12 @@ namespace Example
             var apiInstance = new PostsApi(config);
             var workspaceUuid = "workspaceUuid_example";  // Guid | UUID of the workspace.
             var postUuid = "postUuid_example";  // Guid | UUID of the post.
+            var addPostToQueueRequest = new AddPostToQueueRequest?(); // AddPostToQueueRequest? |  (optional) 
 
             try
             {
                 // Add post to queue
-                ScheduleResult result = apiInstance.AddPostToQueue(workspaceUuid, postUuid);
+                ScheduleResult result = apiInstance.AddPostToQueue(workspaceUuid, postUuid, addPostToQueueRequest);
                 Debug.WriteLine(result);
             }
             catch (ApiException  e)
@@ -69,7 +72,7 @@ This returns an ApiResponse object which contains the response data, status code
 try
 {
     // Add post to queue
-    ApiResponse<ScheduleResult> response = apiInstance.AddPostToQueueWithHttpInfo(workspaceUuid, postUuid);
+    ApiResponse<ScheduleResult> response = apiInstance.AddPostToQueueWithHttpInfo(workspaceUuid, postUuid, addPostToQueueRequest);
     Debug.Write("Status Code: " + response.StatusCode);
     Debug.Write("Response Headers: " + response.Headers);
     Debug.Write("Response Body: " + response.Data);
@@ -88,6 +91,7 @@ catch (ApiException e)
 |------|------|-------------|-------|
 | **workspaceUuid** | **Guid** | UUID of the workspace. |  |
 | **postUuid** | **Guid** | UUID of the post. |  |
+| **addPostToQueueRequest** | [**AddPostToQueueRequest?**](AddPostToQueueRequest?.md) |  | [optional]  |
 
 ### Return type
 
@@ -99,7 +103,7 @@ catch (ApiException e)
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
+ - **Content-Type**: application/json
  - **Accept**: application/json
 
 
@@ -108,17 +112,19 @@ catch (ApiException e)
 |-------------|-------------|------------------|
 | **201** | Queue confirmation |  -  |
 | **401** |  |  -  |
+| **403** |  |  -  |
 | **404** |  |  -  |
+| **422** |  |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 <a id="approvepost"></a>
 # **ApprovePost**
-> ScheduleResult ApprovePost (Guid workspaceUuid, Guid postUuid)
+> ScheduleResult ApprovePost (Guid workspaceUuid, Guid postUuid, ApprovePostRequest? approvePostRequest = null)
 
 Approve post
 
-Approve a post that is pending review.
+Approve a post that is pending review. The approver may move the post with `date`/`time` (read in `timezone`) and set per-account times with `accounts_schedule`; without them the post keeps the time it was submitted with. Provider requirements are validated and reported as `422`. 
 
 ### Example
 ```csharp
@@ -142,11 +148,12 @@ namespace Example
             var apiInstance = new PostsApi(config);
             var workspaceUuid = "workspaceUuid_example";  // Guid | UUID of the workspace.
             var postUuid = "postUuid_example";  // Guid | UUID of the post.
+            var approvePostRequest = new ApprovePostRequest?(); // ApprovePostRequest? |  (optional) 
 
             try
             {
                 // Approve post
-                ScheduleResult result = apiInstance.ApprovePost(workspaceUuid, postUuid);
+                ScheduleResult result = apiInstance.ApprovePost(workspaceUuid, postUuid, approvePostRequest);
                 Debug.WriteLine(result);
             }
             catch (ApiException  e)
@@ -167,7 +174,7 @@ This returns an ApiResponse object which contains the response data, status code
 try
 {
     // Approve post
-    ApiResponse<ScheduleResult> response = apiInstance.ApprovePostWithHttpInfo(workspaceUuid, postUuid);
+    ApiResponse<ScheduleResult> response = apiInstance.ApprovePostWithHttpInfo(workspaceUuid, postUuid, approvePostRequest);
     Debug.Write("Status Code: " + response.StatusCode);
     Debug.Write("Response Headers: " + response.Headers);
     Debug.Write("Response Body: " + response.Data);
@@ -186,6 +193,7 @@ catch (ApiException e)
 |------|------|-------------|-------|
 | **workspaceUuid** | **Guid** | UUID of the workspace. |  |
 | **postUuid** | **Guid** | UUID of the post. |  |
+| **approvePostRequest** | [**ApprovePostRequest?**](ApprovePostRequest?.md) |  | [optional]  |
 
 ### Return type
 
@@ -197,7 +205,7 @@ catch (ApiException e)
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
+ - **Content-Type**: application/json
  - **Accept**: application/json
 
 
@@ -208,6 +216,7 @@ catch (ApiException e)
 | **401** |  |  -  |
 | **403** |  |  -  |
 | **404** |  |  -  |
+| **422** |  |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
@@ -217,7 +226,7 @@ catch (ApiException e)
 
 Create post
 
-Create a new post. Use `schedule: true` with `date` and `time` to schedule, `schedule_now: true` to publish immediately, or `queue: true` to add to the smart publishing queue. 
+Create a new post. Use `schedule: true` with `date` and `time` to schedule, `schedule_now: true` to publish immediately, or `queue: true` to add to the smart publishing queue (each account gets its own queue slot).  `date`, `time` and `accounts_schedule` are read in `timezone` when given, otherwise in the workspace timezone. Use `accounts_schedule` to give individual accounts their own departure time.  Post bodies may reference mentions with `{{mention:<reference>}}` (see the Mentions endpoints). When the post is scheduled, provider requirements (for example a network that requires media) are validated up front and reported as `422`. 
 
 ### Example
 ```csharp
@@ -305,6 +314,7 @@ catch (ApiException e)
 |-------------|-------------|------------------|
 | **201** | Created post |  -  |
 | **401** |  |  -  |
+| **403** |  |  -  |
 | **422** |  |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
@@ -405,6 +415,7 @@ catch (ApiException e)
 |-------------|-------------|------------------|
 | **200** | Deletion result |  -  |
 | **401** |  |  -  |
+| **403** |  |  -  |
 | **404** |  |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
@@ -503,6 +514,7 @@ catch (ApiException e)
 |-------------|-------------|------------------|
 | **200** | Deletion result |  -  |
 | **401** |  |  -  |
+| **403** |  |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
@@ -600,6 +612,106 @@ catch (ApiException e)
 |-------------|-------------|------------------|
 | **200** | Post details |  -  |
 | **401** |  |  -  |
+| **403** |  |  -  |
+| **404** |  |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+<a id="getpostanalytics"></a>
+# **GetPostAnalytics**
+> PostAnalytics GetPostAnalytics (Guid workspaceUuid, Guid postUuid)
+
+Get post analytics
+
+Engagement metrics for a published post across its accounts (also works for trashed posts), with totals, trends and the best-performing account.
+
+### Example
+```csharp
+using System.Collections.Generic;
+using System.Diagnostics;
+using PostBoost.Client.Api;
+using PostBoost.Client.Client;
+using PostBoost.Client.Model;
+
+namespace Example
+{
+    public class GetPostAnalyticsExample
+    {
+        public static void Main()
+        {
+            Configuration config = new Configuration();
+            config.BasePath = "https://postboost.co/app/api";
+            // Configure Bearer token for authorization: bearerAuth
+            config.AccessToken = "YOUR_BEARER_TOKEN";
+
+            var apiInstance = new PostsApi(config);
+            var workspaceUuid = "workspaceUuid_example";  // Guid | UUID of the workspace.
+            var postUuid = "postUuid_example";  // Guid | UUID of the post.
+
+            try
+            {
+                // Get post analytics
+                PostAnalytics result = apiInstance.GetPostAnalytics(workspaceUuid, postUuid);
+                Debug.WriteLine(result);
+            }
+            catch (ApiException  e)
+            {
+                Debug.Print("Exception when calling PostsApi.GetPostAnalytics: " + e.Message);
+                Debug.Print("Status Code: " + e.ErrorCode);
+                Debug.Print(e.StackTrace);
+            }
+        }
+    }
+}
+```
+
+#### Using the GetPostAnalyticsWithHttpInfo variant
+This returns an ApiResponse object which contains the response data, status code and headers.
+
+```csharp
+try
+{
+    // Get post analytics
+    ApiResponse<PostAnalytics> response = apiInstance.GetPostAnalyticsWithHttpInfo(workspaceUuid, postUuid);
+    Debug.Write("Status Code: " + response.StatusCode);
+    Debug.Write("Response Headers: " + response.Headers);
+    Debug.Write("Response Body: " + response.Data);
+}
+catch (ApiException e)
+{
+    Debug.Print("Exception when calling PostsApi.GetPostAnalyticsWithHttpInfo: " + e.Message);
+    Debug.Print("Status Code: " + e.ErrorCode);
+    Debug.Print(e.StackTrace);
+}
+```
+
+### Parameters
+
+| Name | Type | Description | Notes |
+|------|------|-------------|-------|
+| **workspaceUuid** | **Guid** | UUID of the workspace. |  |
+| **postUuid** | **Guid** | UUID of the post. |  |
+
+### Return type
+
+[**PostAnalytics**](PostAnalytics.md)
+
+### Authorization
+
+[bearerAuth](../README.md#bearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | Post analytics |  -  |
+| **401** |  |  -  |
+| **403** |  |  -  |
 | **404** |  |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
@@ -698,6 +810,109 @@ catch (ApiException e)
 |-------------|-------------|------------------|
 | **200** | Paginated list of posts |  -  |
 | **401** |  |  -  |
+| **403** |  |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+<a id="retrypostaccount"></a>
+# **RetryPostAccount**
+> RetryPostAccountResult RetryPostAccount (Guid workspaceUuid, Guid postUuid, Guid accountUuid)
+
+Retry publishing to one account
+
+Re-publishes a post to a single account whose publishing failed. Returns `422` when the account is not on the post, the post is still publishing, or the account did not fail.
+
+### Example
+```csharp
+using System.Collections.Generic;
+using System.Diagnostics;
+using PostBoost.Client.Api;
+using PostBoost.Client.Client;
+using PostBoost.Client.Model;
+
+namespace Example
+{
+    public class RetryPostAccountExample
+    {
+        public static void Main()
+        {
+            Configuration config = new Configuration();
+            config.BasePath = "https://postboost.co/app/api";
+            // Configure Bearer token for authorization: bearerAuth
+            config.AccessToken = "YOUR_BEARER_TOKEN";
+
+            var apiInstance = new PostsApi(config);
+            var workspaceUuid = "workspaceUuid_example";  // Guid | UUID of the workspace.
+            var postUuid = "postUuid_example";  // Guid | UUID of the post.
+            var accountUuid = "accountUuid_example";  // Guid | UUID of the social media account.
+
+            try
+            {
+                // Retry publishing to one account
+                RetryPostAccountResult result = apiInstance.RetryPostAccount(workspaceUuid, postUuid, accountUuid);
+                Debug.WriteLine(result);
+            }
+            catch (ApiException  e)
+            {
+                Debug.Print("Exception when calling PostsApi.RetryPostAccount: " + e.Message);
+                Debug.Print("Status Code: " + e.ErrorCode);
+                Debug.Print(e.StackTrace);
+            }
+        }
+    }
+}
+```
+
+#### Using the RetryPostAccountWithHttpInfo variant
+This returns an ApiResponse object which contains the response data, status code and headers.
+
+```csharp
+try
+{
+    // Retry publishing to one account
+    ApiResponse<RetryPostAccountResult> response = apiInstance.RetryPostAccountWithHttpInfo(workspaceUuid, postUuid, accountUuid);
+    Debug.Write("Status Code: " + response.StatusCode);
+    Debug.Write("Response Headers: " + response.Headers);
+    Debug.Write("Response Body: " + response.Data);
+}
+catch (ApiException e)
+{
+    Debug.Print("Exception when calling PostsApi.RetryPostAccountWithHttpInfo: " + e.Message);
+    Debug.Print("Status Code: " + e.ErrorCode);
+    Debug.Print(e.StackTrace);
+}
+```
+
+### Parameters
+
+| Name | Type | Description | Notes |
+|------|------|-------------|-------|
+| **workspaceUuid** | **Guid** | UUID of the workspace. |  |
+| **postUuid** | **Guid** | UUID of the post. |  |
+| **accountUuid** | **Guid** | UUID of the social media account. |  |
+
+### Return type
+
+[**RetryPostAccountResult**](RetryPostAccountResult.md)
+
+### Authorization
+
+[bearerAuth](../README.md#bearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | Retry started |  -  |
+| **401** |  |  -  |
+| **403** |  |  -  |
+| **404** |  |  -  |
+| **422** |  |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
@@ -707,7 +922,7 @@ catch (ApiException e)
 
 Schedule post
 
-Schedule an existing post. Set `postNow: true` to publish immediately.
+Schedule an existing post. Optionally move it with `date`/`time` (read in `timezone`) and give accounts their own times with `accounts_schedule`. Set `postNow: true` to publish immediately; publishing starts within the request and any per-account times are dropped. Provider requirements are validated and reported as `422`. 
 
 ### Example
 ```csharp
@@ -797,7 +1012,9 @@ catch (ApiException e)
 |-------------|-------------|------------------|
 | **200** | Schedule confirmation |  -  |
 | **401** |  |  -  |
+| **403** |  |  -  |
 | **404** |  |  -  |
+| **422** |  |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
@@ -807,7 +1024,7 @@ catch (ApiException e)
 
 Update post
 
-Replaces a post's versions, accounts, tags, and scheduling options. The post must not be in a published state.
+Replaces a post's versions, accounts, tags, and scheduling options. The post must not be in a published state. `timezone` is honoured: `date`, `time` and `accounts_schedule` are read in it. When the post stays scheduled, provider requirements are validated and reported as `422`. 
 
 ### Example
 ```csharp
@@ -897,6 +1114,7 @@ catch (ApiException e)
 |-------------|-------------|------------------|
 | **200** |  |  -  |
 | **401** |  |  -  |
+| **403** |  |  -  |
 | **404** |  |  -  |
 | **422** |  |  -  |
 

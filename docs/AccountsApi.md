@@ -108,11 +108,11 @@ catch (ApiException e)
 
 <a id="listaccounts"></a>
 # **ListAccounts**
-> ListAccounts200Response ListAccounts (Guid workspaceUuid)
+> ListAccounts200Response ListAccounts (Guid workspaceUuid, string? keyword = null, string? group = null, List<string>? providers = null, bool? unauthorized = null)
 
 List accounts
 
-Returns all social media accounts connected to the workspace.
+Returns all social media accounts connected to the workspace, newest first. Optional filters narrow the list.
 
 ### Example
 ```csharp
@@ -135,11 +135,15 @@ namespace Example
 
             var apiInstance = new AccountsApi(config);
             var workspaceUuid = "workspaceUuid_example";  // Guid | UUID of the workspace.
+            var keyword = "keyword_example";  // string? | Match the account name or username. (optional) 
+            var group = "group_example";  // string? | Only accounts in this account group. (optional) 
+            var providers = new List<string>?(); // List<string>? | Only accounts of these providers (for example `instagram`, `linkedin`). (optional) 
+            var unauthorized = true;  // bool? | When `true`, only accounts that need to be reconnected. (optional) 
 
             try
             {
                 // List accounts
-                ListAccounts200Response result = apiInstance.ListAccounts(workspaceUuid);
+                ListAccounts200Response result = apiInstance.ListAccounts(workspaceUuid, keyword, group, providers, unauthorized);
                 Debug.WriteLine(result);
             }
             catch (ApiException  e)
@@ -160,7 +164,7 @@ This returns an ApiResponse object which contains the response data, status code
 try
 {
     // List accounts
-    ApiResponse<ListAccounts200Response> response = apiInstance.ListAccountsWithHttpInfo(workspaceUuid);
+    ApiResponse<ListAccounts200Response> response = apiInstance.ListAccountsWithHttpInfo(workspaceUuid, keyword, group, providers, unauthorized);
     Debug.Write("Status Code: " + response.StatusCode);
     Debug.Write("Response Headers: " + response.Headers);
     Debug.Write("Response Body: " + response.Data);
@@ -178,6 +182,10 @@ catch (ApiException e)
 | Name | Type | Description | Notes |
 |------|------|-------------|-------|
 | **workspaceUuid** | **Guid** | UUID of the workspace. |  |
+| **keyword** | **string?** | Match the account name or username. | [optional]  |
+| **group** | **string?** | Only accounts in this account group. | [optional]  |
+| **providers** | [**List&lt;string&gt;?**](string.md) | Only accounts of these providers (for example &#x60;instagram&#x60;, &#x60;linkedin&#x60;). | [optional]  |
+| **unauthorized** | **bool?** | When &#x60;true&#x60;, only accounts that need to be reconnected. | [optional]  |
 
 ### Return type
 

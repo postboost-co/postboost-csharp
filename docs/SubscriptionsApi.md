@@ -115,11 +115,11 @@ catch (ApiException e)
 
 <a id="cancelsubscription"></a>
 # **CancelSubscription**
-> Object CancelSubscription (Guid workspaceUuid)
+> Object CancelSubscription (Guid workspaceUuid, CancelSubscriptionRequest? cancelSubscriptionRequest = null)
 
 Cancel subscription
 
-Cancels the workspace's Stripe subscription at the end of the current billing period. Admin only.
+Cancels the workspace's Stripe subscription at the end of the current billing period, or right away with `immediately: true`. Works for active and past-due subscriptions. Admin only. 
 
 ### Example
 ```csharp
@@ -142,11 +142,12 @@ namespace Example
 
             var apiInstance = new SubscriptionsApi(config);
             var workspaceUuid = "workspaceUuid_example";  // Guid | UUID of the workspace.
+            var cancelSubscriptionRequest = new CancelSubscriptionRequest?(); // CancelSubscriptionRequest? |  (optional) 
 
             try
             {
                 // Cancel subscription
-                Object result = apiInstance.CancelSubscription(workspaceUuid);
+                Object result = apiInstance.CancelSubscription(workspaceUuid, cancelSubscriptionRequest);
                 Debug.WriteLine(result);
             }
             catch (ApiException  e)
@@ -167,7 +168,7 @@ This returns an ApiResponse object which contains the response data, status code
 try
 {
     // Cancel subscription
-    ApiResponse<Object> response = apiInstance.CancelSubscriptionWithHttpInfo(workspaceUuid);
+    ApiResponse<Object> response = apiInstance.CancelSubscriptionWithHttpInfo(workspaceUuid, cancelSubscriptionRequest);
     Debug.Write("Status Code: " + response.StatusCode);
     Debug.Write("Response Headers: " + response.Headers);
     Debug.Write("Response Body: " + response.Data);
@@ -185,6 +186,7 @@ catch (ApiException e)
 | Name | Type | Description | Notes |
 |------|------|-------------|-------|
 | **workspaceUuid** | **Guid** | UUID of the workspace. |  |
+| **cancelSubscriptionRequest** | [**CancelSubscriptionRequest?**](CancelSubscriptionRequest?.md) |  | [optional]  |
 
 ### Return type
 
@@ -196,7 +198,7 @@ catch (ApiException e)
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
+ - **Content-Type**: application/json
  - **Accept**: application/json
 
 
@@ -206,6 +208,7 @@ catch (ApiException e)
 | **200** |  |  -  |
 | **401** |  |  -  |
 | **403** |  |  -  |
+| **422** | The workspace has no active or past-due subscription, or the billing provider rejected the cancellation. |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
@@ -702,7 +705,7 @@ catch (ApiException e)
 
 Remove generic subscription
 
-Removes the generic (non-Stripe) subscription from the workspace. Admin only.
+Removes the generic (non-Stripe) subscription from the workspace. Returns `422` when the workspace has no generic subscription. Admin only.
 
 ### Example
 ```csharp
@@ -789,6 +792,7 @@ catch (ApiException e)
 | **200** |  |  -  |
 | **401** |  |  -  |
 | **403** |  |  -  |
+| **422** | The workspace has no generic subscription. |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 

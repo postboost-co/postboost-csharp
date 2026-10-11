@@ -7,6 +7,7 @@ Name | Type | Description | Notes
 **Id** | **int** |  | 
 **Name** | **string** |  | 
 **Email** | **string** |  | 
+**Avatar** | **string** | URL of the user&#39;s avatar, or null when none is set. | [optional] 
 **IsAdmin** | **bool** |  | 
 **EmailVerifiedAt** | **DateTime** |  | [optional] 
 **CreatedAt** | **DateTime** |  | 
