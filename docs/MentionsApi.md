@@ -12,7 +12,7 @@ All URIs are relative to *https://postboost.co/app/api*
 
 <a id="createmention"></a>
 # **CreateMention**
-> CreateMention201Response CreateMention (Guid workspaceUuid, MentionInput mentionInput)
+> CreateMention201Response CreateMention (Guid workspaceUuid, MentionInput mentionInput, string? idempotencyKey = null)
 
 Create mention
 
@@ -40,11 +40,12 @@ namespace Example
             var apiInstance = new MentionsApi(config);
             var workspaceUuid = "workspaceUuid_example";  // Guid | UUID of the workspace.
             var mentionInput = new MentionInput(); // MentionInput | 
+            var idempotencyKey = "idempotencyKey_example";  // string? | Unique key (for example a UUID) that makes the request safe to retry. A repeat with the same key and body within 24 hours returns the stored response with `Idempotent-Replayed: true` and has no further effect. Keys are scoped to your user, the workspace, the method and the path.  (optional) 
 
             try
             {
                 // Create mention
-                CreateMention201Response result = apiInstance.CreateMention(workspaceUuid, mentionInput);
+                CreateMention201Response result = apiInstance.CreateMention(workspaceUuid, mentionInput, idempotencyKey);
                 Debug.WriteLine(result);
             }
             catch (ApiException  e)
@@ -65,7 +66,7 @@ This returns an ApiResponse object which contains the response data, status code
 try
 {
     // Create mention
-    ApiResponse<CreateMention201Response> response = apiInstance.CreateMentionWithHttpInfo(workspaceUuid, mentionInput);
+    ApiResponse<CreateMention201Response> response = apiInstance.CreateMentionWithHttpInfo(workspaceUuid, mentionInput, idempotencyKey);
     Debug.Write("Status Code: " + response.StatusCode);
     Debug.Write("Response Headers: " + response.Headers);
     Debug.Write("Response Body: " + response.Data);
@@ -84,6 +85,7 @@ catch (ApiException e)
 |------|------|-------------|-------|
 | **workspaceUuid** | **Guid** | UUID of the workspace. |  |
 | **mentionInput** | [**MentionInput**](MentionInput.md) |  |  |
+| **idempotencyKey** | **string?** | Unique key (for example a UUID) that makes the request safe to retry. A repeat with the same key and body within 24 hours returns the stored response with &#x60;Idempotent-Replayed: true&#x60; and has no further effect. Keys are scoped to your user, the workspace, the method and the path.  | [optional]  |
 
 ### Return type
 

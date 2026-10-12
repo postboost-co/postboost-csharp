@@ -12,7 +12,7 @@ All URIs are relative to *https://postboost.co/app/api*
 
 <a id="createtag"></a>
 # **CreateTag**
-> Tag CreateTag (Guid workspaceUuid, TagInput tagInput)
+> Tag CreateTag (Guid workspaceUuid, TagInput tagInput, string? idempotencyKey = null)
 
 Create tag
 
@@ -40,11 +40,12 @@ namespace Example
             var apiInstance = new TagsApi(config);
             var workspaceUuid = "workspaceUuid_example";  // Guid | UUID of the workspace.
             var tagInput = new TagInput(); // TagInput | 
+            var idempotencyKey = "idempotencyKey_example";  // string? | Unique key (for example a UUID) that makes the request safe to retry. A repeat with the same key and body within 24 hours returns the stored response with `Idempotent-Replayed: true` and has no further effect. Keys are scoped to your user, the workspace, the method and the path.  (optional) 
 
             try
             {
                 // Create tag
-                Tag result = apiInstance.CreateTag(workspaceUuid, tagInput);
+                Tag result = apiInstance.CreateTag(workspaceUuid, tagInput, idempotencyKey);
                 Debug.WriteLine(result);
             }
             catch (ApiException  e)
@@ -65,7 +66,7 @@ This returns an ApiResponse object which contains the response data, status code
 try
 {
     // Create tag
-    ApiResponse<Tag> response = apiInstance.CreateTagWithHttpInfo(workspaceUuid, tagInput);
+    ApiResponse<Tag> response = apiInstance.CreateTagWithHttpInfo(workspaceUuid, tagInput, idempotencyKey);
     Debug.Write("Status Code: " + response.StatusCode);
     Debug.Write("Response Headers: " + response.Headers);
     Debug.Write("Response Body: " + response.Data);
@@ -84,6 +85,7 @@ catch (ApiException e)
 |------|------|-------------|-------|
 | **workspaceUuid** | **Guid** | UUID of the workspace. |  |
 | **tagInput** | [**TagInput**](TagInput.md) |  |  |
+| **idempotencyKey** | **string?** | Unique key (for example a UUID) that makes the request safe to retry. A repeat with the same key and body within 24 hours returns the stored response with &#x60;Idempotent-Replayed: true&#x60; and has no further effect. Keys are scoped to your user, the workspace, the method and the path.  | [optional]  |
 
 ### Return type
 

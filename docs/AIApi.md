@@ -5,11 +5,17 @@ All URIs are relative to *https://postboost.co/app/api*
 | Method | HTTP request | Description |
 |--------|--------------|-------------|
 | [**BlogToSocial**](AIApi.md#blogtosocial) | **POST** /{workspaceUuid}/ai/blog-to-social | Generate social media captions from a blog post |
+| [**DeleteBrandVoice**](AIApi.md#deletebrandvoice) | **DELETE** /{workspaceUuid}/brand-voice | Delete the brand voice |
+| [**GetAIUsage**](AIApi.md#getaiusage) | **GET** /{workspaceUuid}/usage/ai | AI credit usage |
+| [**GetBrandVoice**](AIApi.md#getbrandvoice) | **GET** /{workspaceUuid}/brand-voice | Get the brand voice |
 | [**ImageAltText**](AIApi.md#imagealttext) | **POST** /{workspaceUuid}/ai/image-alt-text | Generate alt text for a media image using AI |
 | [**ImageEdit**](AIApi.md#imageedit) | **POST** /{workspaceUuid}/ai/image-edit | Edit an existing media image using AI |
 | [**ImageGenerate**](AIApi.md#imagegenerate) | **POST** /{workspaceUuid}/ai/image-generate | Generate social media images from a caption |
 | [**ImagePrompt**](AIApi.md#imageprompt) | **POST** /{workspaceUuid}/ai/image-prompt | Build an optimized image prompt from a social media caption |
 | [**ImageVariations**](AIApi.md#imagevariations) | **POST** /{workspaceUuid}/ai/image-variations | Generate variations of an existing media image |
+| [**LearnBrandVoice**](AIApi.md#learnbrandvoice) | **POST** /{workspaceUuid}/brand-voice/learn | Learn a brand voice from past posts |
+| [**RepurposeContent**](AIApi.md#repurposecontent) | **POST** /{workspaceUuid}/ai/repurpose | Repurpose long-form content into a draft post set with a carousel |
+| [**UpdateBrandVoice**](AIApi.md#updatebrandvoice) | **PUT** /{workspaceUuid}/brand-voice | Create or update the brand voice |
 
 <a id="blogtosocial"></a>
 # **BlogToSocial**
@@ -108,6 +114,294 @@ catch (ApiException e)
 | **403** |  |  -  |
 | **422** |  |  -  |
 | **429** | AI credits exhausted for this billing period |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+<a id="deletebrandvoice"></a>
+# **DeleteBrandVoice**
+> Object DeleteBrandVoice (Guid workspaceUuid)
+
+Delete the brand voice
+
+Removes the workspace's brand voice. AI endpoints then run without one. Admins and members only.
+
+### Example
+```csharp
+using System.Collections.Generic;
+using System.Diagnostics;
+using PostBoost.Client.Api;
+using PostBoost.Client.Client;
+using PostBoost.Client.Model;
+
+namespace Example
+{
+    public class DeleteBrandVoiceExample
+    {
+        public static void Main()
+        {
+            Configuration config = new Configuration();
+            config.BasePath = "https://postboost.co/app/api";
+            // Configure Bearer token for authorization: bearerAuth
+            config.AccessToken = "YOUR_BEARER_TOKEN";
+
+            var apiInstance = new AIApi(config);
+            var workspaceUuid = "workspaceUuid_example";  // Guid | UUID of the workspace.
+
+            try
+            {
+                // Delete the brand voice
+                Object result = apiInstance.DeleteBrandVoice(workspaceUuid);
+                Debug.WriteLine(result);
+            }
+            catch (ApiException  e)
+            {
+                Debug.Print("Exception when calling AIApi.DeleteBrandVoice: " + e.Message);
+                Debug.Print("Status Code: " + e.ErrorCode);
+                Debug.Print(e.StackTrace);
+            }
+        }
+    }
+}
+```
+
+#### Using the DeleteBrandVoiceWithHttpInfo variant
+This returns an ApiResponse object which contains the response data, status code and headers.
+
+```csharp
+try
+{
+    // Delete the brand voice
+    ApiResponse<Object> response = apiInstance.DeleteBrandVoiceWithHttpInfo(workspaceUuid);
+    Debug.Write("Status Code: " + response.StatusCode);
+    Debug.Write("Response Headers: " + response.Headers);
+    Debug.Write("Response Body: " + response.Data);
+}
+catch (ApiException e)
+{
+    Debug.Print("Exception when calling AIApi.DeleteBrandVoiceWithHttpInfo: " + e.Message);
+    Debug.Print("Status Code: " + e.ErrorCode);
+    Debug.Print(e.StackTrace);
+}
+```
+
+### Parameters
+
+| Name | Type | Description | Notes |
+|------|------|-------------|-------|
+| **workspaceUuid** | **Guid** | UUID of the workspace. |  |
+
+### Return type
+
+**Object**
+
+### Authorization
+
+[bearerAuth](../README.md#bearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** |  |  -  |
+| **401** |  |  -  |
+| **403** |  |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+<a id="getaiusage"></a>
+# **GetAIUsage**
+> AIUsage GetAIUsage (Guid workspaceUuid)
+
+AI credit usage
+
+The workspace's AI credits: text credits (captions, rewrites, outlines, alt text; counted per billing cycle) and image credits (one per generated, edited or varied image, and one per repurpose carousel; counted per calendar month, UTC). `limit` and `remaining` are `null` when the workspace has no limit. Readable when credits are used up; costs nothing.  When image credits run out, the image endpoints and carousels answer `429` with `code: image_credits_exhausted`; when text credits run out, the AI endpoints answer `429` with `code: ai_credits_exhausted`. Image endpoint responses also carry `image_credits_used` and `image_credits_remaining`; their `credits_used` counts text credits only. If the image pool is switched off (`image.enabled: false`), images cost text credits as before. 
+
+### Example
+```csharp
+using System.Collections.Generic;
+using System.Diagnostics;
+using PostBoost.Client.Api;
+using PostBoost.Client.Client;
+using PostBoost.Client.Model;
+
+namespace Example
+{
+    public class GetAIUsageExample
+    {
+        public static void Main()
+        {
+            Configuration config = new Configuration();
+            config.BasePath = "https://postboost.co/app/api";
+            // Configure Bearer token for authorization: bearerAuth
+            config.AccessToken = "YOUR_BEARER_TOKEN";
+
+            var apiInstance = new AIApi(config);
+            var workspaceUuid = "workspaceUuid_example";  // Guid | UUID of the workspace.
+
+            try
+            {
+                // AI credit usage
+                AIUsage result = apiInstance.GetAIUsage(workspaceUuid);
+                Debug.WriteLine(result);
+            }
+            catch (ApiException  e)
+            {
+                Debug.Print("Exception when calling AIApi.GetAIUsage: " + e.Message);
+                Debug.Print("Status Code: " + e.ErrorCode);
+                Debug.Print(e.StackTrace);
+            }
+        }
+    }
+}
+```
+
+#### Using the GetAIUsageWithHttpInfo variant
+This returns an ApiResponse object which contains the response data, status code and headers.
+
+```csharp
+try
+{
+    // AI credit usage
+    ApiResponse<AIUsage> response = apiInstance.GetAIUsageWithHttpInfo(workspaceUuid);
+    Debug.Write("Status Code: " + response.StatusCode);
+    Debug.Write("Response Headers: " + response.Headers);
+    Debug.Write("Response Body: " + response.Data);
+}
+catch (ApiException e)
+{
+    Debug.Print("Exception when calling AIApi.GetAIUsageWithHttpInfo: " + e.Message);
+    Debug.Print("Status Code: " + e.ErrorCode);
+    Debug.Print(e.StackTrace);
+}
+```
+
+### Parameters
+
+| Name | Type | Description | Notes |
+|------|------|-------------|-------|
+| **workspaceUuid** | **Guid** | UUID of the workspace. |  |
+
+### Return type
+
+[**AIUsage**](AIUsage.md)
+
+### Authorization
+
+[bearerAuth](../README.md#bearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | Credit usage |  -  |
+| **401** |  |  -  |
+| **403** |  |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+<a id="getbrandvoice"></a>
+# **GetBrandVoice**
+> GetBrandVoice200Response GetBrandVoice (Guid workspaceUuid)
+
+Get the brand voice
+
+The workspace's brand voice: identity, audience, tone sliders, style rules and example posts. It is the same profile as the Brand Voice page in the app (one per workspace). `data` is `null` when no voice is set. Any workspace member may read it; reading costs no AI credits.  The AI endpoints apply it automatically: `blog-to-social` adds it to the caption instructions, `image-prompt` and `image-generate` turn it into a short visual tone line, and `image-edit` applies it when you send `use_brand_voice: true`. `image-variations` and `image-alt-text` never use it (alt text must describe the image literally). Send `use_brand_voice: false` to skip it on a call; responses report `meta.brand_voice_applied`. 
+
+### Example
+```csharp
+using System.Collections.Generic;
+using System.Diagnostics;
+using PostBoost.Client.Api;
+using PostBoost.Client.Client;
+using PostBoost.Client.Model;
+
+namespace Example
+{
+    public class GetBrandVoiceExample
+    {
+        public static void Main()
+        {
+            Configuration config = new Configuration();
+            config.BasePath = "https://postboost.co/app/api";
+            // Configure Bearer token for authorization: bearerAuth
+            config.AccessToken = "YOUR_BEARER_TOKEN";
+
+            var apiInstance = new AIApi(config);
+            var workspaceUuid = "workspaceUuid_example";  // Guid | UUID of the workspace.
+
+            try
+            {
+                // Get the brand voice
+                GetBrandVoice200Response result = apiInstance.GetBrandVoice(workspaceUuid);
+                Debug.WriteLine(result);
+            }
+            catch (ApiException  e)
+            {
+                Debug.Print("Exception when calling AIApi.GetBrandVoice: " + e.Message);
+                Debug.Print("Status Code: " + e.ErrorCode);
+                Debug.Print(e.StackTrace);
+            }
+        }
+    }
+}
+```
+
+#### Using the GetBrandVoiceWithHttpInfo variant
+This returns an ApiResponse object which contains the response data, status code and headers.
+
+```csharp
+try
+{
+    // Get the brand voice
+    ApiResponse<GetBrandVoice200Response> response = apiInstance.GetBrandVoiceWithHttpInfo(workspaceUuid);
+    Debug.Write("Status Code: " + response.StatusCode);
+    Debug.Write("Response Headers: " + response.Headers);
+    Debug.Write("Response Body: " + response.Data);
+}
+catch (ApiException e)
+{
+    Debug.Print("Exception when calling AIApi.GetBrandVoiceWithHttpInfo: " + e.Message);
+    Debug.Print("Status Code: " + e.ErrorCode);
+    Debug.Print(e.StackTrace);
+}
+```
+
+### Parameters
+
+| Name | Type | Description | Notes |
+|------|------|-------------|-------|
+| **workspaceUuid** | **Guid** | UUID of the workspace. |  |
+
+### Return type
+
+[**GetBrandVoice200Response**](GetBrandVoice200Response.md)
+
+### Authorization
+
+[bearerAuth](../README.md#bearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | The brand voice, or &#x60;null&#x60; when none is set |  -  |
+| **401** |  |  -  |
+| **403** |  |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
@@ -608,6 +902,308 @@ catch (ApiException e)
 | **403** |  |  -  |
 | **422** |  |  -  |
 | **429** |  |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+<a id="learnbrandvoice"></a>
+# **LearnBrandVoice**
+> LearnBrandVoiceResponse LearnBrandVoice (Guid workspaceUuid, LearnBrandVoiceInput? learnBrandVoiceInput = null)
+
+Learn a brand voice from past posts
+
+Reads the workspace's latest published posts (original text) and proposes a brand voice in the same shape as `GET /brand-voice`. Returns a draft and saves nothing unless `apply: true`.  Without `overwrite`, learned values only fill fields that are empty (tone sliders and styles still at their defaults count as empty); with `overwrite: true` they replace them. The first five sampled posts become `example_posts`. Needs at least 3 published posts (`422`, `code: not_enough_posts`). Costs one AI text credit per AI call (one retry when the reply is not usable). Admins and members only. A key limited to some accounts must send `account_ids`; only posts whose accounts are all among them are read. `apply` also needs the `write` ability. 
+
+### Example
+```csharp
+using System.Collections.Generic;
+using System.Diagnostics;
+using PostBoost.Client.Api;
+using PostBoost.Client.Client;
+using PostBoost.Client.Model;
+
+namespace Example
+{
+    public class LearnBrandVoiceExample
+    {
+        public static void Main()
+        {
+            Configuration config = new Configuration();
+            config.BasePath = "https://postboost.co/app/api";
+            // Configure Bearer token for authorization: bearerAuth
+            config.AccessToken = "YOUR_BEARER_TOKEN";
+
+            var apiInstance = new AIApi(config);
+            var workspaceUuid = "workspaceUuid_example";  // Guid | UUID of the workspace.
+            var learnBrandVoiceInput = new LearnBrandVoiceInput?(); // LearnBrandVoiceInput? |  (optional) 
+
+            try
+            {
+                // Learn a brand voice from past posts
+                LearnBrandVoiceResponse result = apiInstance.LearnBrandVoice(workspaceUuid, learnBrandVoiceInput);
+                Debug.WriteLine(result);
+            }
+            catch (ApiException  e)
+            {
+                Debug.Print("Exception when calling AIApi.LearnBrandVoice: " + e.Message);
+                Debug.Print("Status Code: " + e.ErrorCode);
+                Debug.Print(e.StackTrace);
+            }
+        }
+    }
+}
+```
+
+#### Using the LearnBrandVoiceWithHttpInfo variant
+This returns an ApiResponse object which contains the response data, status code and headers.
+
+```csharp
+try
+{
+    // Learn a brand voice from past posts
+    ApiResponse<LearnBrandVoiceResponse> response = apiInstance.LearnBrandVoiceWithHttpInfo(workspaceUuid, learnBrandVoiceInput);
+    Debug.Write("Status Code: " + response.StatusCode);
+    Debug.Write("Response Headers: " + response.Headers);
+    Debug.Write("Response Body: " + response.Data);
+}
+catch (ApiException e)
+{
+    Debug.Print("Exception when calling AIApi.LearnBrandVoiceWithHttpInfo: " + e.Message);
+    Debug.Print("Status Code: " + e.ErrorCode);
+    Debug.Print(e.StackTrace);
+}
+```
+
+### Parameters
+
+| Name | Type | Description | Notes |
+|------|------|-------------|-------|
+| **workspaceUuid** | **Guid** | UUID of the workspace. |  |
+| **learnBrandVoiceInput** | [**LearnBrandVoiceInput?**](LearnBrandVoiceInput?.md) |  | [optional]  |
+
+### Return type
+
+[**LearnBrandVoiceResponse**](LearnBrandVoiceResponse.md)
+
+### Authorization
+
+[bearerAuth](../README.md#bearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | Proposed (or saved) brand voice |  -  |
+| **401** |  |  -  |
+| **403** |  |  -  |
+| **422** | Validation error, AI disabled, or fewer than 3 published posts (&#x60;code: not_enough_posts&#x60;) |  -  |
+| **429** | AI text credits used up (&#x60;code: ai_credits_exhausted&#x60;) |  -  |
+| **502** | The AI reply was not a usable profile (&#x60;code: ai_unusable_response&#x60;) |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+<a id="repurposecontent"></a>
+# **RepurposeContent**
+> RepurposeContent200Response RepurposeContent (Guid workspaceUuid, RepurposeInput repurposeInput, string? idempotencyKey = null)
+
+Repurpose long-form content into a draft post set with a carousel
+
+Turns an article URL, a YouTube video, a PDF or pasted text into one **draft** post with a caption for every target account, plus a carousel of rendered slide images (hook, 1 to 6 idea slides, call to action; 1080×1350 PNG). Nothing is published or scheduled.  **Sources** (`source_type`): - `url`: the article is fetched and its main text extracted. - `youtube`: title, description and chapters come from YouTube; send the transcript in   `transcript` for better results (required when the description is short). - `pdf`: `pdf_url` must be a public PDF of at most 20 MB; the first 30 pages are read. - `text`: send `title` and `text`.  **Carousel per network**: Instagram, Facebook, Threads up to 10 slides; LinkedIn up to 9; X and Bluesky up to 4; other networks get the cover slide; YouTube and TikTok get none (listed in `warnings`). Without a carousel, the source image (article image or video thumbnail) is attached when available.  **AI credits**: one per target account plus one for the carousel outline. Slides are drawn without AI and cost nothing. The workspace brand voice applies unless `use_brand_voice` is `false`. Send an `Idempotency-Key` so a retried call does not create a second draft. Limited to 10 calls per minute. 
+
+### Example
+```csharp
+using System.Collections.Generic;
+using System.Diagnostics;
+using PostBoost.Client.Api;
+using PostBoost.Client.Client;
+using PostBoost.Client.Model;
+
+namespace Example
+{
+    public class RepurposeContentExample
+    {
+        public static void Main()
+        {
+            Configuration config = new Configuration();
+            config.BasePath = "https://postboost.co/app/api";
+            // Configure Bearer token for authorization: bearerAuth
+            config.AccessToken = "YOUR_BEARER_TOKEN";
+
+            var apiInstance = new AIApi(config);
+            var workspaceUuid = "workspaceUuid_example";  // Guid | UUID of the workspace.
+            var repurposeInput = new RepurposeInput(); // RepurposeInput | 
+            var idempotencyKey = "idempotencyKey_example";  // string? | Unique key (for example a UUID) that makes the request safe to retry. A repeat with the same key and body within 24 hours returns the stored response with `Idempotent-Replayed: true` and has no further effect. Keys are scoped to your user, the workspace, the method and the path.  (optional) 
+
+            try
+            {
+                // Repurpose long-form content into a draft post set with a carousel
+                RepurposeContent200Response result = apiInstance.RepurposeContent(workspaceUuid, repurposeInput, idempotencyKey);
+                Debug.WriteLine(result);
+            }
+            catch (ApiException  e)
+            {
+                Debug.Print("Exception when calling AIApi.RepurposeContent: " + e.Message);
+                Debug.Print("Status Code: " + e.ErrorCode);
+                Debug.Print(e.StackTrace);
+            }
+        }
+    }
+}
+```
+
+#### Using the RepurposeContentWithHttpInfo variant
+This returns an ApiResponse object which contains the response data, status code and headers.
+
+```csharp
+try
+{
+    // Repurpose long-form content into a draft post set with a carousel
+    ApiResponse<RepurposeContent200Response> response = apiInstance.RepurposeContentWithHttpInfo(workspaceUuid, repurposeInput, idempotencyKey);
+    Debug.Write("Status Code: " + response.StatusCode);
+    Debug.Write("Response Headers: " + response.Headers);
+    Debug.Write("Response Body: " + response.Data);
+}
+catch (ApiException e)
+{
+    Debug.Print("Exception when calling AIApi.RepurposeContentWithHttpInfo: " + e.Message);
+    Debug.Print("Status Code: " + e.ErrorCode);
+    Debug.Print(e.StackTrace);
+}
+```
+
+### Parameters
+
+| Name | Type | Description | Notes |
+|------|------|-------------|-------|
+| **workspaceUuid** | **Guid** | UUID of the workspace. |  |
+| **repurposeInput** | [**RepurposeInput**](RepurposeInput.md) |  |  |
+| **idempotencyKey** | **string?** | Unique key (for example a UUID) that makes the request safe to retry. A repeat with the same key and body within 24 hours returns the stored response with &#x60;Idempotent-Replayed: true&#x60; and has no further effect. Keys are scoped to your user, the workspace, the method and the path.  | [optional]  |
+
+### Return type
+
+[**RepurposeContent200Response**](RepurposeContent200Response.md)
+
+### Authorization
+
+[bearerAuth](../README.md#bearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | Draft post set created |  -  |
+| **401** |  |  -  |
+| **403** |  |  -  |
+| **422** |  |  -  |
+| **429** |  |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+<a id="updatebrandvoice"></a>
+# **UpdateBrandVoice**
+> GetBrandVoice200Response UpdateBrandVoice (Guid workspaceUuid, BrandVoiceInput brandVoiceInput)
+
+Create or update the brand voice
+
+Creates the workspace's brand voice or updates it. Fields you leave out keep their current value. Admins and members only (not viewers); the workspace must have AI enabled. 
+
+### Example
+```csharp
+using System.Collections.Generic;
+using System.Diagnostics;
+using PostBoost.Client.Api;
+using PostBoost.Client.Client;
+using PostBoost.Client.Model;
+
+namespace Example
+{
+    public class UpdateBrandVoiceExample
+    {
+        public static void Main()
+        {
+            Configuration config = new Configuration();
+            config.BasePath = "https://postboost.co/app/api";
+            // Configure Bearer token for authorization: bearerAuth
+            config.AccessToken = "YOUR_BEARER_TOKEN";
+
+            var apiInstance = new AIApi(config);
+            var workspaceUuid = "workspaceUuid_example";  // Guid | UUID of the workspace.
+            var brandVoiceInput = new BrandVoiceInput(); // BrandVoiceInput | 
+
+            try
+            {
+                // Create or update the brand voice
+                GetBrandVoice200Response result = apiInstance.UpdateBrandVoice(workspaceUuid, brandVoiceInput);
+                Debug.WriteLine(result);
+            }
+            catch (ApiException  e)
+            {
+                Debug.Print("Exception when calling AIApi.UpdateBrandVoice: " + e.Message);
+                Debug.Print("Status Code: " + e.ErrorCode);
+                Debug.Print(e.StackTrace);
+            }
+        }
+    }
+}
+```
+
+#### Using the UpdateBrandVoiceWithHttpInfo variant
+This returns an ApiResponse object which contains the response data, status code and headers.
+
+```csharp
+try
+{
+    // Create or update the brand voice
+    ApiResponse<GetBrandVoice200Response> response = apiInstance.UpdateBrandVoiceWithHttpInfo(workspaceUuid, brandVoiceInput);
+    Debug.Write("Status Code: " + response.StatusCode);
+    Debug.Write("Response Headers: " + response.Headers);
+    Debug.Write("Response Body: " + response.Data);
+}
+catch (ApiException e)
+{
+    Debug.Print("Exception when calling AIApi.UpdateBrandVoiceWithHttpInfo: " + e.Message);
+    Debug.Print("Status Code: " + e.ErrorCode);
+    Debug.Print(e.StackTrace);
+}
+```
+
+### Parameters
+
+| Name | Type | Description | Notes |
+|------|------|-------------|-------|
+| **workspaceUuid** | **Guid** | UUID of the workspace. |  |
+| **brandVoiceInput** | [**BrandVoiceInput**](BrandVoiceInput.md) |  |  |
+
+### Return type
+
+[**GetBrandVoice200Response**](GetBrandVoice200Response.md)
+
+### Authorization
+
+[bearerAuth](../README.md#bearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | The saved brand voice |  -  |
+| **401** |  |  -  |
+| **403** |  |  -  |
+| **422** |  |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 

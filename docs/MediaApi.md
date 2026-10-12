@@ -19,6 +19,7 @@ All URIs are relative to *https://postboost.co/app/api*
 | [**UpdateMediaFolder**](MediaApi.md#updatemediafolder) | **PUT** /{workspaceUuid}/media/folders/{folderUuid} | Update media folder |
 | [**UploadChunk**](MediaApi.md#uploadchunk) | **POST** /{workspaceUuid}/media/chunked/{uploadUuid}/upload | Upload a chunk |
 | [**UploadMedia**](MediaApi.md#uploadmedia) | **POST** /{workspaceUuid}/media | Upload media (binary) |
+| [**UploadMediaBase64**](MediaApi.md#uploadmediabase64) | **POST** /{workspaceUuid}/media/base64 | Upload media (base64 JSON) |
 
 <a id="abortchunkedupload"></a>
 # **AbortChunkedUpload**
@@ -217,7 +218,7 @@ catch (ApiException e)
 
 <a id="createmediafolder"></a>
 # **CreateMediaFolder**
-> MediaFolder CreateMediaFolder (Guid workspaceUuid, CreateMediaFolderRequest createMediaFolderRequest)
+> MediaFolder CreateMediaFolder (Guid workspaceUuid, CreateMediaFolderRequest createMediaFolderRequest, string? idempotencyKey = null)
 
 Create media folder
 
@@ -245,11 +246,12 @@ namespace Example
             var apiInstance = new MediaApi(config);
             var workspaceUuid = "workspaceUuid_example";  // Guid | UUID of the workspace.
             var createMediaFolderRequest = new CreateMediaFolderRequest(); // CreateMediaFolderRequest | 
+            var idempotencyKey = "idempotencyKey_example";  // string? | Unique key (for example a UUID) that makes the request safe to retry. A repeat with the same key and body within 24 hours returns the stored response with `Idempotent-Replayed: true` and has no further effect. Keys are scoped to your user, the workspace, the method and the path.  (optional) 
 
             try
             {
                 // Create media folder
-                MediaFolder result = apiInstance.CreateMediaFolder(workspaceUuid, createMediaFolderRequest);
+                MediaFolder result = apiInstance.CreateMediaFolder(workspaceUuid, createMediaFolderRequest, idempotencyKey);
                 Debug.WriteLine(result);
             }
             catch (ApiException  e)
@@ -270,7 +272,7 @@ This returns an ApiResponse object which contains the response data, status code
 try
 {
     // Create media folder
-    ApiResponse<MediaFolder> response = apiInstance.CreateMediaFolderWithHttpInfo(workspaceUuid, createMediaFolderRequest);
+    ApiResponse<MediaFolder> response = apiInstance.CreateMediaFolderWithHttpInfo(workspaceUuid, createMediaFolderRequest, idempotencyKey);
     Debug.Write("Status Code: " + response.StatusCode);
     Debug.Write("Response Headers: " + response.Headers);
     Debug.Write("Response Body: " + response.Data);
@@ -289,6 +291,7 @@ catch (ApiException e)
 |------|------|-------------|-------|
 | **workspaceUuid** | **Guid** | UUID of the workspace. |  |
 | **createMediaFolderRequest** | [**CreateMediaFolderRequest**](CreateMediaFolderRequest.md) |  |  |
+| **idempotencyKey** | **string?** | Unique key (for example a UUID) that makes the request safe to retry. A repeat with the same key and body within 24 hours returns the stored response with &#x60;Idempotent-Replayed: true&#x60; and has no further effect. Keys are scoped to your user, the workspace, the method and the path.  | [optional]  |
 
 ### Return type
 
@@ -714,7 +717,7 @@ catch (ApiException e)
 
 <a id="initiatechunkedupload"></a>
 # **InitiateChunkedUpload**
-> InitiateChunkedUpload201Response InitiateChunkedUpload (Guid workspaceUuid, InitiateChunkedUploadRequest initiateChunkedUploadRequest)
+> InitiateChunkedUpload201Response InitiateChunkedUpload (Guid workspaceUuid, InitiateChunkedUploadRequest initiateChunkedUploadRequest, string? idempotencyKey = null)
 
 Initiate chunked upload
 
@@ -742,11 +745,12 @@ namespace Example
             var apiInstance = new MediaApi(config);
             var workspaceUuid = "workspaceUuid_example";  // Guid | UUID of the workspace.
             var initiateChunkedUploadRequest = new InitiateChunkedUploadRequest(); // InitiateChunkedUploadRequest | 
+            var idempotencyKey = "idempotencyKey_example";  // string? | Unique key (for example a UUID) that makes the request safe to retry. A repeat with the same key and body within 24 hours returns the stored response with `Idempotent-Replayed: true` and has no further effect. Keys are scoped to your user, the workspace, the method and the path.  (optional) 
 
             try
             {
                 // Initiate chunked upload
-                InitiateChunkedUpload201Response result = apiInstance.InitiateChunkedUpload(workspaceUuid, initiateChunkedUploadRequest);
+                InitiateChunkedUpload201Response result = apiInstance.InitiateChunkedUpload(workspaceUuid, initiateChunkedUploadRequest, idempotencyKey);
                 Debug.WriteLine(result);
             }
             catch (ApiException  e)
@@ -767,7 +771,7 @@ This returns an ApiResponse object which contains the response data, status code
 try
 {
     // Initiate chunked upload
-    ApiResponse<InitiateChunkedUpload201Response> response = apiInstance.InitiateChunkedUploadWithHttpInfo(workspaceUuid, initiateChunkedUploadRequest);
+    ApiResponse<InitiateChunkedUpload201Response> response = apiInstance.InitiateChunkedUploadWithHttpInfo(workspaceUuid, initiateChunkedUploadRequest, idempotencyKey);
     Debug.Write("Status Code: " + response.StatusCode);
     Debug.Write("Response Headers: " + response.Headers);
     Debug.Write("Response Body: " + response.Data);
@@ -786,6 +790,7 @@ catch (ApiException e)
 |------|------|-------------|-------|
 | **workspaceUuid** | **Guid** | UUID of the workspace. |  |
 | **initiateChunkedUploadRequest** | [**InitiateChunkedUploadRequest**](InitiateChunkedUploadRequest.md) |  |  |
+| **idempotencyKey** | **string?** | Unique key (for example a UUID) that makes the request safe to retry. A repeat with the same key and body within 24 hours returns the stored response with &#x60;Idempotent-Replayed: true&#x60; and has no further effect. Keys are scoped to your user, the workspace, the method and the path.  | [optional]  |
 
 ### Return type
 
@@ -813,7 +818,7 @@ catch (ApiException e)
 
 <a id="initiateremoteupload"></a>
 # **InitiateRemoteUpload**
-> InitiateRemoteUpload201Response InitiateRemoteUpload (Guid workspaceUuid, InitiateRemoteUploadRequest initiateRemoteUploadRequest)
+> InitiateRemoteUpload201Response InitiateRemoteUpload (Guid workspaceUuid, InitiateRemoteUploadRequest initiateRemoteUploadRequest, string? idempotencyKey = null)
 
 Initiate remote upload
 
@@ -841,11 +846,12 @@ namespace Example
             var apiInstance = new MediaApi(config);
             var workspaceUuid = "workspaceUuid_example";  // Guid | UUID of the workspace.
             var initiateRemoteUploadRequest = new InitiateRemoteUploadRequest(); // InitiateRemoteUploadRequest | 
+            var idempotencyKey = "idempotencyKey_example";  // string? | Unique key (for example a UUID) that makes the request safe to retry. A repeat with the same key and body within 24 hours returns the stored response with `Idempotent-Replayed: true` and has no further effect. Keys are scoped to your user, the workspace, the method and the path.  (optional) 
 
             try
             {
                 // Initiate remote upload
-                InitiateRemoteUpload201Response result = apiInstance.InitiateRemoteUpload(workspaceUuid, initiateRemoteUploadRequest);
+                InitiateRemoteUpload201Response result = apiInstance.InitiateRemoteUpload(workspaceUuid, initiateRemoteUploadRequest, idempotencyKey);
                 Debug.WriteLine(result);
             }
             catch (ApiException  e)
@@ -866,7 +872,7 @@ This returns an ApiResponse object which contains the response data, status code
 try
 {
     // Initiate remote upload
-    ApiResponse<InitiateRemoteUpload201Response> response = apiInstance.InitiateRemoteUploadWithHttpInfo(workspaceUuid, initiateRemoteUploadRequest);
+    ApiResponse<InitiateRemoteUpload201Response> response = apiInstance.InitiateRemoteUploadWithHttpInfo(workspaceUuid, initiateRemoteUploadRequest, idempotencyKey);
     Debug.Write("Status Code: " + response.StatusCode);
     Debug.Write("Response Headers: " + response.Headers);
     Debug.Write("Response Body: " + response.Data);
@@ -885,6 +891,7 @@ catch (ApiException e)
 |------|------|-------------|-------|
 | **workspaceUuid** | **Guid** | UUID of the workspace. |  |
 | **initiateRemoteUploadRequest** | [**InitiateRemoteUploadRequest**](InitiateRemoteUploadRequest.md) |  |  |
+| **idempotencyKey** | **string?** | Unique key (for example a UUID) that makes the request safe to retry. A repeat with the same key and body within 24 hours returns the stored response with &#x60;Idempotent-Replayed: true&#x60; and has no further effect. Keys are scoped to your user, the workspace, the method and the path.  | [optional]  |
 
 ### Return type
 
@@ -1429,11 +1436,11 @@ catch (ApiException e)
 
 <a id="uploadmedia"></a>
 # **UploadMedia**
-> Media UploadMedia (Guid workspaceUuid, System.IO.Stream file, string? altText = null, Guid? folder = null)
+> Media UploadMedia (Guid workspaceUuid, System.IO.Stream file, string? idempotencyKey = null, string? altText = null, Guid? folder = null)
 
 Upload media (binary)
 
-Upload a file directly as multipart form data.
+Upload a file directly as multipart form data. Images and videos, plus a PDF (up to 100 MB) for LinkedIn document posts: a post that attaches a PDF must have it as the only media item and may only go to LinkedIn profiles and pages. 
 
 ### Example
 ```csharp
@@ -1457,13 +1464,14 @@ namespace Example
             var apiInstance = new MediaApi(config);
             var workspaceUuid = "workspaceUuid_example";  // Guid | UUID of the workspace.
             var file = new System.IO.MemoryStream(System.IO.File.ReadAllBytes("/path/to/file.txt"));  // System.IO.Stream | The file to upload.
+            var idempotencyKey = "idempotencyKey_example";  // string? | Unique key (for example a UUID) that makes the request safe to retry. A repeat with the same key and body within 24 hours returns the stored response with `Idempotent-Replayed: true` and has no further effect. Keys are scoped to your user, the workspace, the method and the path.  (optional) 
             var altText = "altText_example";  // string? | Alternative text for accessibility. (optional) 
             var folder = "folder_example";  // Guid? | UUID of the media folder to file the upload in. Omit or null for the library root. (optional) 
 
             try
             {
                 // Upload media (binary)
-                Media result = apiInstance.UploadMedia(workspaceUuid, file, altText, folder);
+                Media result = apiInstance.UploadMedia(workspaceUuid, file, idempotencyKey, altText, folder);
                 Debug.WriteLine(result);
             }
             catch (ApiException  e)
@@ -1484,7 +1492,7 @@ This returns an ApiResponse object which contains the response data, status code
 try
 {
     // Upload media (binary)
-    ApiResponse<Media> response = apiInstance.UploadMediaWithHttpInfo(workspaceUuid, file, altText, folder);
+    ApiResponse<Media> response = apiInstance.UploadMediaWithHttpInfo(workspaceUuid, file, idempotencyKey, altText, folder);
     Debug.Write("Status Code: " + response.StatusCode);
     Debug.Write("Response Headers: " + response.Headers);
     Debug.Write("Response Body: " + response.Data);
@@ -1503,6 +1511,7 @@ catch (ApiException e)
 |------|------|-------------|-------|
 | **workspaceUuid** | **Guid** | UUID of the workspace. |  |
 | **file** | **System.IO.Stream****System.IO.Stream** | The file to upload. |  |
+| **idempotencyKey** | **string?** | Unique key (for example a UUID) that makes the request safe to retry. A repeat with the same key and body within 24 hours returns the stored response with &#x60;Idempotent-Replayed: true&#x60; and has no further effect. Keys are scoped to your user, the workspace, the method and the path.  | [optional]  |
 | **altText** | **string?** | Alternative text for accessibility. | [optional]  |
 | **folder** | **Guid?** | UUID of the media folder to file the upload in. Omit or null for the library root. | [optional]  |
 
@@ -1527,6 +1536,104 @@ catch (ApiException e)
 | **401** |  |  -  |
 | **403** |  |  -  |
 | **422** |  |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+<a id="uploadmediabase64"></a>
+# **UploadMediaBase64**
+> Media UploadMediaBase64 (Guid workspaceUuid, MediaBase64Input mediaBase64Input, string? idempotencyKey = null)
+
+Upload media (base64 JSON)
+
+Upload a file as base64 inside a JSON body, for agents and tools that cannot send multipart form data. The decoded file is checked exactly like `POST media` (allowed types and size limits; a PDF is accepted for LinkedIn document posts). Decoded size is capped at 20 MB; for larger files use remote upload by URL or chunked upload. 
+
+### Example
+```csharp
+using System.Collections.Generic;
+using System.Diagnostics;
+using PostBoost.Client.Api;
+using PostBoost.Client.Client;
+using PostBoost.Client.Model;
+
+namespace Example
+{
+    public class UploadMediaBase64Example
+    {
+        public static void Main()
+        {
+            Configuration config = new Configuration();
+            config.BasePath = "https://postboost.co/app/api";
+            // Configure Bearer token for authorization: bearerAuth
+            config.AccessToken = "YOUR_BEARER_TOKEN";
+
+            var apiInstance = new MediaApi(config);
+            var workspaceUuid = "workspaceUuid_example";  // Guid | UUID of the workspace.
+            var mediaBase64Input = new MediaBase64Input(); // MediaBase64Input | 
+            var idempotencyKey = "idempotencyKey_example";  // string? | Unique key (for example a UUID) that makes the request safe to retry. A repeat with the same key and body within 24 hours returns the stored response with `Idempotent-Replayed: true` and has no further effect. Keys are scoped to your user, the workspace, the method and the path.  (optional) 
+
+            try
+            {
+                // Upload media (base64 JSON)
+                Media result = apiInstance.UploadMediaBase64(workspaceUuid, mediaBase64Input, idempotencyKey);
+                Debug.WriteLine(result);
+            }
+            catch (ApiException  e)
+            {
+                Debug.Print("Exception when calling MediaApi.UploadMediaBase64: " + e.Message);
+                Debug.Print("Status Code: " + e.ErrorCode);
+                Debug.Print(e.StackTrace);
+            }
+        }
+    }
+}
+```
+
+#### Using the UploadMediaBase64WithHttpInfo variant
+This returns an ApiResponse object which contains the response data, status code and headers.
+
+```csharp
+try
+{
+    // Upload media (base64 JSON)
+    ApiResponse<Media> response = apiInstance.UploadMediaBase64WithHttpInfo(workspaceUuid, mediaBase64Input, idempotencyKey);
+    Debug.Write("Status Code: " + response.StatusCode);
+    Debug.Write("Response Headers: " + response.Headers);
+    Debug.Write("Response Body: " + response.Data);
+}
+catch (ApiException e)
+{
+    Debug.Print("Exception when calling MediaApi.UploadMediaBase64WithHttpInfo: " + e.Message);
+    Debug.Print("Status Code: " + e.ErrorCode);
+    Debug.Print(e.StackTrace);
+}
+```
+
+### Parameters
+
+| Name | Type | Description | Notes |
+|------|------|-------------|-------|
+| **workspaceUuid** | **Guid** | UUID of the workspace. |  |
+| **mediaBase64Input** | [**MediaBase64Input**](MediaBase64Input.md) |  |  |
+| **idempotencyKey** | **string?** | Unique key (for example a UUID) that makes the request safe to retry. A repeat with the same key and body within 24 hours returns the stored response with &#x60;Idempotent-Replayed: true&#x60; and has no further effect. Keys are scoped to your user, the workspace, the method and the path.  | [optional]  |
+
+### Return type
+
+[**Media**](Media.md)
+
+### Authorization
+
+[bearerAuth](../README.md#bearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **201** | Uploaded media object |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 

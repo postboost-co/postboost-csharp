@@ -4,11 +4,217 @@ All URIs are relative to *https://postboost.co/app/api*
 
 | Method | HTTP request | Description |
 |--------|--------------|-------------|
+| [**CreateReportExport**](AnalyticsApi.md#createreportexport) | **POST** /{workspaceUuid}/reports/exports | Create a report export |
+| [**DownloadReportExport**](AnalyticsApi.md#downloadreportexport) | **GET** /{workspaceUuid}/reports/exports/{exportUuid}/download | Download a report file |
 | [**GetAccountAnalytics**](AnalyticsApi.md#getaccountanalytics) | **GET** /{workspaceUuid}/analytics/accounts/{accountUuid} | Get account analytics |
 | [**GetAnalyticsSummary**](AnalyticsApi.md#getanalyticssummary) | **GET** /{workspaceUuid}/analytics | Get analytics summary |
 | [**GetBestPostingTimes**](AnalyticsApi.md#getbestpostingtimes) | **GET** /{workspaceUuid}/analytics/best-times | Get best posting times |
 | [**GetPostAnalytics_0**](AnalyticsApi.md#getpostanalytics_0) | **GET** /{workspaceUuid}/posts/{postUuid}/analytics | Get post analytics |
 | [**GetPostingTimes**](AnalyticsApi.md#getpostingtimes) | **GET** /{workspaceUuid}/analytics/posting-times | Get posting times heatmap |
+| [**GetReportBranding**](AnalyticsApi.md#getreportbranding) | **GET** /{workspaceUuid}/report-branding | Get the report branding |
+| [**GetReportExport**](AnalyticsApi.md#getreportexport) | **GET** /{workspaceUuid}/reports/exports/{exportUuid} | Get a report export |
+| [**ListReportExports**](AnalyticsApi.md#listreportexports) | **GET** /{workspaceUuid}/reports/exports | List report exports |
+| [**UpdateReportBranding**](AnalyticsApi.md#updatereportbranding) | **PUT** /{workspaceUuid}/report-branding | Update the report branding |
+| [**UploadReportBrandingLogo**](AnalyticsApi.md#uploadreportbrandinglogo) | **POST** /{workspaceUuid}/report-branding/logo | Upload the report logo |
+
+<a id="createreportexport"></a>
+# **CreateReportExport**
+> CreateReportExport201Response CreateReportExport (Guid workspaceUuid, ReportExportInput reportExportInput)
+
+Create a report export
+
+Generates a report for a period (default `last_month`) or a custom `date_from`/`date_to` range: a branded PDF (summary, accounts, top 10 posts; the header uses the report branding) or a CSV with one row per published post and account (`dataset: posts`, default) or per account (`dataset: accounts`). CSV files are UTF-8 with a byte order mark. At most 500 posts per report. The file is ready when the call returns; fetch it from `download_url` with the same token. Admins and members only; 20 per minute. 
+
+### Example
+```csharp
+using System.Collections.Generic;
+using System.Diagnostics;
+using PostBoost.Client.Api;
+using PostBoost.Client.Client;
+using PostBoost.Client.Model;
+
+namespace Example
+{
+    public class CreateReportExportExample
+    {
+        public static void Main()
+        {
+            Configuration config = new Configuration();
+            config.BasePath = "https://postboost.co/app/api";
+            // Configure Bearer token for authorization: bearerAuth
+            config.AccessToken = "YOUR_BEARER_TOKEN";
+
+            var apiInstance = new AnalyticsApi(config);
+            var workspaceUuid = "workspaceUuid_example";  // Guid | UUID of the workspace.
+            var reportExportInput = new ReportExportInput(); // ReportExportInput | 
+
+            try
+            {
+                // Create a report export
+                CreateReportExport201Response result = apiInstance.CreateReportExport(workspaceUuid, reportExportInput);
+                Debug.WriteLine(result);
+            }
+            catch (ApiException  e)
+            {
+                Debug.Print("Exception when calling AnalyticsApi.CreateReportExport: " + e.Message);
+                Debug.Print("Status Code: " + e.ErrorCode);
+                Debug.Print(e.StackTrace);
+            }
+        }
+    }
+}
+```
+
+#### Using the CreateReportExportWithHttpInfo variant
+This returns an ApiResponse object which contains the response data, status code and headers.
+
+```csharp
+try
+{
+    // Create a report export
+    ApiResponse<CreateReportExport201Response> response = apiInstance.CreateReportExportWithHttpInfo(workspaceUuid, reportExportInput);
+    Debug.Write("Status Code: " + response.StatusCode);
+    Debug.Write("Response Headers: " + response.Headers);
+    Debug.Write("Response Body: " + response.Data);
+}
+catch (ApiException e)
+{
+    Debug.Print("Exception when calling AnalyticsApi.CreateReportExportWithHttpInfo: " + e.Message);
+    Debug.Print("Status Code: " + e.ErrorCode);
+    Debug.Print(e.StackTrace);
+}
+```
+
+### Parameters
+
+| Name | Type | Description | Notes |
+|------|------|-------------|-------|
+| **workspaceUuid** | **Guid** | UUID of the workspace. |  |
+| **reportExportInput** | [**ReportExportInput**](ReportExportInput.md) |  |  |
+
+### Return type
+
+[**CreateReportExport201Response**](CreateReportExport201Response.md)
+
+### Authorization
+
+[bearerAuth](../README.md#bearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **201** | The export (status &#x60;ready&#x60;, or &#x60;failed&#x60; with &#x60;error&#x60;) |  -  |
+| **401** |  |  -  |
+| **403** |  |  -  |
+| **422** |  |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+<a id="downloadreportexport"></a>
+# **DownloadReportExport**
+> System.IO.Stream DownloadReportExport (Guid workspaceUuid, Guid exportUuid)
+
+Download a report file
+
+The PDF or CSV file. `410` once it expired (7 days) or if the export failed.
+
+### Example
+```csharp
+using System.Collections.Generic;
+using System.Diagnostics;
+using PostBoost.Client.Api;
+using PostBoost.Client.Client;
+using PostBoost.Client.Model;
+
+namespace Example
+{
+    public class DownloadReportExportExample
+    {
+        public static void Main()
+        {
+            Configuration config = new Configuration();
+            config.BasePath = "https://postboost.co/app/api";
+            // Configure Bearer token for authorization: bearerAuth
+            config.AccessToken = "YOUR_BEARER_TOKEN";
+
+            var apiInstance = new AnalyticsApi(config);
+            var workspaceUuid = "workspaceUuid_example";  // Guid | UUID of the workspace.
+            var exportUuid = "exportUuid_example";  // Guid | UUID of the report export.
+
+            try
+            {
+                // Download a report file
+                System.IO.Stream result = apiInstance.DownloadReportExport(workspaceUuid, exportUuid);
+                Debug.WriteLine(result);
+            }
+            catch (ApiException  e)
+            {
+                Debug.Print("Exception when calling AnalyticsApi.DownloadReportExport: " + e.Message);
+                Debug.Print("Status Code: " + e.ErrorCode);
+                Debug.Print(e.StackTrace);
+            }
+        }
+    }
+}
+```
+
+#### Using the DownloadReportExportWithHttpInfo variant
+This returns an ApiResponse object which contains the response data, status code and headers.
+
+```csharp
+try
+{
+    // Download a report file
+    ApiResponse<System.IO.Stream> response = apiInstance.DownloadReportExportWithHttpInfo(workspaceUuid, exportUuid);
+    Debug.Write("Status Code: " + response.StatusCode);
+    Debug.Write("Response Headers: " + response.Headers);
+    Debug.Write("Response Body: " + response.Data);
+}
+catch (ApiException e)
+{
+    Debug.Print("Exception when calling AnalyticsApi.DownloadReportExportWithHttpInfo: " + e.Message);
+    Debug.Print("Status Code: " + e.ErrorCode);
+    Debug.Print(e.StackTrace);
+}
+```
+
+### Parameters
+
+| Name | Type | Description | Notes |
+|------|------|-------------|-------|
+| **workspaceUuid** | **Guid** | UUID of the workspace. |  |
+| **exportUuid** | **Guid** | UUID of the report export. |  |
+
+### Return type
+
+**System.IO.Stream**
+
+### Authorization
+
+[bearerAuth](../README.md#bearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/pdf, text/csv, application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | The report file |  -  |
+| **401** |  |  -  |
+| **403** |  |  -  |
+| **404** |  |  -  |
+| **410** | The file expired or the export failed. |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 <a id="getaccountanalytics"></a>
 # **GetAccountAnalytics**
@@ -526,6 +732,493 @@ catch (ApiException e)
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Posting times |  -  |
+| **401** |  |  -  |
+| **403** |  |  -  |
+| **422** |  |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+<a id="getreportbranding"></a>
+# **GetReportBranding**
+> GetReportBranding200Response GetReportBranding (Guid workspaceUuid)
+
+Get the report branding
+
+The white-label header of the workspace's PDF reports. Unset fields are `null`; the workspace name is used then.
+
+### Example
+```csharp
+using System.Collections.Generic;
+using System.Diagnostics;
+using PostBoost.Client.Api;
+using PostBoost.Client.Client;
+using PostBoost.Client.Model;
+
+namespace Example
+{
+    public class GetReportBrandingExample
+    {
+        public static void Main()
+        {
+            Configuration config = new Configuration();
+            config.BasePath = "https://postboost.co/app/api";
+            // Configure Bearer token for authorization: bearerAuth
+            config.AccessToken = "YOUR_BEARER_TOKEN";
+
+            var apiInstance = new AnalyticsApi(config);
+            var workspaceUuid = "workspaceUuid_example";  // Guid | UUID of the workspace.
+
+            try
+            {
+                // Get the report branding
+                GetReportBranding200Response result = apiInstance.GetReportBranding(workspaceUuid);
+                Debug.WriteLine(result);
+            }
+            catch (ApiException  e)
+            {
+                Debug.Print("Exception when calling AnalyticsApi.GetReportBranding: " + e.Message);
+                Debug.Print("Status Code: " + e.ErrorCode);
+                Debug.Print(e.StackTrace);
+            }
+        }
+    }
+}
+```
+
+#### Using the GetReportBrandingWithHttpInfo variant
+This returns an ApiResponse object which contains the response data, status code and headers.
+
+```csharp
+try
+{
+    // Get the report branding
+    ApiResponse<GetReportBranding200Response> response = apiInstance.GetReportBrandingWithHttpInfo(workspaceUuid);
+    Debug.Write("Status Code: " + response.StatusCode);
+    Debug.Write("Response Headers: " + response.Headers);
+    Debug.Write("Response Body: " + response.Data);
+}
+catch (ApiException e)
+{
+    Debug.Print("Exception when calling AnalyticsApi.GetReportBrandingWithHttpInfo: " + e.Message);
+    Debug.Print("Status Code: " + e.ErrorCode);
+    Debug.Print(e.StackTrace);
+}
+```
+
+### Parameters
+
+| Name | Type | Description | Notes |
+|------|------|-------------|-------|
+| **workspaceUuid** | **Guid** | UUID of the workspace. |  |
+
+### Return type
+
+[**GetReportBranding200Response**](GetReportBranding200Response.md)
+
+### Authorization
+
+[bearerAuth](../README.md#bearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | The report branding |  -  |
+| **401** |  |  -  |
+| **403** |  |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+<a id="getreportexport"></a>
+# **GetReportExport**
+> CreateReportExport201Response GetReportExport (Guid workspaceUuid, Guid exportUuid)
+
+Get a report export
+
+### Example
+```csharp
+using System.Collections.Generic;
+using System.Diagnostics;
+using PostBoost.Client.Api;
+using PostBoost.Client.Client;
+using PostBoost.Client.Model;
+
+namespace Example
+{
+    public class GetReportExportExample
+    {
+        public static void Main()
+        {
+            Configuration config = new Configuration();
+            config.BasePath = "https://postboost.co/app/api";
+            // Configure Bearer token for authorization: bearerAuth
+            config.AccessToken = "YOUR_BEARER_TOKEN";
+
+            var apiInstance = new AnalyticsApi(config);
+            var workspaceUuid = "workspaceUuid_example";  // Guid | UUID of the workspace.
+            var exportUuid = "exportUuid_example";  // Guid | UUID of the report export.
+
+            try
+            {
+                // Get a report export
+                CreateReportExport201Response result = apiInstance.GetReportExport(workspaceUuid, exportUuid);
+                Debug.WriteLine(result);
+            }
+            catch (ApiException  e)
+            {
+                Debug.Print("Exception when calling AnalyticsApi.GetReportExport: " + e.Message);
+                Debug.Print("Status Code: " + e.ErrorCode);
+                Debug.Print(e.StackTrace);
+            }
+        }
+    }
+}
+```
+
+#### Using the GetReportExportWithHttpInfo variant
+This returns an ApiResponse object which contains the response data, status code and headers.
+
+```csharp
+try
+{
+    // Get a report export
+    ApiResponse<CreateReportExport201Response> response = apiInstance.GetReportExportWithHttpInfo(workspaceUuid, exportUuid);
+    Debug.Write("Status Code: " + response.StatusCode);
+    Debug.Write("Response Headers: " + response.Headers);
+    Debug.Write("Response Body: " + response.Data);
+}
+catch (ApiException e)
+{
+    Debug.Print("Exception when calling AnalyticsApi.GetReportExportWithHttpInfo: " + e.Message);
+    Debug.Print("Status Code: " + e.ErrorCode);
+    Debug.Print(e.StackTrace);
+}
+```
+
+### Parameters
+
+| Name | Type | Description | Notes |
+|------|------|-------------|-------|
+| **workspaceUuid** | **Guid** | UUID of the workspace. |  |
+| **exportUuid** | **Guid** | UUID of the report export. |  |
+
+### Return type
+
+[**CreateReportExport201Response**](CreateReportExport201Response.md)
+
+### Authorization
+
+[bearerAuth](../README.md#bearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | The export |  -  |
+| **401** |  |  -  |
+| **403** |  |  -  |
+| **404** |  |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+<a id="listreportexports"></a>
+# **ListReportExports**
+> ListReportExports200Response ListReportExports (Guid workspaceUuid)
+
+List report exports
+
+The workspace's latest 50 report exports, newest first. Files can be downloaded for 7 days.
+
+### Example
+```csharp
+using System.Collections.Generic;
+using System.Diagnostics;
+using PostBoost.Client.Api;
+using PostBoost.Client.Client;
+using PostBoost.Client.Model;
+
+namespace Example
+{
+    public class ListReportExportsExample
+    {
+        public static void Main()
+        {
+            Configuration config = new Configuration();
+            config.BasePath = "https://postboost.co/app/api";
+            // Configure Bearer token for authorization: bearerAuth
+            config.AccessToken = "YOUR_BEARER_TOKEN";
+
+            var apiInstance = new AnalyticsApi(config);
+            var workspaceUuid = "workspaceUuid_example";  // Guid | UUID of the workspace.
+
+            try
+            {
+                // List report exports
+                ListReportExports200Response result = apiInstance.ListReportExports(workspaceUuid);
+                Debug.WriteLine(result);
+            }
+            catch (ApiException  e)
+            {
+                Debug.Print("Exception when calling AnalyticsApi.ListReportExports: " + e.Message);
+                Debug.Print("Status Code: " + e.ErrorCode);
+                Debug.Print(e.StackTrace);
+            }
+        }
+    }
+}
+```
+
+#### Using the ListReportExportsWithHttpInfo variant
+This returns an ApiResponse object which contains the response data, status code and headers.
+
+```csharp
+try
+{
+    // List report exports
+    ApiResponse<ListReportExports200Response> response = apiInstance.ListReportExportsWithHttpInfo(workspaceUuid);
+    Debug.Write("Status Code: " + response.StatusCode);
+    Debug.Write("Response Headers: " + response.Headers);
+    Debug.Write("Response Body: " + response.Data);
+}
+catch (ApiException e)
+{
+    Debug.Print("Exception when calling AnalyticsApi.ListReportExportsWithHttpInfo: " + e.Message);
+    Debug.Print("Status Code: " + e.ErrorCode);
+    Debug.Print(e.StackTrace);
+}
+```
+
+### Parameters
+
+| Name | Type | Description | Notes |
+|------|------|-------------|-------|
+| **workspaceUuid** | **Guid** | UUID of the workspace. |  |
+
+### Return type
+
+[**ListReportExports200Response**](ListReportExports200Response.md)
+
+### Authorization
+
+[bearerAuth](../README.md#bearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | Recent exports |  -  |
+| **401** |  |  -  |
+| **403** |  |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+<a id="updatereportbranding"></a>
+# **UpdateReportBranding**
+> GetReportBranding200Response UpdateReportBranding (Guid workspaceUuid, ReportBrandingInput reportBrandingInput)
+
+Update the report branding
+
+Name, colour and footer of PDF reports. Fields you leave out keep their value. Upload the logo with `uploadReportBrandingLogo`. Admins and members only.
+
+### Example
+```csharp
+using System.Collections.Generic;
+using System.Diagnostics;
+using PostBoost.Client.Api;
+using PostBoost.Client.Client;
+using PostBoost.Client.Model;
+
+namespace Example
+{
+    public class UpdateReportBrandingExample
+    {
+        public static void Main()
+        {
+            Configuration config = new Configuration();
+            config.BasePath = "https://postboost.co/app/api";
+            // Configure Bearer token for authorization: bearerAuth
+            config.AccessToken = "YOUR_BEARER_TOKEN";
+
+            var apiInstance = new AnalyticsApi(config);
+            var workspaceUuid = "workspaceUuid_example";  // Guid | UUID of the workspace.
+            var reportBrandingInput = new ReportBrandingInput(); // ReportBrandingInput | 
+
+            try
+            {
+                // Update the report branding
+                GetReportBranding200Response result = apiInstance.UpdateReportBranding(workspaceUuid, reportBrandingInput);
+                Debug.WriteLine(result);
+            }
+            catch (ApiException  e)
+            {
+                Debug.Print("Exception when calling AnalyticsApi.UpdateReportBranding: " + e.Message);
+                Debug.Print("Status Code: " + e.ErrorCode);
+                Debug.Print(e.StackTrace);
+            }
+        }
+    }
+}
+```
+
+#### Using the UpdateReportBrandingWithHttpInfo variant
+This returns an ApiResponse object which contains the response data, status code and headers.
+
+```csharp
+try
+{
+    // Update the report branding
+    ApiResponse<GetReportBranding200Response> response = apiInstance.UpdateReportBrandingWithHttpInfo(workspaceUuid, reportBrandingInput);
+    Debug.Write("Status Code: " + response.StatusCode);
+    Debug.Write("Response Headers: " + response.Headers);
+    Debug.Write("Response Body: " + response.Data);
+}
+catch (ApiException e)
+{
+    Debug.Print("Exception when calling AnalyticsApi.UpdateReportBrandingWithHttpInfo: " + e.Message);
+    Debug.Print("Status Code: " + e.ErrorCode);
+    Debug.Print(e.StackTrace);
+}
+```
+
+### Parameters
+
+| Name | Type | Description | Notes |
+|------|------|-------------|-------|
+| **workspaceUuid** | **Guid** | UUID of the workspace. |  |
+| **reportBrandingInput** | [**ReportBrandingInput**](ReportBrandingInput.md) |  |  |
+
+### Return type
+
+[**GetReportBranding200Response**](GetReportBranding200Response.md)
+
+### Authorization
+
+[bearerAuth](../README.md#bearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | The saved branding |  -  |
+| **401** |  |  -  |
+| **403** |  |  -  |
+| **422** |  |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+<a id="uploadreportbrandinglogo"></a>
+# **UploadReportBrandingLogo**
+> GetReportBranding200Response UploadReportBrandingLogo (Guid workspaceUuid, System.IO.Stream logo)
+
+Upload the report logo
+
+PNG or JPEG, up to 1 MB (SVG is not accepted). Replaces the current logo. Admins and members only.
+
+### Example
+```csharp
+using System.Collections.Generic;
+using System.Diagnostics;
+using PostBoost.Client.Api;
+using PostBoost.Client.Client;
+using PostBoost.Client.Model;
+
+namespace Example
+{
+    public class UploadReportBrandingLogoExample
+    {
+        public static void Main()
+        {
+            Configuration config = new Configuration();
+            config.BasePath = "https://postboost.co/app/api";
+            // Configure Bearer token for authorization: bearerAuth
+            config.AccessToken = "YOUR_BEARER_TOKEN";
+
+            var apiInstance = new AnalyticsApi(config);
+            var workspaceUuid = "workspaceUuid_example";  // Guid | UUID of the workspace.
+            var logo = new System.IO.MemoryStream(System.IO.File.ReadAllBytes("/path/to/file.txt"));  // System.IO.Stream | 
+
+            try
+            {
+                // Upload the report logo
+                GetReportBranding200Response result = apiInstance.UploadReportBrandingLogo(workspaceUuid, logo);
+                Debug.WriteLine(result);
+            }
+            catch (ApiException  e)
+            {
+                Debug.Print("Exception when calling AnalyticsApi.UploadReportBrandingLogo: " + e.Message);
+                Debug.Print("Status Code: " + e.ErrorCode);
+                Debug.Print(e.StackTrace);
+            }
+        }
+    }
+}
+```
+
+#### Using the UploadReportBrandingLogoWithHttpInfo variant
+This returns an ApiResponse object which contains the response data, status code and headers.
+
+```csharp
+try
+{
+    // Upload the report logo
+    ApiResponse<GetReportBranding200Response> response = apiInstance.UploadReportBrandingLogoWithHttpInfo(workspaceUuid, logo);
+    Debug.Write("Status Code: " + response.StatusCode);
+    Debug.Write("Response Headers: " + response.Headers);
+    Debug.Write("Response Body: " + response.Data);
+}
+catch (ApiException e)
+{
+    Debug.Print("Exception when calling AnalyticsApi.UploadReportBrandingLogoWithHttpInfo: " + e.Message);
+    Debug.Print("Status Code: " + e.ErrorCode);
+    Debug.Print(e.StackTrace);
+}
+```
+
+### Parameters
+
+| Name | Type | Description | Notes |
+|------|------|-------------|-------|
+| **workspaceUuid** | **Guid** | UUID of the workspace. |  |
+| **logo** | **System.IO.Stream****System.IO.Stream** |  |  |
+
+### Return type
+
+[**GetReportBranding200Response**](GetReportBranding200Response.md)
+
+### Authorization
+
+[bearerAuth](../README.md#bearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: multipart/form-data
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | The saved branding |  -  |
 | **401** |  |  -  |
 | **403** |  |  -  |
 | **422** |  |  -  |

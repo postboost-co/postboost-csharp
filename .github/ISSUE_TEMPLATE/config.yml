@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Documentation
+    url: https://postboost.co/docs
+    about: Guides, API reference and MCP setup.
+  - name: Account or billing help
+    url: mailto:hi@postboost.co
+    about: Questions about your PostBoost account go to support, not GitHub.
+  - name: Security report
+    url: mailto:security@postboost.co
+    about: Please report vulnerabilities privately.
