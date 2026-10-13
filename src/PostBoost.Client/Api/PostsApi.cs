@@ -31,7 +31,7 @@ namespace PostBoost.Client.Api
         /// Add post to queue
         /// </summary>
         /// <remarks>
-        /// Add an existing post to the smart publishing queue. Each account of the post gets its own next free queue slot. Returns &#x60;422&#x60; when the post has no accounts, the posting schedule has no available times, or provider requirements are not met. 
+        /// Add an existing post to the smart publishing queue. Each account of the post gets its own next free queue slot. Returns &#x60;422&#x60; when the post has no accounts, the posting schedule has no available times, or provider requirements are not met. The guardrails check the saved post as publishing today (UTC), as on create: &#x60;409&#x60; duplicate (override with &#x60;X-Allow-Duplicate: true&#x60;), &#x60;422&#x60; account cannot publish, &#x60;429&#x60; daily or X cap. 
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -46,7 +46,7 @@ namespace PostBoost.Client.Api
         /// Add post to queue
         /// </summary>
         /// <remarks>
-        /// Add an existing post to the smart publishing queue. Each account of the post gets its own next free queue slot. Returns &#x60;422&#x60; when the post has no accounts, the posting schedule has no available times, or provider requirements are not met. 
+        /// Add an existing post to the smart publishing queue. Each account of the post gets its own next free queue slot. Returns &#x60;422&#x60; when the post has no accounts, the posting schedule has no available times, or provider requirements are not met. The guardrails check the saved post as publishing today (UTC), as on create: &#x60;409&#x60; duplicate (override with &#x60;X-Allow-Duplicate: true&#x60;), &#x60;422&#x60; account cannot publish, &#x60;429&#x60; daily or X cap. 
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -539,7 +539,7 @@ namespace PostBoost.Client.Api
         /// Schedule post
         /// </summary>
         /// <remarks>
-        /// Schedule an existing post. Optionally move it with &#x60;date&#x60;/&#x60;time&#x60; (read in &#x60;timezone&#x60;) and give accounts their own times with &#x60;accounts_schedule&#x60;. Set &#x60;postNow: true&#x60; to publish immediately; publishing starts within the request and any per-account times are dropped. Provider requirements are validated and reported as &#x60;422&#x60;. 
+        /// Schedule an existing post. Optionally move it with &#x60;date&#x60;/&#x60;time&#x60; (read in &#x60;timezone&#x60;) and give accounts their own times with &#x60;accounts_schedule&#x60;. Set &#x60;postNow: true&#x60; to publish immediately; publishing starts within the request and any per-account times are dropped. Provider requirements are validated and reported as &#x60;422&#x60;. The guardrails check the saved post at the time it would publish, as on create: &#x60;409&#x60; duplicate (override with &#x60;X-Allow-Duplicate: true&#x60;), &#x60;422&#x60; account cannot publish, &#x60;429&#x60; daily or X cap. 
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -554,7 +554,7 @@ namespace PostBoost.Client.Api
         /// Schedule post
         /// </summary>
         /// <remarks>
-        /// Schedule an existing post. Optionally move it with &#x60;date&#x60;/&#x60;time&#x60; (read in &#x60;timezone&#x60;) and give accounts their own times with &#x60;accounts_schedule&#x60;. Set &#x60;postNow: true&#x60; to publish immediately; publishing starts within the request and any per-account times are dropped. Provider requirements are validated and reported as &#x60;422&#x60;. 
+        /// Schedule an existing post. Optionally move it with &#x60;date&#x60;/&#x60;time&#x60; (read in &#x60;timezone&#x60;) and give accounts their own times with &#x60;accounts_schedule&#x60;. Set &#x60;postNow: true&#x60; to publish immediately; publishing starts within the request and any per-account times are dropped. Provider requirements are validated and reported as &#x60;422&#x60;. The guardrails check the saved post at the time it would publish, as on create: &#x60;409&#x60; duplicate (override with &#x60;X-Allow-Duplicate: true&#x60;), &#x60;422&#x60; account cannot publish, &#x60;429&#x60; daily or X cap. 
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -683,7 +683,7 @@ namespace PostBoost.Client.Api
         /// Add post to queue
         /// </summary>
         /// <remarks>
-        /// Add an existing post to the smart publishing queue. Each account of the post gets its own next free queue slot. Returns &#x60;422&#x60; when the post has no accounts, the posting schedule has no available times, or provider requirements are not met. 
+        /// Add an existing post to the smart publishing queue. Each account of the post gets its own next free queue slot. Returns &#x60;422&#x60; when the post has no accounts, the posting schedule has no available times, or provider requirements are not met. The guardrails check the saved post as publishing today (UTC), as on create: &#x60;409&#x60; duplicate (override with &#x60;X-Allow-Duplicate: true&#x60;), &#x60;422&#x60; account cannot publish, &#x60;429&#x60; daily or X cap. 
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -699,7 +699,7 @@ namespace PostBoost.Client.Api
         /// Add post to queue
         /// </summary>
         /// <remarks>
-        /// Add an existing post to the smart publishing queue. Each account of the post gets its own next free queue slot. Returns &#x60;422&#x60; when the post has no accounts, the posting schedule has no available times, or provider requirements are not met. 
+        /// Add an existing post to the smart publishing queue. Each account of the post gets its own next free queue slot. Returns &#x60;422&#x60; when the post has no accounts, the posting schedule has no available times, or provider requirements are not met. The guardrails check the saved post as publishing today (UTC), as on create: &#x60;409&#x60; duplicate (override with &#x60;X-Allow-Duplicate: true&#x60;), &#x60;422&#x60; account cannot publish, &#x60;429&#x60; daily or X cap. 
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -1237,7 +1237,7 @@ namespace PostBoost.Client.Api
         /// Schedule post
         /// </summary>
         /// <remarks>
-        /// Schedule an existing post. Optionally move it with &#x60;date&#x60;/&#x60;time&#x60; (read in &#x60;timezone&#x60;) and give accounts their own times with &#x60;accounts_schedule&#x60;. Set &#x60;postNow: true&#x60; to publish immediately; publishing starts within the request and any per-account times are dropped. Provider requirements are validated and reported as &#x60;422&#x60;. 
+        /// Schedule an existing post. Optionally move it with &#x60;date&#x60;/&#x60;time&#x60; (read in &#x60;timezone&#x60;) and give accounts their own times with &#x60;accounts_schedule&#x60;. Set &#x60;postNow: true&#x60; to publish immediately; publishing starts within the request and any per-account times are dropped. Provider requirements are validated and reported as &#x60;422&#x60;. The guardrails check the saved post at the time it would publish, as on create: &#x60;409&#x60; duplicate (override with &#x60;X-Allow-Duplicate: true&#x60;), &#x60;422&#x60; account cannot publish, &#x60;429&#x60; daily or X cap. 
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -1253,7 +1253,7 @@ namespace PostBoost.Client.Api
         /// Schedule post
         /// </summary>
         /// <remarks>
-        /// Schedule an existing post. Optionally move it with &#x60;date&#x60;/&#x60;time&#x60; (read in &#x60;timezone&#x60;) and give accounts their own times with &#x60;accounts_schedule&#x60;. Set &#x60;postNow: true&#x60; to publish immediately; publishing starts within the request and any per-account times are dropped. Provider requirements are validated and reported as &#x60;422&#x60;. 
+        /// Schedule an existing post. Optionally move it with &#x60;date&#x60;/&#x60;time&#x60; (read in &#x60;timezone&#x60;) and give accounts their own times with &#x60;accounts_schedule&#x60;. Set &#x60;postNow: true&#x60; to publish immediately; publishing starts within the request and any per-account times are dropped. Provider requirements are validated and reported as &#x60;422&#x60;. The guardrails check the saved post at the time it would publish, as on create: &#x60;409&#x60; duplicate (override with &#x60;X-Allow-Duplicate: true&#x60;), &#x60;422&#x60; account cannot publish, &#x60;429&#x60; daily or X cap. 
         /// </remarks>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -1499,7 +1499,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Add post to queue Add an existing post to the smart publishing queue. Each account of the post gets its own next free queue slot. Returns &#x60;422&#x60; when the post has no accounts, the posting schedule has no available times, or provider requirements are not met. 
+        /// Add post to queue Add an existing post to the smart publishing queue. Each account of the post gets its own next free queue slot. Returns &#x60;422&#x60; when the post has no accounts, the posting schedule has no available times, or provider requirements are not met. The guardrails check the saved post as publishing today (UTC), as on create: &#x60;409&#x60; duplicate (override with &#x60;X-Allow-Duplicate: true&#x60;), &#x60;422&#x60; account cannot publish, &#x60;429&#x60; daily or X cap. 
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -1515,7 +1515,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Add post to queue Add an existing post to the smart publishing queue. Each account of the post gets its own next free queue slot. Returns &#x60;422&#x60; when the post has no accounts, the posting schedule has no available times, or provider requirements are not met. 
+        /// Add post to queue Add an existing post to the smart publishing queue. Each account of the post gets its own next free queue slot. Returns &#x60;422&#x60; when the post has no accounts, the posting schedule has no available times, or provider requirements are not met. The guardrails check the saved post as publishing today (UTC), as on create: &#x60;409&#x60; duplicate (override with &#x60;X-Allow-Duplicate: true&#x60;), &#x60;422&#x60; account cannot publish, &#x60;429&#x60; daily or X cap. 
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -1582,7 +1582,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Add post to queue Add an existing post to the smart publishing queue. Each account of the post gets its own next free queue slot. Returns &#x60;422&#x60; when the post has no accounts, the posting schedule has no available times, or provider requirements are not met. 
+        /// Add post to queue Add an existing post to the smart publishing queue. Each account of the post gets its own next free queue slot. Returns &#x60;422&#x60; when the post has no accounts, the posting schedule has no available times, or provider requirements are not met. The guardrails check the saved post as publishing today (UTC), as on create: &#x60;409&#x60; duplicate (override with &#x60;X-Allow-Duplicate: true&#x60;), &#x60;422&#x60; account cannot publish, &#x60;429&#x60; daily or X cap. 
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -1599,7 +1599,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Add post to queue Add an existing post to the smart publishing queue. Each account of the post gets its own next free queue slot. Returns &#x60;422&#x60; when the post has no accounts, the posting schedule has no available times, or provider requirements are not met. 
+        /// Add post to queue Add an existing post to the smart publishing queue. Each account of the post gets its own next free queue slot. Returns &#x60;422&#x60; when the post has no accounts, the posting schedule has no available times, or provider requirements are not met. The guardrails check the saved post as publishing today (UTC), as on create: &#x60;409&#x60; duplicate (override with &#x60;X-Allow-Duplicate: true&#x60;), &#x60;422&#x60; account cannot publish, &#x60;429&#x60; daily or X cap. 
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -4647,7 +4647,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Schedule post Schedule an existing post. Optionally move it with &#x60;date&#x60;/&#x60;time&#x60; (read in &#x60;timezone&#x60;) and give accounts their own times with &#x60;accounts_schedule&#x60;. Set &#x60;postNow: true&#x60; to publish immediately; publishing starts within the request and any per-account times are dropped. Provider requirements are validated and reported as &#x60;422&#x60;. 
+        /// Schedule post Schedule an existing post. Optionally move it with &#x60;date&#x60;/&#x60;time&#x60; (read in &#x60;timezone&#x60;) and give accounts their own times with &#x60;accounts_schedule&#x60;. Set &#x60;postNow: true&#x60; to publish immediately; publishing starts within the request and any per-account times are dropped. Provider requirements are validated and reported as &#x60;422&#x60;. The guardrails check the saved post at the time it would publish, as on create: &#x60;409&#x60; duplicate (override with &#x60;X-Allow-Duplicate: true&#x60;), &#x60;422&#x60; account cannot publish, &#x60;429&#x60; daily or X cap. 
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -4663,7 +4663,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Schedule post Schedule an existing post. Optionally move it with &#x60;date&#x60;/&#x60;time&#x60; (read in &#x60;timezone&#x60;) and give accounts their own times with &#x60;accounts_schedule&#x60;. Set &#x60;postNow: true&#x60; to publish immediately; publishing starts within the request and any per-account times are dropped. Provider requirements are validated and reported as &#x60;422&#x60;. 
+        /// Schedule post Schedule an existing post. Optionally move it with &#x60;date&#x60;/&#x60;time&#x60; (read in &#x60;timezone&#x60;) and give accounts their own times with &#x60;accounts_schedule&#x60;. Set &#x60;postNow: true&#x60; to publish immediately; publishing starts within the request and any per-account times are dropped. Provider requirements are validated and reported as &#x60;422&#x60;. The guardrails check the saved post at the time it would publish, as on create: &#x60;409&#x60; duplicate (override with &#x60;X-Allow-Duplicate: true&#x60;), &#x60;422&#x60; account cannot publish, &#x60;429&#x60; daily or X cap. 
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -4736,7 +4736,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Schedule post Schedule an existing post. Optionally move it with &#x60;date&#x60;/&#x60;time&#x60; (read in &#x60;timezone&#x60;) and give accounts their own times with &#x60;accounts_schedule&#x60;. Set &#x60;postNow: true&#x60; to publish immediately; publishing starts within the request and any per-account times are dropped. Provider requirements are validated and reported as &#x60;422&#x60;. 
+        /// Schedule post Schedule an existing post. Optionally move it with &#x60;date&#x60;/&#x60;time&#x60; (read in &#x60;timezone&#x60;) and give accounts their own times with &#x60;accounts_schedule&#x60;. Set &#x60;postNow: true&#x60; to publish immediately; publishing starts within the request and any per-account times are dropped. Provider requirements are validated and reported as &#x60;422&#x60;. The guardrails check the saved post at the time it would publish, as on create: &#x60;409&#x60; duplicate (override with &#x60;X-Allow-Duplicate: true&#x60;), &#x60;422&#x60; account cannot publish, &#x60;429&#x60; daily or X cap. 
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>
@@ -4753,7 +4753,7 @@ namespace PostBoost.Client.Api
         }
 
         /// <summary>
-        /// Schedule post Schedule an existing post. Optionally move it with &#x60;date&#x60;/&#x60;time&#x60; (read in &#x60;timezone&#x60;) and give accounts their own times with &#x60;accounts_schedule&#x60;. Set &#x60;postNow: true&#x60; to publish immediately; publishing starts within the request and any per-account times are dropped. Provider requirements are validated and reported as &#x60;422&#x60;. 
+        /// Schedule post Schedule an existing post. Optionally move it with &#x60;date&#x60;/&#x60;time&#x60; (read in &#x60;timezone&#x60;) and give accounts their own times with &#x60;accounts_schedule&#x60;. Set &#x60;postNow: true&#x60; to publish immediately; publishing starts within the request and any per-account times are dropped. Provider requirements are validated and reported as &#x60;422&#x60;. The guardrails check the saved post at the time it would publish, as on create: &#x60;409&#x60; duplicate (override with &#x60;X-Allow-Duplicate: true&#x60;), &#x60;422&#x60; account cannot publish, &#x60;429&#x60; daily or X cap. 
         /// </summary>
         /// <exception cref="PostBoost.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="workspaceUuid">UUID of the workspace.</param>

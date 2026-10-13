@@ -36,7 +36,7 @@ All URIs are relative to *https://postboost.co/app/api*
 
 Add post to queue
 
-Add an existing post to the smart publishing queue. Each account of the post gets its own next free queue slot. Returns `422` when the post has no accounts, the posting schedule has no available times, or provider requirements are not met. 
+Add an existing post to the smart publishing queue. Each account of the post gets its own next free queue slot. Returns `422` when the post has no accounts, the posting schedule has no available times, or provider requirements are not met. The guardrails check the saved post as publishing today (UTC), as on create: `409` duplicate (override with `X-Allow-Duplicate: true`), `422` account cannot publish, `429` daily or X cap. 
 
 ### Example
 ```csharp
@@ -130,7 +130,9 @@ catch (ApiException e)
 | **401** |  |  -  |
 | **403** |  |  -  |
 | **404** |  |  -  |
+| **409** |  |  -  |
 | **422** |  |  -  |
+| **429** |  |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
@@ -2029,7 +2031,7 @@ catch (ApiException e)
 
 Schedule post
 
-Schedule an existing post. Optionally move it with `date`/`time` (read in `timezone`) and give accounts their own times with `accounts_schedule`. Set `postNow: true` to publish immediately; publishing starts within the request and any per-account times are dropped. Provider requirements are validated and reported as `422`. 
+Schedule an existing post. Optionally move it with `date`/`time` (read in `timezone`) and give accounts their own times with `accounts_schedule`. Set `postNow: true` to publish immediately; publishing starts within the request and any per-account times are dropped. Provider requirements are validated and reported as `422`. The guardrails check the saved post at the time it would publish, as on create: `409` duplicate (override with `X-Allow-Duplicate: true`), `422` account cannot publish, `429` daily or X cap. 
 
 ### Example
 ```csharp
@@ -2123,7 +2125,9 @@ catch (ApiException e)
 | **401** |  |  -  |
 | **403** |  |  -  |
 | **404** |  |  -  |
+| **409** |  |  -  |
 | **422** |  |  -  |
+| **429** |  |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
