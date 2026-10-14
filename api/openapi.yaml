@@ -48,7 +48,7 @@ info:
     name: Commercial
     url: https://postboost.co/pages/terms
   title: PostBoost API
-  version: 1.22.0
+  version: 1.23.0
 servers:
 - description: Production
   url: https://postboost.co/app/api
@@ -5845,6 +5845,19 @@ paths:
               schema:
                 $ref: '#/components/schemas/FreeToolList'
           description: The free tools.
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
         "401":
           $ref: '#/components/responses/Unauthorized'
         "429":
@@ -5852,7 +5865,29 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FreeToolError'
-          description: Too many requests from this IP (30 per minute).
+          description: "Rate limit reached. Without a token: 30 calls per minute and\
+            \ 500 per UTC day per IP address (IPv6 per /64). With a token: 300 per\
+            \ minute per user; the Free plan also has 1,000 calls per UTC day, paid\
+            \ plans have no daily cap."
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            Retry-After:
+              description: Seconds until the limit resets.
+              explode: false
+              schema:
+                type: integer
+              style: simple
       security: []
       summary: List the free tools
       tags:
@@ -5921,6 +5956,19 @@ paths:
               schema:
                 $ref: '#/components/schemas/FreeToolCountCharactersResponse'
           description: The tool output.
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
         "401":
           $ref: '#/components/responses/Unauthorized'
         "413":
@@ -5936,7 +5984,29 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FreeToolError'
-          description: Too many requests from this IP (30 per minute).
+          description: "Rate limit reached. Without a token: 30 calls per minute and\
+            \ 500 per UTC day per IP address (IPv6 per /64). With a token: 300 per\
+            \ minute per user; the Free plan also has 1,000 calls per UTC day, paid\
+            \ plans have no daily cap."
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            Retry-After:
+              description: Seconds until the limit resets.
+              explode: false
+              schema:
+                type: integer
+              style: simple
       security: []
       summary: Count characters as each network counts them
       tags:
@@ -6002,6 +6072,19 @@ paths:
               schema:
                 $ref: '#/components/schemas/FreeToolSplitThreadResponse'
           description: The tool output.
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
         "401":
           $ref: '#/components/responses/Unauthorized'
         "413":
@@ -6017,7 +6100,29 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FreeToolError'
-          description: Too many requests from this IP (30 per minute).
+          description: "Rate limit reached. Without a token: 30 calls per minute and\
+            \ 500 per UTC day per IP address (IPv6 per /64). With a token: 300 per\
+            \ minute per user; the Free plan also has 1,000 calls per UTC day, paid\
+            \ plans have no daily cap."
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            Retry-After:
+              description: Seconds until the limit resets.
+              explode: false
+              schema:
+                type: integer
+              style: simple
       security: []
       summary: Split long text into a thread
       tags:
@@ -6086,6 +6191,19 @@ paths:
               schema:
                 $ref: '#/components/schemas/FreeToolFormatLinkedInPostResponse'
           description: The tool output.
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
         "401":
           $ref: '#/components/responses/Unauthorized'
         "413":
@@ -6101,7 +6219,29 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FreeToolError'
-          description: Too many requests from this IP (30 per minute).
+          description: "Rate limit reached. Without a token: 30 calls per minute and\
+            \ 500 per UTC day per IP address (IPv6 per /64). With a token: 300 per\
+            \ minute per user; the Free plan also has 1,000 calls per UTC day, paid\
+            \ plans have no daily cap."
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            Retry-After:
+              description: Seconds until the limit resets.
+              explode: false
+              schema:
+                type: integer
+              style: simple
       security: []
       summary: "Format a LinkedIn post with bold, italic and lists"
       tags:
@@ -6148,6 +6288,19 @@ paths:
               schema:
                 $ref: '#/components/schemas/FreeToolGenerateFancyTextResponse'
           description: The tool output.
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
         "401":
           $ref: '#/components/responses/Unauthorized'
         "413":
@@ -6163,7 +6316,29 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FreeToolError'
-          description: Too many requests from this IP (30 per minute).
+          description: "Rate limit reached. Without a token: 30 calls per minute and\
+            \ 500 per UTC day per IP address (IPv6 per /64). With a token: 300 per\
+            \ minute per user; the Free plan also has 1,000 calls per UTC day, paid\
+            \ plans have no daily cap."
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            Retry-After:
+              description: Seconds until the limit resets.
+              explode: false
+              schema:
+                type: integer
+              style: simple
       security: []
       summary: Convert text to fancy Unicode styles
       tags:
@@ -6212,6 +6387,19 @@ paths:
               schema:
                 $ref: '#/components/schemas/FreeToolBuildUtmUrlResponse'
           description: The tool output.
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
         "401":
           $ref: '#/components/responses/Unauthorized'
         "413":
@@ -6227,7 +6415,29 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FreeToolError'
-          description: Too many requests from this IP (30 per minute).
+          description: "Rate limit reached. Without a token: 30 calls per minute and\
+            \ 500 per UTC day per IP address (IPv6 per /64). With a token: 300 per\
+            \ minute per user; the Free plan also has 1,000 calls per UTC day, paid\
+            \ plans have no daily cap."
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            Retry-After:
+              description: Seconds until the limit resets.
+              explode: false
+              schema:
+                type: integer
+              style: simple
       security: []
       summary: Build a UTM-tagged campaign URL
       tags:
@@ -6279,6 +6489,19 @@ paths:
               schema:
                 $ref: '#/components/schemas/FreeToolCalculateEngagementRateResponse'
           description: The tool output.
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
         "401":
           $ref: '#/components/responses/Unauthorized'
         "413":
@@ -6294,7 +6517,29 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FreeToolError'
-          description: Too many requests from this IP (30 per minute).
+          description: "Rate limit reached. Without a token: 30 calls per minute and\
+            \ 500 per UTC day per IP address (IPv6 per /64). With a token: 300 per\
+            \ minute per user; the Free plan also has 1,000 calls per UTC day, paid\
+            \ plans have no daily cap."
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            Retry-After:
+              description: Seconds until the limit resets.
+              explode: false
+              schema:
+                type: integer
+              style: simple
       security: []
       summary: Calculate an engagement rate
       tags:
@@ -12540,9 +12785,23 @@ components:
       - name
     FreeToolError:
       example:
+        register_url: https://openapi-generator.tech
+        retry_after: 0
         message: message
+        upgrade_url: https://openapi-generator.tech
       properties:
         message:
+          type: string
+        retry_after:
+          description: "429 only: seconds until the limit resets."
+          type: integer
+        register_url:
+          description: "429 for guests: sign up for a token with higher limits."
+          format: uri
+          type: string
+        upgrade_url:
+          description: 429 when a token user reached the plan's daily cap.
+          format: uri
           type: string
       required:
       - message
