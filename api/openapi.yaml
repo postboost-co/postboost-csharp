@@ -48,7 +48,7 @@ info:
     name: Commercial
     url: https://postboost.co/pages/terms
   title: PostBoost API
-  version: 1.18.0
+  version: 1.19.0
 servers:
 - description: Production
   url: https://postboost.co/app/api
@@ -5065,6 +5065,12 @@ paths:
         without AI and cost nothing. The workspace brand voice applies unless `use_brand_voice` is
         `false`. Send an `Idempotency-Key` so a retried call does not create a second draft.
         Limited to 10 calls per minute.
+
+        **Long runs**: the run is queued. The call waits up to 20 seconds and answers `200` with the
+        result when the run finished by then. Otherwise it answers `202` with a `run_id`; poll
+        `getRepurposeRun` (`status_url`) every few seconds until the status is `ok`, `partial` or
+        `failed`. Send `async: true` to get the `202` right away. Validation, account and credit
+        errors are answered before anything is queued.
       operationId: repurposeContent
       parameters:
       - $ref: '#/components/parameters/workspaceUuid'
@@ -5101,6 +5107,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/repurposeContent_200_response'
           description: Draft post set created
+        "202":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/repurposeContent_202_response'
+          description: The run is still going (or `async` was set); poll `status_url`.
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -5109,7 +5121,49 @@ paths:
           $ref: '#/components/responses/ValidationError'
         "429":
           $ref: '#/components/responses/InsufficientCredits'
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/repurposeContent_500_response'
+          description: The run failed while the call waited. `getRepurposeRun` shows
+            the error.
       summary: Repurpose long-form content into a draft post set with a carousel
+      tags:
+      - AI
+  /{workspaceUuid}/ai/repurpose/runs/{runId}:
+    get:
+      description: |
+        Status of a run started by `repurposeContent`. `queued` and `running` mean it is still
+        going; poll again in a few seconds. A run that has not finished after 10 minutes reports
+        `failed`. `result` holds the same `data` body a `200` from `repurposeContent` returns, for
+        one hour after the run ended with `ok` or `partial`; after that it is `null` (the draft post
+        stays). Limited to 60 calls per minute.
+      operationId: getRepurposeRun
+      parameters:
+      - $ref: '#/components/parameters/workspaceUuid'
+      - description: The `run_id` from `repurposeContent`.
+        explode: false
+        in: path
+        name: runId
+        required: true
+        schema:
+          type: integer
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getRepurposeRun_200_response'
+          description: Run status
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/WorkspaceForbidden'
+        "404":
+          $ref: '#/components/responses/NotFound'
+      summary: Get a repurpose run
       tags:
       - AI
   /{workspaceUuid}/agents:
@@ -10825,6 +10879,7 @@ components:
         - platforms
         cta: none
         create_post: true
+        async: false
         transcript: transcript
         use_brand_voice: true
         slide_count: 6
@@ -10949,8 +11004,106 @@ components:
         use_brand_voice:
           default: true
           type: boolean
+        async:
+          default: false
+          description: Answer `202` with a run id right away instead of waiting up
+            to 20 seconds for the result.
+          type: boolean
       required:
       - source_type
+    RepurposeRunAccepted:
+      example:
+        run_id: 5
+        status: queued
+        status_url: https://openapi-generator.tech
+      properties:
+        run_id:
+          type: integer
+        status:
+          enum:
+          - queued
+          - running
+          type: string
+        status_url:
+          description: The `getRepurposeRun` URL for this run.
+          format: uri
+          type: string
+      required:
+      - run_id
+      - status
+      - status_url
+    RepurposeRun:
+      example:
+        result:
+          slides:
+          - media_id: 0
+            url: url
+          - media_id: 0
+            url: url
+          warnings:
+          - warnings
+          - warnings
+          post_uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          credits_remaining: 5
+          source:
+            type: url
+            title: title
+            url: url
+          media:
+            id: 6
+            url: url
+          captions:
+          - account_id: 5
+            provider: x
+            character_limit: 280
+            error: error
+            content: "Unlock better social media results with these 10 proven tips.\
+              \ #SocialMedia #Marketing"
+            character_count: 87
+          - account_id: 5
+            provider: x
+            character_limit: 280
+            error: error
+            content: "Unlock better social media results with these 10 proven tips.\
+              \ #SocialMedia #Marketing"
+            character_count: 87
+          credits_used: 1
+        run_id: 0
+        post_uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        error: error
+        credits_used: 6
+        status: queued
+      properties:
+        run_id:
+          type: integer
+        status:
+          enum:
+          - queued
+          - running
+          - ok
+          - partial
+          - failed
+          type: string
+        error:
+          description: Why the run failed.
+          nullable: true
+          type: string
+        post_uuid:
+          description: "The draft post, once created."
+          format: uuid
+          nullable: true
+          type: string
+        credits_used:
+          type: integer
+        result:
+          $ref: '#/components/schemas/RepurposeResult'
+      required:
+      - credits_used
+      - error
+      - post_uuid
+      - result
+      - run_id
+      - status
     RepurposeSlide:
       example:
         media_id: 0
@@ -14163,6 +14316,77 @@ components:
       required:
       - data
       - meta
+    repurposeContent_202_response:
+      example:
+        data:
+          run_id: 5
+          status: queued
+          status_url: https://openapi-generator.tech
+      properties:
+        data:
+          $ref: '#/components/schemas/RepurposeRunAccepted'
+      required:
+      - data
+    repurposeContent_500_response:
+      example:
+        run_id: 2
+        message: The run failed.
+      properties:
+        message:
+          example: The run failed.
+          type: string
+        run_id:
+          type: integer
+      required:
+      - message
+      - run_id
+    getRepurposeRun_200_response:
+      example:
+        data:
+          result:
+            slides:
+            - media_id: 0
+              url: url
+            - media_id: 0
+              url: url
+            warnings:
+            - warnings
+            - warnings
+            post_uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            credits_remaining: 5
+            source:
+              type: url
+              title: title
+              url: url
+            media:
+              id: 6
+              url: url
+            captions:
+            - account_id: 5
+              provider: x
+              character_limit: 280
+              error: error
+              content: "Unlock better social media results with these 10 proven tips.\
+                \ #SocialMedia #Marketing"
+              character_count: 87
+            - account_id: 5
+              provider: x
+              character_limit: 280
+              error: error
+              content: "Unlock better social media results with these 10 proven tips.\
+                \ #SocialMedia #Marketing"
+              character_count: 87
+            credits_used: 1
+          run_id: 0
+          post_uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          error: error
+          credits_used: 6
+          status: queued
+      properties:
+        data:
+          $ref: '#/components/schemas/RepurposeRun'
+      required:
+      - data
     listAgents_200_response:
       example:
         data:

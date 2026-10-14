@@ -13,7 +13,7 @@ dotnet add package PostBoost.Client
 | **NuGet** | [nuget.org/packages/PostBoost.Client](https://www.nuget.org/packages/PostBoost.Client/) |
 | **GitHub** | [postboost-co/postboost-csharp](https://github.com/postboost-co/postboost-csharp) |
 | **Docs** | [postboost.co/docs/api](https://postboost.co/docs/api) |
-| **Version** | v1.18.0 |
+| **Version** | v1.19.0 |
 
 ## Quick start
 
@@ -40,6 +40,7 @@ Class | Method | HTTP request | Description
 *AIApi* | [**DeleteBrandVoice**](docs/AIApi.md#deletebrandvoice) | **DELETE** /{workspaceUuid}/brand-voice | Delete the brand voice
 *AIApi* | [**GetAIUsage**](docs/AIApi.md#getaiusage) | **GET** /{workspaceUuid}/usage/ai | AI credit usage
 *AIApi* | [**GetBrandVoice**](docs/AIApi.md#getbrandvoice) | **GET** /{workspaceUuid}/brand-voice | Get the brand voice
+*AIApi* | [**GetRepurposeRun**](docs/AIApi.md#getrepurposerun) | **GET** /{workspaceUuid}/ai/repurpose/runs/{runId} | Get a repurpose run
 *AIApi* | [**ImageAltText**](docs/AIApi.md#imagealttext) | **POST** /{workspaceUuid}/ai/image-alt-text | Generate alt text for a media image using AI
 *AIApi* | [**ImageEdit**](docs/AIApi.md#imageedit) | **POST** /{workspaceUuid}/ai/image-edit | Edit an existing media image using AI
 *AIApi* | [**ImageGenerate**](docs/AIApi.md#imagegenerate) | **POST** /{workspaceUuid}/ai/image-generate | Generate social media images from a caption

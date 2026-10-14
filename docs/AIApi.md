@@ -8,6 +8,7 @@ All URIs are relative to *https://postboost.co/app/api*
 | [**DeleteBrandVoice**](AIApi.md#deletebrandvoice) | **DELETE** /{workspaceUuid}/brand-voice | Delete the brand voice |
 | [**GetAIUsage**](AIApi.md#getaiusage) | **GET** /{workspaceUuid}/usage/ai | AI credit usage |
 | [**GetBrandVoice**](AIApi.md#getbrandvoice) | **GET** /{workspaceUuid}/brand-voice | Get the brand voice |
+| [**GetRepurposeRun**](AIApi.md#getrepurposerun) | **GET** /{workspaceUuid}/ai/repurpose/runs/{runId} | Get a repurpose run |
 | [**ImageAltText**](AIApi.md#imagealttext) | **POST** /{workspaceUuid}/ai/image-alt-text | Generate alt text for a media image using AI |
 | [**ImageEdit**](AIApi.md#imageedit) | **POST** /{workspaceUuid}/ai/image-edit | Edit an existing media image using AI |
 | [**ImageGenerate**](AIApi.md#imagegenerate) | **POST** /{workspaceUuid}/ai/image-generate | Generate social media images from a caption |
@@ -402,6 +403,105 @@ catch (ApiException e)
 | **200** | The brand voice, or &#x60;null&#x60; when none is set |  -  |
 | **401** |  |  -  |
 | **403** |  |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+<a id="getrepurposerun"></a>
+# **GetRepurposeRun**
+> GetRepurposeRun200Response GetRepurposeRun (Guid workspaceUuid, int runId)
+
+Get a repurpose run
+
+Status of a run started by `repurposeContent`. `queued` and `running` mean it is still going; poll again in a few seconds. A run that has not finished after 10 minutes reports `failed`. `result` holds the same `data` body a `200` from `repurposeContent` returns, for one hour after the run ended with `ok` or `partial`; after that it is `null` (the draft post stays). Limited to 60 calls per minute. 
+
+### Example
+```csharp
+using System.Collections.Generic;
+using System.Diagnostics;
+using PostBoost.Client.Api;
+using PostBoost.Client.Client;
+using PostBoost.Client.Model;
+
+namespace Example
+{
+    public class GetRepurposeRunExample
+    {
+        public static void Main()
+        {
+            Configuration config = new Configuration();
+            config.BasePath = "https://postboost.co/app/api";
+            // Configure Bearer token for authorization: bearerAuth
+            config.AccessToken = "YOUR_BEARER_TOKEN";
+
+            var apiInstance = new AIApi(config);
+            var workspaceUuid = "workspaceUuid_example";  // Guid | UUID of the workspace.
+            var runId = 56;  // int | The `run_id` from `repurposeContent`.
+
+            try
+            {
+                // Get a repurpose run
+                GetRepurposeRun200Response result = apiInstance.GetRepurposeRun(workspaceUuid, runId);
+                Debug.WriteLine(result);
+            }
+            catch (ApiException  e)
+            {
+                Debug.Print("Exception when calling AIApi.GetRepurposeRun: " + e.Message);
+                Debug.Print("Status Code: " + e.ErrorCode);
+                Debug.Print(e.StackTrace);
+            }
+        }
+    }
+}
+```
+
+#### Using the GetRepurposeRunWithHttpInfo variant
+This returns an ApiResponse object which contains the response data, status code and headers.
+
+```csharp
+try
+{
+    // Get a repurpose run
+    ApiResponse<GetRepurposeRun200Response> response = apiInstance.GetRepurposeRunWithHttpInfo(workspaceUuid, runId);
+    Debug.Write("Status Code: " + response.StatusCode);
+    Debug.Write("Response Headers: " + response.Headers);
+    Debug.Write("Response Body: " + response.Data);
+}
+catch (ApiException e)
+{
+    Debug.Print("Exception when calling AIApi.GetRepurposeRunWithHttpInfo: " + e.Message);
+    Debug.Print("Status Code: " + e.ErrorCode);
+    Debug.Print(e.StackTrace);
+}
+```
+
+### Parameters
+
+| Name | Type | Description | Notes |
+|------|------|-------------|-------|
+| **workspaceUuid** | **Guid** | UUID of the workspace. |  |
+| **runId** | **int** | The &#x60;run_id&#x60; from &#x60;repurposeContent&#x60;. |  |
+
+### Return type
+
+[**GetRepurposeRun200Response**](GetRepurposeRun200Response.md)
+
+### Authorization
+
+[bearerAuth](../README.md#bearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | Run status |  -  |
+| **401** |  |  -  |
+| **403** |  |  -  |
+| **404** |  |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
@@ -1012,7 +1112,7 @@ catch (ApiException e)
 
 Repurpose long-form content into a draft post set with a carousel
 
-Turns an article URL, a YouTube video, a PDF or pasted text into one **draft** post with a caption for every target account, plus a carousel of rendered slide images (hook, 1 to 6 idea slides, call to action; 1080×1350 PNG). Nothing is published or scheduled.  **Sources** (`source_type`): - `url`: the article is fetched and its main text extracted. - `youtube`: title, description and chapters come from YouTube; send the transcript in   `transcript` for better results (required when the description is short). - `pdf`: `pdf_url` must be a public PDF of at most 20 MB; the first 30 pages are read. - `text`: send `title` and `text`.  **Carousel per network**: Instagram, Facebook, Threads up to 10 slides; LinkedIn up to 9; X and Bluesky up to 4; other networks get the cover slide; YouTube and TikTok get none (listed in `warnings`). Without a carousel, the source image (article image or video thumbnail) is attached when available.  **AI credits**: one per target account plus one for the carousel outline. Slides are drawn without AI and cost nothing. The workspace brand voice applies unless `use_brand_voice` is `false`. Send an `Idempotency-Key` so a retried call does not create a second draft. Limited to 10 calls per minute. 
+Turns an article URL, a YouTube video, a PDF or pasted text into one **draft** post with a caption for every target account, plus a carousel of rendered slide images (hook, 1 to 6 idea slides, call to action; 1080×1350 PNG). Nothing is published or scheduled.  **Sources** (`source_type`): - `url`: the article is fetched and its main text extracted. - `youtube`: title, description and chapters come from YouTube; send the transcript in   `transcript` for better results (required when the description is short). - `pdf`: `pdf_url` must be a public PDF of at most 20 MB; the first 30 pages are read. - `text`: send `title` and `text`.  **Carousel per network**: Instagram, Facebook, Threads up to 10 slides; LinkedIn up to 9; X and Bluesky up to 4; other networks get the cover slide; YouTube and TikTok get none (listed in `warnings`). Without a carousel, the source image (article image or video thumbnail) is attached when available.  **AI credits**: one per target account plus one for the carousel outline. Slides are drawn without AI and cost nothing. The workspace brand voice applies unless `use_brand_voice` is `false`. Send an `Idempotency-Key` so a retried call does not create a second draft. Limited to 10 calls per minute.  **Long runs**: the run is queued. The call waits up to 20 seconds and answers `200` with the result when the run finished by then. Otherwise it answers `202` with a `run_id`; poll `getRepurposeRun` (`status_url`) every few seconds until the status is `ok`, `partial` or `failed`. Send `async: true` to get the `202` right away. Validation, account and credit errors are answered before anything is queued. 
 
 ### Example
 ```csharp
@@ -1101,10 +1201,12 @@ catch (ApiException e)
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Draft post set created |  -  |
+| **202** | The run is still going (or &#x60;async&#x60; was set); poll &#x60;status_url&#x60;. |  -  |
 | **401** |  |  -  |
 | **403** |  |  -  |
 | **422** |  |  -  |
 | **429** |  |  -  |
+| **500** | The run failed while the call waited. &#x60;getRepurposeRun&#x60; shows the error. |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 

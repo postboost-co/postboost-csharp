@@ -23,6 +23,7 @@ Name | Type | Description | Notes
 **Theme** | [**RepurposeInputTheme**](RepurposeInputTheme.md) |  | [optional] 
 **CreatePost** | **bool** | Create the draft post. &#x60;false&#x60; returns captions and slides only. | [optional] [default to true]
 **UseBrandVoice** | **bool** |  | [optional] [default to true]
+**Async** | **bool** | Answer &#x60;202&#x60; with a run id right away instead of waiting up to 20 seconds for the result. | [optional] [default to false]
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 
