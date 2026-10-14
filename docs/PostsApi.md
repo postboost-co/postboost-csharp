@@ -36,7 +36,7 @@ All URIs are relative to *https://postboost.co/app/api*
 
 Add post to queue
 
-Add an existing post to the smart publishing queue. Each account of the post gets its own next free queue slot. Returns `422` when the post has no accounts, the posting schedule has no available times, or provider requirements are not met. The guardrails check the saved post as publishing today (UTC), as on create: `409` duplicate (override with `X-Allow-Duplicate: true`), `422` account cannot publish, `429` daily or X cap. 
+Add an existing post to the smart publishing queue. Each account of the post gets its own next free queue slot. Returns `422` when the post has no accounts, the posting schedule has no available times, or provider requirements are not met. The guardrails check the saved post as publishing at the queue slot it will get (the earliest next free slot of its accounts), as on create: `409` duplicate (override with `X-Allow-Duplicate: true`), `422` account cannot publish, `429` daily cap on that slot's UTC day or X cap. 
 
 ### Example
 ```csharp

@@ -48,7 +48,7 @@ info:
     name: Commercial
     url: https://postboost.co/pages/terms
   title: PostBoost API
-  version: 1.15.0
+  version: 1.17.1
 servers:
 - description: Production
   url: https://postboost.co/app/api
@@ -1433,8 +1433,9 @@ paths:
         Add an existing post to the smart publishing queue. Each account of the post gets its own
         next free queue slot. Returns `422` when the post has no accounts, the posting schedule has no
         available times, or provider requirements are not met. The guardrails check the saved post as
-        publishing today (UTC), as on create: `409` duplicate (override with `X-Allow-Duplicate: true`),
-        `422` account cannot publish, `429` daily or X cap.
+        publishing at the queue slot it will get (the earliest next free slot of its accounts), as on
+        create: `409` duplicate (override with `X-Allow-Duplicate: true`), `422` account cannot publish,
+        `429` daily cap on that slot's UTC day or X cap.
       operationId: addPostToQueue
       parameters:
       - $ref: '#/components/parameters/workspaceUuid'
