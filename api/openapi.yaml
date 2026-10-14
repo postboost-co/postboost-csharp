@@ -48,7 +48,7 @@ info:
     name: Commercial
     url: https://postboost.co/pages/terms
   title: PostBoost API
-  version: 1.17.2
+  version: 1.17.3
 servers:
 - description: Production
   url: https://postboost.co/app/api
@@ -14613,7 +14613,8 @@ components:
         used_today: 2
       properties:
         limit:
-          description: Posts allowed per UTC day for this network.
+          description: "Posts allowed per UTC day for this network; Free workspaces\
+            \ get half (rounded down, at least 1)."
           type: integer
         used_today:
           description: "Scheduled, awaiting-approval and published posts counted for\
