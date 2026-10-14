@@ -242,7 +242,7 @@ catch (ApiException e)
 
 <a id="createpost"></a>
 # **CreatePost**
-> Post CreatePost (Guid workspaceUuid, PostInput postInput, string? idempotencyKey = null)
+> CreatePost201Response CreatePost (Guid workspaceUuid, PostInput postInput, string? idempotencyKey = null)
 
 Create post
 
@@ -275,7 +275,7 @@ namespace Example
             try
             {
                 // Create post
-                Post result = apiInstance.CreatePost(workspaceUuid, postInput, idempotencyKey);
+                CreatePost201Response result = apiInstance.CreatePost(workspaceUuid, postInput, idempotencyKey);
                 Debug.WriteLine(result);
             }
             catch (ApiException  e)
@@ -296,7 +296,7 @@ This returns an ApiResponse object which contains the response data, status code
 try
 {
     // Create post
-    ApiResponse<Post> response = apiInstance.CreatePostWithHttpInfo(workspaceUuid, postInput, idempotencyKey);
+    ApiResponse<CreatePost201Response> response = apiInstance.CreatePostWithHttpInfo(workspaceUuid, postInput, idempotencyKey);
     Debug.Write("Status Code: " + response.StatusCode);
     Debug.Write("Response Headers: " + response.Headers);
     Debug.Write("Response Body: " + response.Data);
@@ -319,7 +319,7 @@ catch (ApiException e)
 
 ### Return type
 
-[**Post**](Post.md)
+[**CreatePost201Response**](CreatePost201Response.md)
 
 ### Authorization
 
@@ -334,7 +334,7 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **201** | Created post |  * Idempotent-Replayed -  <br>  |
+| **201** | Created post. &#x60;warnings&#x60; lists non-blocking problems (see PostWarning); the key is absent when there are none. |  * Idempotent-Replayed -  <br>  |
 | **400** |  |  -  |
 | **401** |  |  -  |
 | **403** |  |  -  |
@@ -2133,7 +2133,7 @@ catch (ApiException e)
 
 <a id="updatepost"></a>
 # **UpdatePost**
-> Object UpdatePost (Guid workspaceUuid, Guid postUuid, PostInput postInput)
+> UpdatePost200Response UpdatePost (Guid workspaceUuid, Guid postUuid, PostInput postInput)
 
 Update post
 
@@ -2166,7 +2166,7 @@ namespace Example
             try
             {
                 // Update post
-                Object result = apiInstance.UpdatePost(workspaceUuid, postUuid, postInput);
+                UpdatePost200Response result = apiInstance.UpdatePost(workspaceUuid, postUuid, postInput);
                 Debug.WriteLine(result);
             }
             catch (ApiException  e)
@@ -2187,7 +2187,7 @@ This returns an ApiResponse object which contains the response data, status code
 try
 {
     // Update post
-    ApiResponse<Object> response = apiInstance.UpdatePostWithHttpInfo(workspaceUuid, postUuid, postInput);
+    ApiResponse<UpdatePost200Response> response = apiInstance.UpdatePostWithHttpInfo(workspaceUuid, postUuid, postInput);
     Debug.Write("Status Code: " + response.StatusCode);
     Debug.Write("Response Headers: " + response.Headers);
     Debug.Write("Response Body: " + response.Data);
@@ -2210,7 +2210,7 @@ catch (ApiException e)
 
 ### Return type
 
-**Object**
+[**UpdatePost200Response**](UpdatePost200Response.md)
 
 ### Authorization
 
@@ -2225,7 +2225,7 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **200** |  |  -  |
+| **200** | Post updated. &#x60;warnings&#x60; lists non-blocking problems (see PostWarning); the key is absent when there are none. |  -  |
 | **401** |  |  -  |
 | **403** |  |  -  |
 | **404** |  |  -  |

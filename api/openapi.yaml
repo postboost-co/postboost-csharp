@@ -48,7 +48,7 @@ info:
     name: Commercial
     url: https://postboost.co/pages/terms
   title: PostBoost API
-  version: 1.19.0
+  version: 1.20.0
 servers:
 - description: Production
   url: https://postboost.co/app/api
@@ -1281,8 +1281,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Post'
-          description: Created post
+                $ref: '#/components/schemas/createPost_201_response'
+          description: Created post. `warnings` lists non-blocking problems (see PostWarning);
+            the key is absent when there are none.
           headers:
             Idempotent-Replayed:
               $ref: '#/components/headers/IdempotentReplayed'
@@ -1369,7 +1370,12 @@ paths:
         required: true
       responses:
         "200":
-          $ref: '#/components/responses/SuccessResponse'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/updatePost_200_response'
+          description: Post updated. `warnings` lists non-blocking problems (see PostWarning);
+            the key is absent when there are none.
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -6113,6 +6119,42 @@ components:
           type: string
       required:
       - message
+    PostWarning:
+      description: |
+        A non-blocking warning on a successful create or update: the post was saved, but
+        something will not behave as you may expect. Log the `code`.
+        - `ai_media_without_disclosure`: the post uses media from the AI image endpoints but
+          `ai_generated` is `false`, so no network AI label is applied.
+        - `meta_first_comment_unavailable`: a Facebook Page or Instagram first comment cannot
+          be published yet (Meta is reviewing our access); the post itself publishes.
+      example:
+        code: ai_media_without_disclosure
+        account_id: 6
+        message: message
+      properties:
+        code:
+          enum:
+          - ai_media_without_disclosure
+          - meta_first_comment_unavailable
+          type: string
+        account_id:
+          description: The account the warning is about; null when it is about the
+            whole post.
+          nullable: true
+          type: integer
+        message:
+          type: string
+      required:
+      - account_id
+      - code
+      - message
+    PostWarnings:
+      properties:
+        warnings:
+          description: Present only when there is at least one warning.
+          items:
+            $ref: '#/components/schemas/PostWarning'
+          type: array
     GuardrailError:
       example:
         code: duplicate_post
@@ -12759,6 +12801,189 @@ components:
           last: last
           prev: prev
           first: first
+    createPost_201_response:
+      allOf:
+      - $ref: '#/components/schemas/Post'
+      - $ref: '#/components/schemas/PostWarnings'
+      example:
+        publish_progress: ""
+        versions:
+        - synced_with: 0
+          account_id: 6
+          is_original: true
+          options:
+            youtube:
+              contains_synthetic_media: false
+              made_for_kids: false
+              title: title
+              status: public
+            tiktok:
+              brand_content_toggle:
+                key: true
+              privacy_level:
+                account-12: PUBLIC_TO_EVERYONE
+              allow_comments:
+                key: true
+              content_disclosure:
+                key: true
+              brand_organic_toggle:
+                key: true
+              allow_stitch:
+                key: true
+              allow_duet:
+                key: true
+              is_aigc:
+                account-12: true
+              auto_add_music:
+                key: true
+            instagram:
+              ai_generated: false
+              collaborators:
+              - collaborators
+              - collaborators
+              - collaborators
+              type: post
+            instagram_standalone:
+              ai_generated: false
+              collaborators:
+              - collaborators
+              - collaborators
+              - collaborators
+              type: post
+          content:
+          - video_thumbs:
+            - "{}"
+            - "{}"
+            media:
+            - 5
+            - 5
+            body: body
+            url: https://openapi-generator.tech
+          - video_thumbs:
+            - "{}"
+            - "{}"
+            media:
+            - 5
+            - 5
+            body: body
+            url: https://openapi-generator.tech
+        - synced_with: 0
+          account_id: 6
+          is_original: true
+          options:
+            youtube:
+              contains_synthetic_media: false
+              made_for_kids: false
+              title: title
+              status: public
+            tiktok:
+              brand_content_toggle:
+                key: true
+              privacy_level:
+                account-12: PUBLIC_TO_EVERYONE
+              allow_comments:
+                key: true
+              content_disclosure:
+                key: true
+              brand_organic_toggle:
+                key: true
+              allow_stitch:
+                key: true
+              allow_duet:
+                key: true
+              is_aigc:
+                account-12: true
+              auto_add_music:
+                key: true
+            instagram:
+              ai_generated: false
+              collaborators:
+              - collaborators
+              - collaborators
+              - collaborators
+              type: post
+            instagram_standalone:
+              ai_generated: false
+              collaborators:
+              - collaborators
+              - collaborators
+              - collaborators
+              type: post
+          content:
+          - video_thumbs:
+            - "{}"
+            - "{}"
+            media:
+            - 5
+            - 5
+            body: body
+            url: https://openapi-generator.tech
+          - video_thumbs:
+            - "{}"
+            - "{}"
+            media:
+            - 5
+            - 5
+            body: body
+            url: https://openapi-generator.tech
+        warnings:
+        - code: ai_media_without_disclosure
+          account_id: 6
+          message: message
+        - code: ai_media_without_disclosure
+          account_id: 6
+          message: message
+        scheduled_at: 2000-01-23T04:56:07.000+00:00
+        created_at: 2000-01-23T04:56:07.000+00:00
+        id: 0
+        accounts:
+        - image: https://openapi-generator.tech
+          data: "{}"
+          profile_url: https://openapi-generator.tech
+          published_parts: 0
+          created_at: 2026-10-11 09:30:00
+          uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          external_url: external_url
+          provider: instagram
+          provider_post_id: provider_post_id
+          authorized: true
+          name: My Instagram
+          id: 0
+          publish_status: pending
+          errors:
+          - Account_errors_inner
+          - Account_errors_inner
+          username: myhandle
+        - image: https://openapi-generator.tech
+          data: "{}"
+          profile_url: https://openapi-generator.tech
+          published_parts: 0
+          created_at: 2026-10-11 09:30:00
+          uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          external_url: external_url
+          provider: instagram
+          provider_post_id: provider_post_id
+          authorized: true
+          name: My Instagram
+          id: 0
+          publish_status: pending
+          errors:
+          - Account_errors_inner
+          - Account_errors_inner
+          username: myhandle
+        published_at: 2000-01-23T04:56:07.000+00:00
+        uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        status: draft
+        tags:
+        - name: Campaign 2025
+          id: 0
+          hex_color: '#3B82F6'
+          uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        - name: Campaign 2025
+          id: 0
+          hex_color: '#3B82F6'
+          uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        trashed: true
     deletePostsBulk_request:
       properties:
         posts:
@@ -12775,6 +13000,22 @@ components:
           $ref: '#/components/schemas/DeleteMode'
       required:
       - posts
+    updatePost_200_response:
+      allOf:
+      - properties:
+          success:
+            example: true
+            type: boolean
+      - $ref: '#/components/schemas/PostWarnings'
+      example:
+        success: true
+        warnings:
+        - code: ai_media_without_disclosure
+          account_id: 6
+          message: message
+        - code: ai_media_without_disclosure
+          account_id: 6
+          message: message
     deletePost_request:
       properties:
         trash:
