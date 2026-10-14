@@ -48,7 +48,7 @@ info:
     name: Commercial
     url: https://postboost.co/pages/terms
   title: PostBoost API
-  version: 1.21.0
+  version: 1.22.0
 servers:
 - description: Production
   url: https://postboost.co/app/api
@@ -88,6 +88,10 @@ tags:
 - description: "REST-hook subscriptions so automation tools (n8n, Zapier, Make) can\
     \ register their own webhook triggers."
   name: Webhooks
+- description: "Free social media tools (character counter, thread maker, UTM builder\
+    \ and more), the same logic as https://postboost.co/tools. No account needed:\
+    \ call them without a token, or with any API token."
+  name: Free Tools
 paths:
   /workspaces:
     get:
@@ -5829,6 +5833,473 @@ paths:
       tags:
       - Workspaces
       x-mcp-exclude: true
+  /tools:
+    get:
+      description: "Every free tool the API serves, with its operationId and web page.\
+        \ No token needed."
+      operationId: listFreeTools
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolList'
+          description: The free tools.
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: Too many requests from this IP (30 per minute).
+      security: []
+      summary: List the free tools
+      tags:
+      - Free Tools
+      x-free-tool: true
+  /tools/social-media-character-counter:
+    post:
+      description: "Count characters as each network counts them. The same logic as\
+        \ the free web tool at https://postboost.co/tools/social-media-character-counter.\
+        \ No account needed: call it without a token, or with any API token."
+      operationId: countCharacters
+      requestBody:
+        content:
+          application/json:
+            examples:
+              example-1:
+                value:
+                  text: "New post: https://postboost.co/tools"
+                  network: x
+              example-2:
+                value:
+                  text: "Launch day 🚀 #saas #marketing"
+                  network: instagram
+              example-3:
+                value:
+                  text: ""
+                  network: bluesky
+            schema:
+              $ref: '#/components/schemas/FreeToolCountCharactersRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                example-1:
+                  value:
+                    hashtags: 0
+                    networks:
+                    - key: x
+                      label: X (Twitter) post
+                      limit: 280
+                      count: 33
+                      remaining: 247
+                      over: false
+                example-2:
+                  value:
+                    hashtags: 2
+                    networks:
+                    - key: instagram
+                      label: Instagram caption
+                      limit: 2200
+                      count: 30
+                      remaining: 2170
+                      over: false
+                example-3:
+                  value:
+                    hashtags: 0
+                    networks:
+                    - key: bluesky
+                      label: Bluesky post
+                      limit: 300
+                      count: 0
+                      remaining: 300
+                      over: false
+              schema:
+                $ref: '#/components/schemas/FreeToolCountCharactersResponse'
+          description: The tool output.
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "413":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: The request body is larger than 64 KB.
+        "422":
+          $ref: '#/components/responses/ValidationError'
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: Too many requests from this IP (30 per minute).
+      security: []
+      summary: Count characters as each network counts them
+      tags:
+      - Free Tools
+      x-free-tool: true
+  /tools/x-thread-maker:
+    post:
+      description: "Split long text into a thread. The same logic as the free web\
+        \ tool at https://postboost.co/tools/x-thread-maker. No account needed: call\
+        \ it without a token, or with any API token."
+      operationId: splitThread
+      requestBody:
+        content:
+          application/json:
+            examples:
+              example-1:
+                value:
+                  text: |-
+                    Short one.
+
+                    Short two.
+                    ---
+                    Second post.
+                  numbering: true
+              example-2:
+                value:
+                  text: Read https://postboost.co/learn/schedule-social-media-posts-with-claude?ref=thread
+                    now.
+                  network: x
+              example-3:
+                value:
+                  text: ""
+            schema:
+              $ref: '#/components/schemas/FreeToolSplitThreadRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                example-1:
+                  value:
+                    limit: 280
+                    posts:
+                    - text: |-
+                        Short one.
+
+                        Short two. 1/2
+                      count: 26
+                    - text: Second post. 2/2
+                      count: 16
+                example-2:
+                  value:
+                    limit: 280
+                    posts:
+                    - text: Read https://postboost.co/learn/schedule-social-media-posts-with-claude?ref=thread
+                        now.
+                      count: 33
+                example-3:
+                  value:
+                    limit: 280
+                    posts: []
+              schema:
+                $ref: '#/components/schemas/FreeToolSplitThreadResponse'
+          description: The tool output.
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "413":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: The request body is larger than 64 KB.
+        "422":
+          $ref: '#/components/responses/ValidationError'
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: Too many requests from this IP (30 per minute).
+      security: []
+      summary: Split long text into a thread
+      tags:
+      - Free Tools
+      x-free-tool: true
+  /tools/linkedin-post-formatter:
+    post:
+      description: "Format a LinkedIn post with bold, italic and lists. The same logic\
+        \ as the free web tool at https://postboost.co/tools/linkedin-post-formatter.\
+        \ No account needed: call it without a token, or with any API token."
+      operationId: formatLinkedInPost
+      requestBody:
+        content:
+          application/json:
+            examples:
+              example-1:
+                value:
+                  text: |-
+                    Three tips
+                    Plan ahead
+                    Reuse posts
+                  list: numbered
+              example-2:
+                value:
+                  text: |-
+                    Big news
+                    One
+                    Two
+                    Three
+                  style: bold
+            schema:
+              $ref: '#/components/schemas/FreeToolFormatLinkedInPostRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                example-1:
+                  value:
+                    text: |-
+                      1. Three tips
+                      2. Plan ahead
+                      3. Reuse posts
+                    count: 42
+                    limit: 3000
+                    preview: |-
+                      1. Three tips
+                      2. Plan ahead
+                      3. Reuse posts
+                    folded: false
+                example-2:
+                  value:
+                    text: |-
+                      𝐁𝐢𝐠 𝐧𝐞𝐰𝐬
+                      𝐎𝐧𝐞
+                      𝐓𝐰𝐨
+                      𝐓𝐡𝐫𝐞𝐞
+                    count: 40
+                    limit: 3000
+                    preview: |-
+                      𝐁𝐢𝐠 𝐧𝐞𝐰𝐬
+                      𝐎𝐧𝐞
+                      𝐓𝐰𝐨
+                    folded: true
+              schema:
+                $ref: '#/components/schemas/FreeToolFormatLinkedInPostResponse'
+          description: The tool output.
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "413":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: The request body is larger than 64 KB.
+        "422":
+          $ref: '#/components/responses/ValidationError'
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: Too many requests from this IP (30 per minute).
+      security: []
+      summary: "Format a LinkedIn post with bold, italic and lists"
+      tags:
+      - Free Tools
+      x-free-tool: true
+  /tools/fancy-text-generator:
+    post:
+      description: "Convert text to fancy Unicode styles. The same logic as the free\
+        \ web tool at https://postboost.co/tools/fancy-text-generator. No account\
+        \ needed: call it without a token, or with any API token."
+      operationId: generateFancyText
+      requestBody:
+        content:
+          application/json:
+            examples:
+              example-1:
+                value:
+                  text: Hello 123
+                  style: bold
+              example-2:
+                value:
+                  text: ğ ok 🚀
+                  style: upside_down
+            schema:
+              $ref: '#/components/schemas/FreeToolGenerateFancyTextRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                example-1:
+                  value:
+                    styles:
+                    - key: bold
+                      label: Bold
+                      text: 𝐇𝐞𝐥𝐥𝐨 𝟏𝟐𝟑
+                example-2:
+                  value:
+                    styles:
+                    - key: upside_down
+                      label: Upside down
+                      text: 🚀 ʞo ğ
+              schema:
+                $ref: '#/components/schemas/FreeToolGenerateFancyTextResponse'
+          description: The tool output.
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "413":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: The request body is larger than 64 KB.
+        "422":
+          $ref: '#/components/responses/ValidationError'
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: Too many requests from this IP (30 per minute).
+      security: []
+      summary: Convert text to fancy Unicode styles
+      tags:
+      - Free Tools
+      x-free-tool: true
+  /tools/utm-builder:
+    post:
+      description: "Build a UTM-tagged campaign URL. The same logic as the free web\
+        \ tool at https://postboost.co/tools/utm-builder. No account needed: call\
+        \ it without a token, or with any API token."
+      operationId: buildUtmUrl
+      requestBody:
+        content:
+          application/json:
+            examples:
+              example-1:
+                value:
+                  url: https://postboost.co/pricing?plan=pro#faq
+                  utm_source: linkedin
+                  utm_medium: social
+                  utm_campaign: q4 launch
+              example-2:
+                value:
+                  url: https://example.com/?utm_source=old&ref=1
+                  utm_source: LinkedIn
+            schema:
+              $ref: '#/components/schemas/FreeToolBuildUtmUrlRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                example-1:
+                  value:
+                    url: https://postboost.co/pricing?plan=pro&utm_source=linkedin&utm_medium=social&utm_campaign=q4%20launch#faq
+                    warnings:
+                    - utm_campaign has spaces
+                example-2:
+                  value:
+                    url: https://example.com/?ref=1&utm_source=LinkedIn
+                    warnings:
+                    - "Add medium, campaign: GA4 expects source, medium and campaign."
+                    - utm_source has capital letters (GA4 treats "LinkedIn" and "linkedin"
+                      as two sources)
+              schema:
+                $ref: '#/components/schemas/FreeToolBuildUtmUrlResponse'
+          description: The tool output.
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "413":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: The request body is larger than 64 KB.
+        "422":
+          $ref: '#/components/responses/ValidationError'
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: Too many requests from this IP (30 per minute).
+      security: []
+      summary: Build a UTM-tagged campaign URL
+      tags:
+      - Free Tools
+      x-free-tool: true
+  /tools/engagement-rate-calculator:
+    post:
+      description: "Calculate an engagement rate. The same logic as the free web tool\
+        \ at https://postboost.co/tools/engagement-rate-calculator. No account needed:\
+        \ call it without a token, or with any API token."
+      operationId: calculateEngagementRate
+      requestBody:
+        content:
+          application/json:
+            examples:
+              example-1:
+                value:
+                  likes: 120
+                  comments: 30
+                  shares: 10
+                  base: 4000
+                  posts: 2
+              example-2:
+                value:
+                  likes: 1
+                  base: 3
+                  method: reach
+            schema:
+              $ref: '#/components/schemas/FreeToolCalculateEngagementRateRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                example-1:
+                  value:
+                    engagements: 160
+                    posts: 2
+                    rate: 2.0
+                    formula: "160 engagements ÷ 2 posts ÷ 4,000 followers × 100 =\
+                      \ 2.00%"
+                example-2:
+                  value:
+                    engagements: 1
+                    posts: 1
+                    rate: 33.33
+                    formula: 1 engagements ÷ 3 reach × 100 = 33.33%
+              schema:
+                $ref: '#/components/schemas/FreeToolCalculateEngagementRateResponse'
+          description: The tool output.
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "413":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: The request body is larger than 64 KB.
+        "422":
+          $ref: '#/components/responses/ValidationError'
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: Too many requests from this IP (30 per minute).
+      security: []
+      summary: Calculate an engagement rate
+      tags:
+      - Free Tools
+      x-free-tool: true
 components:
   headers:
     IdempotentReplayed:
@@ -12067,6 +12538,388 @@ components:
           type: string
       required:
       - name
+    FreeToolError:
+      example:
+        message: message
+      properties:
+        message:
+          type: string
+      required:
+      - message
+    FreeToolList:
+      example:
+        data:
+        - page_url: https://openapi-generator.tech
+          docs_url: https://openapi-generator.tech
+          kind: client
+          name: name
+          operation_id: splitThread
+          slug: x-thread-maker
+          limits: limits
+        - page_url: https://openapi-generator.tech
+          docs_url: https://openapi-generator.tech
+          kind: client
+          name: name
+          operation_id: splitThread
+          slug: x-thread-maker
+          limits: limits
+      properties:
+        data:
+          items:
+            $ref: '#/components/schemas/FreeToolListItem'
+          type: array
+      required:
+      - data
+    FreeToolListItem:
+      example:
+        page_url: https://openapi-generator.tech
+        docs_url: https://openapi-generator.tech
+        kind: client
+        name: name
+        operation_id: splitThread
+        slug: x-thread-maker
+        limits: limits
+      properties:
+        slug:
+          example: x-thread-maker
+          type: string
+        name:
+          type: string
+        operation_id:
+          example: splitThread
+          type: string
+        kind:
+          enum:
+          - client
+          - data
+          - server
+          - paid_ai
+          type: string
+        limits:
+          description: "Limit profile: std, fetch or ai."
+          nullable: true
+          type: string
+        page_url:
+          format: uri
+          type: string
+        docs_url:
+          format: uri
+          nullable: true
+          type: string
+      required:
+      - docs_url
+      - kind
+      - limits
+      - name
+      - operation_id
+      - page_url
+      - slug
+    FreeToolCountCharactersRequest:
+      example:
+        text: ""
+        network: x
+      properties:
+        text:
+          default: ""
+          description: "The post text, up to 10,000 characters (twice the longest\
+            \ network limit)."
+          maxLength: 10000
+          type: string
+        network:
+          description: Count for one network only; all networks when omitted.
+          enum:
+          - x
+          - threads
+          - bluesky
+          - mastodon
+          - linkedin
+          - instagram
+          - facebook
+          - tiktok
+          - pinterest
+          - youtube_title
+          - youtube
+          - gbp
+          type: string
+    FreeToolCountCharactersResponse:
+      example:
+        hashtags: 0
+        networks:
+        - over: true
+          limit: 6
+          count: 1
+          label: label
+          key: key
+          remaining: 5
+        - over: true
+          limit: 6
+          count: 1
+          label: label
+          key: key
+          remaining: 5
+      properties:
+        hashtags:
+          description: Hashtags in the text (Instagram allows 5 per post in PostBoost).
+          type: integer
+        networks:
+          items:
+            $ref: '#/components/schemas/FreeToolCountCharactersResponse_networks_inner'
+          type: array
+    FreeToolSplitThreadRequest:
+      example:
+        numbering: false
+        text: ""
+        network: x
+      properties:
+        text:
+          default: ""
+          description: "The long text, up to 10,000 characters. A line with only ---\
+            \ forces a new post."
+          maxLength: 10000
+          type: string
+        network:
+          default: x
+          enum:
+          - x
+          - threads
+          - bluesky
+          - mastodon
+          type: string
+        numbering:
+          default: false
+          description: End each post with " k/n".
+          type: boolean
+    FreeToolSplitThreadResponse:
+      example:
+        limit: 0
+        posts:
+        - count: 6
+          text: text
+        - count: 6
+          text: text
+      properties:
+        limit:
+          type: integer
+        posts:
+          items:
+            $ref: '#/components/schemas/FreeToolSplitThreadResponse_posts_inner'
+          type: array
+    FreeToolFormatLinkedInPostRequest:
+      example:
+        style: bold
+        text: text
+        list: bullet
+      properties:
+        text:
+          maxLength: 10000
+          type: string
+        style:
+          description: "Unicode style for the whole text, e.g. bold."
+          enum:
+          - bold
+          - italic
+          - bold_italic
+          - sans_bold
+          - sans_italic
+          - script
+          - bold_script
+          - fraktur
+          - double_struck
+          - monospace
+          - small_caps
+          - circled
+          - squared
+          - upside_down
+          - strikethrough
+          type: string
+        list:
+          description: "Prefix every non-empty line with \"• \" or \"1. \", \"2. \"\
+            \ (plain digits)."
+          enum:
+          - bullet
+          - numbered
+          type: string
+      required:
+      - text
+    FreeToolFormatLinkedInPostResponse:
+      example:
+        preview: preview
+        count: 0
+        limit: 6
+        text: text
+        folded: true
+      properties:
+        text:
+          type: string
+        count:
+          type: integer
+        limit:
+          type: integer
+        preview:
+          description: What the feed shows before "…see more" (about 3 lines or 210
+            characters; varies by device).
+          type: string
+        folded:
+          type: boolean
+    FreeToolGenerateFancyTextRequest:
+      example:
+        style: bold
+        text: text
+      properties:
+        text:
+          maxLength: 2000
+          type: string
+        style:
+          description: One style only; every style when omitted.
+          enum:
+          - bold
+          - italic
+          - bold_italic
+          - sans_bold
+          - sans_italic
+          - script
+          - bold_script
+          - fraktur
+          - double_struck
+          - monospace
+          - small_caps
+          - circled
+          - squared
+          - upside_down
+          - strikethrough
+          type: string
+      required:
+      - text
+    FreeToolGenerateFancyTextResponse:
+      example:
+        styles:
+        - label: label
+          text: text
+          key: key
+        - label: label
+          text: text
+          key: key
+      properties:
+        styles:
+          items:
+            $ref: '#/components/schemas/FreeToolGenerateFancyTextResponse_styles_inner'
+          type: array
+    FreeToolBuildUtmUrlRequest:
+      example:
+        utm_term: utm_term
+        utm_id: utm_id
+        utm_campaign: utm_campaign
+        utm_medium: utm_medium
+        url: url
+        utm_source: utm_source
+        utm_content: utm_content
+      properties:
+        url:
+          description: The http(s) page URL.
+          maxLength: 2048
+          pattern: "^\\s*https?://[^\\s/?#]+"
+          type: string
+        utm_source:
+          maxLength: 200
+          type: string
+        utm_medium:
+          maxLength: 200
+          type: string
+        utm_campaign:
+          maxLength: 200
+          type: string
+        utm_term:
+          maxLength: 200
+          type: string
+        utm_content:
+          maxLength: 200
+          type: string
+        utm_id:
+          maxLength: 200
+          type: string
+      required:
+      - url
+    FreeToolBuildUtmUrlResponse:
+      example:
+        warnings:
+        - warnings
+        - warnings
+        url: url
+      properties:
+        url:
+          type: string
+        warnings:
+          description: "Missing GA4 keys and values with capitals, spaces or mixed\
+            \ - and _."
+          items:
+            type: string
+          type: array
+    FreeToolCalculateEngagementRateRequest:
+      example:
+        shares: 0
+        comments: 0
+        saves: 0
+        method: followers
+        clicks: 0
+        posts: 1
+        likes: 0
+        base: 1
+      properties:
+        likes:
+          default: 0
+          minimum: 0
+          type: integer
+        comments:
+          default: 0
+          minimum: 0
+          type: integer
+        shares:
+          default: 0
+          minimum: 0
+          type: integer
+        saves:
+          default: 0
+          minimum: 0
+          type: integer
+        clicks:
+          default: 0
+          minimum: 0
+          type: integer
+        method:
+          default: followers
+          description: What to divide by.
+          enum:
+          - followers
+          - reach
+          - impressions
+          type: string
+        base:
+          description: "Followers, or the total reach or impressions of the posts."
+          minimum: 1
+          type: integer
+        posts:
+          default: 1
+          description: Number of posts the engagements come from.
+          minimum: 1
+          type: integer
+      required:
+      - base
+    FreeToolCalculateEngagementRateResponse:
+      example:
+        rate: 1.4658129805029452
+        formula: formula
+        engagements: 0
+        posts: 6
+      properties:
+        engagements:
+          type: integer
+        posts:
+          type: integer
+        rate:
+          description: "Percent, 2 decimals."
+          type: number
+        formula:
+          type: string
     listMyWorkspaces_200_response:
       example:
         data:
@@ -15570,6 +16423,52 @@ components:
       - credits_used
       - learned_fields
       - posts_used
+    FreeToolCountCharactersResponse_networks_inner:
+      example:
+        over: true
+        limit: 6
+        count: 1
+        label: label
+        key: key
+        remaining: 5
+      properties:
+        key:
+          type: string
+        label:
+          type: string
+        limit:
+          type: integer
+        count:
+          type: integer
+        remaining:
+          type: integer
+        over:
+          type: boolean
+    FreeToolSplitThreadResponse_posts_inner:
+      example:
+        count: 6
+        text: text
+      properties:
+        text:
+          type: string
+        count:
+          description: Length as the network counts it; a single word longer than
+            the limit stays whole.
+          type: integer
+    FreeToolGenerateFancyTextResponse_styles_inner:
+      example:
+        label: label
+        text: text
+        key: key
+      properties:
+        key:
+          type: string
+        label:
+          type: string
+        text:
+          description: "Characters with no styled form (accents, emoji) pass through\
+            \ unchanged."
+          type: string
   securitySchemes:
     bearerAuth:
       description: |
