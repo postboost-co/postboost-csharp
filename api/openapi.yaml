@@ -48,7 +48,7 @@ info:
     name: Commercial
     url: https://postboost.co/pages/terms
   title: PostBoost API
-  version: 1.20.0
+  version: 1.21.0
 servers:
 - description: Production
   url: https://postboost.co/app/api
@@ -5177,7 +5177,7 @@ paths:
       description: |
         Background agents switched on for the workspace. Agents run on a schedule, record every run
         and never change a post themselves: each change is a proposal that a workspace admin or
-        member approves. Available type: `pre_publish_checker`.
+        member approves. Available types: `pre_publish_checker`, `failed_post_fixer`.
       operationId: listAgents
       parameters:
       - $ref: '#/components/parameters/workspaceUuid'
@@ -5202,7 +5202,11 @@ paths:
         proposes holding (back to draft) posts that would fail: disconnected accounts, network
         requirements, daily caps, the X allowance and links that answer an error. It proposes caption
         edits that drop `banned_phrases`. With `ai_review: true` it also asks AI to review up to
-        `max_ai_reviews_per_run` posts per run (one AI credit each). Admins and members only.
+        `max_ai_reviews_per_run` posts per run (one AI credit each). **Failed-post fixer** looks at
+        posts that failed on an account in the last `lookback_hours` and proposes, per post and
+        account, `reconnect_account` (the account's token expired), or `retry_account`, with a
+        caption trimmed to the network limit when the text is over it. One open proposal per post
+        and account. It uses no AI. Admins and members only.
       operationId: createAgent
       parameters:
       - $ref: '#/components/parameters/workspaceUuid'
@@ -5479,8 +5483,12 @@ paths:
     post:
       description: |
         Applies the proposal at once: `hold_post` moves the post back to draft, `edit_caption`
-        replaces the caption. When the post was edited, deleted or left the schedule since the
-        proposal was made, nothing changes and the proposal becomes `stale`. Admins and members only.
+        replaces the caption, `retry_account` saves the shortened caption (if any) on that account's
+        version and publishes that account again, `reconnect_account` only records the decision.
+        When the post was edited, deleted or left the schedule since the proposal was made (for
+        `retry_account`: the account is no longer failed, the post is publishing, or the plan does
+        not allow scheduling), nothing changes and the proposal becomes `stale`. Admins and members
+        only.
       operationId: approveAgentProposal
       parameters:
       - $ref: '#/components/parameters/workspaceUuid'
@@ -11236,10 +11244,14 @@ components:
       - source
       - warnings
     WorkspaceAgentSettings:
-      description: Pre-publish checker settings.
+      description: |
+        Agent settings; each type reads its own keys.
+        Pre-publish checker: `horizon_hours`, `check_links`, `banned_phrases`, `ai_review`,
+        `max_ai_reviews_per_run`. Failed-post fixer: `lookback_hours`.
       example:
         max_ai_reviews_per_run: 30
         horizon_hours: 14
+        lookback_hours: 11
         check_links: true
         ai_review: false
         banned_phrases:
@@ -11275,12 +11287,19 @@ components:
           maximum: 50
           minimum: 1
           type: integer
+        lookback_hours:
+          default: 24
+          description: Look at posts that failed within this many hours.
+          maximum: 72
+          minimum: 1
+          type: integer
     WorkspaceAgent:
       example:
         schedule: hourly
         settings:
           max_ai_reviews_per_run: 30
           horizon_hours: 14
+          lookback_hours: 11
           check_links: true
           ai_review: false
           banned_phrases:
@@ -11303,6 +11322,7 @@ components:
         type:
           enum:
           - pre_publish_checker
+          - failed_post_fixer
           type: string
         name:
           type: string
@@ -11344,6 +11364,7 @@ components:
         settings:
           max_ai_reviews_per_run: 30
           horizon_hours: 14
+          lookback_hours: 11
           check_links: true
           ai_review: false
           banned_phrases:
@@ -11359,6 +11380,7 @@ components:
         type:
           enum:
           - pre_publish_checker
+          - failed_post_fixer
           type: string
         name:
           maxLength: 100
@@ -11384,6 +11406,7 @@ components:
         settings:
           max_ai_reviews_per_run: 30
           horizon_hours: 14
+          lookback_hours: 11
           check_links: true
           ai_review: false
           banned_phrases:
@@ -11551,11 +11574,15 @@ components:
           nullable: true
           type: integer
         kind:
-          description: '`hold_post` moves the post back to draft; `edit_caption` replaces
-            one caption.'
+          description: |
+            `hold_post` moves the post back to draft; `edit_caption` replaces one caption;
+            `retry_account` publishes one failed account again; `reconnect_account` asks to
+            reconnect the account first.
           enum:
           - hold_post
           - edit_caption
+          - retry_account
+          - reconnect_account
           type: string
         severity:
           enum:
@@ -11570,7 +11597,10 @@ components:
           description: |
             The proposed change. `hold_post`: `reasons[]` (`code`, `account_id`, `message`, `severity`)
             and `scheduled_at`. `edit_caption`: `version_account_id` (0 = original), `item_index`,
-            `before`, `after`. Both carry `post_updated_at`.
+            `before`, `after`. `retry_account`: `error` (up to 300 characters) and, for a shortened
+            caption, `source_account_id` (the version it was taken from, 0 = original), `item_index`,
+            `before`, `after`. `reconnect_account`: `error`, `reconnect_url`. All carry
+            `post_updated_at`.
           type: object
         status:
           enum:
@@ -14635,6 +14665,7 @@ components:
           settings:
             max_ai_reviews_per_run: 30
             horizon_hours: 14
+            lookback_hours: 11
             check_links: true
             ai_review: false
             banned_phrases:
@@ -14654,6 +14685,7 @@ components:
           settings:
             max_ai_reviews_per_run: 30
             horizon_hours: 14
+            lookback_hours: 11
             check_links: true
             ai_review: false
             banned_phrases:
@@ -14683,6 +14715,7 @@ components:
           settings:
             max_ai_reviews_per_run: 30
             horizon_hours: 14
+            lookback_hours: 11
             check_links: true
             ai_review: false
             banned_phrases:

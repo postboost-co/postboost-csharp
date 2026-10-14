@@ -21,7 +21,7 @@ All URIs are relative to *https://postboost.co/app/api*
 
 Approve and apply an agent proposal
 
-Applies the proposal at once: `hold_post` moves the post back to draft, `edit_caption` replaces the caption. When the post was edited, deleted or left the schedule since the proposal was made, nothing changes and the proposal becomes `stale`. Admins and members only. 
+Applies the proposal at once: `hold_post` moves the post back to draft, `edit_caption` replaces the caption, `retry_account` saves the shortened caption (if any) on that account's version and publishes that account again, `reconnect_account` only records the decision. When the post was edited, deleted or left the schedule since the proposal was made (for `retry_account`: the account is no longer failed, the post is publishing, or the plan does not allow scheduling), nothing changes and the proposal becomes `stale`. Admins and members only. 
 
 ### Example
 ```csharp
@@ -123,7 +123,7 @@ catch (ApiException e)
 
 Switch on a background agent
 
-Creates an agent (one per type per workspace). It first runs within five minutes, then on its `schedule`. **Pre-publish checker** looks at posts scheduled in the next `horizon_hours` and proposes holding (back to draft) posts that would fail: disconnected accounts, network requirements, daily caps, the X allowance and links that answer an error. It proposes caption edits that drop `banned_phrases`. With `ai_review: true` it also asks AI to review up to `max_ai_reviews_per_run` posts per run (one AI credit each). Admins and members only. 
+Creates an agent (one per type per workspace). It first runs within five minutes, then on its `schedule`. **Pre-publish checker** looks at posts scheduled in the next `horizon_hours` and proposes holding (back to draft) posts that would fail: disconnected accounts, network requirements, daily caps, the X allowance and links that answer an error. It proposes caption edits that drop `banned_phrases`. With `ai_review: true` it also asks AI to review up to `max_ai_reviews_per_run` posts per run (one AI credit each). **Failed-post fixer** looks at posts that failed on an account in the last `lookback_hours` and proposes, per post and account, `reconnect_account` (the account's token expired), or `retry_account`, with a caption trimmed to the network limit when the text is over it. One open proposal per post and account. It uses no AI. Admins and members only. 
 
 ### Example
 ```csharp
@@ -624,7 +624,7 @@ catch (ApiException e)
 
 List background agents
 
-Background agents switched on for the workspace. Agents run on a schedule, record every run and never change a post themselves: each change is a proposal that a workspace admin or member approves. Available type: `pre_publish_checker`. 
+Background agents switched on for the workspace. Agents run on a schedule, record every run and never change a post themselves: each change is a proposal that a workspace admin or member approves. Available types: `pre_publish_checker`, `failed_post_fixer`. 
 
 ### Example
 ```csharp
