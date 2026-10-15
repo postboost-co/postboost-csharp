@@ -6,7 +6,7 @@ info:
     url: https://postboost.co
   description: |
     The PostBoost REST API lets you publish, schedule, and analyze social media posts
-    across 12+ platforms from a single integration. No OAuth apps to maintain —
+    on every supported network from a single integration. No OAuth apps to maintain —
     PostBoost handles platform authorization for you.
 
     ## Base URL
@@ -48,7 +48,7 @@ info:
     name: Commercial
     url: https://postboost.co/pages/terms
   title: PostBoost API
-  version: 1.26.0
+  version: 1.26.1
 servers:
 - description: Production
   url: https://postboost.co/app/api
@@ -3005,9 +3005,7 @@ paths:
   /{workspaceUuid}/accounts/connect-links:
     post:
       description: |
-        Creates a single-use link (valid 15 minutes) that lets the user connect a new account on an
-        OAuth network to this workspace. Ask the user to open this link in their browser while logged
-        in to PostBoost, wait until they confirm, then call `list-accounts` to get the new account id.
+        Creates a single-use link (valid 15 minutes) to connect a new account on an OAuth network to this workspace: ask the user to open it in their browser while logged in to PostBoost, wait until they confirm, then call `list-accounts` to get the new account id.
         The link signs no one in: only the user who created it, while a workspace admin, can use it.
         Telegram, Discord and Slack need no browser: connect them with `connectChannel`. Mastodon,
         Pixelfed and Bluesky ask for a server or handle first, so the user connects them in the app.
@@ -7294,7 +7292,7 @@ components:
         use_brand_voice: true
         excerpt: Social media success starts with consistency and knowing your audience...
         content_length: medium
-        custom_instructions: Always mention that PostBoost supports 12+ platforms.
+        custom_instructions: Always mention that PostBoost has a free plan.
       properties:
         url:
           description: Blog post URL to scrape. Required if `title` and `excerpt`
@@ -7420,7 +7418,7 @@ components:
         custom_instructions:
           description: Additional instructions appended to the AI prompt (e.g. "always
             mention our free tier").
-          example: Always mention that PostBoost supports 12+ platforms.
+          example: Always mention that PostBoost has a free plan.
           maxLength: 500
           type: string
           nullable: true
