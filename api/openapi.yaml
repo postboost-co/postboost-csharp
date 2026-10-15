@@ -48,7 +48,7 @@ info:
     name: Commercial
     url: https://postboost.co/pages/terms
   title: PostBoost API
-  version: 1.29.0
+  version: 1.29.1
 servers:
 - description: Production
   url: https://postboost.co/app/api
@@ -6854,7 +6854,7 @@ paths:
                 value:
                   topic: Behind the scenes of our bakery
                   network: tiktok
-                  niche: food
+                  niche: Food and restaurants
             schema:
               $ref: '#/components/schemas/FreeToolGenerateHashtagsRequest'
         required: true
@@ -6963,7 +6963,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FreeToolError'
-          description: AI tools are switched off or out of budget right now.
+          description: AI tools are switched off right now.
       summary: "Generate hashtags for a post topic with AI (needs a token, spends\
         \ AI credits)"
       tags:
@@ -7105,7 +7105,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FreeToolError'
-          description: AI tools are switched off or out of budget right now.
+          description: AI tools are switched off right now.
       summary: "Write three post captions for a topic with AI (needs a token, spends\
         \ AI credits)"
       tags:
@@ -13946,17 +13946,29 @@ components:
       example:
         workspace: workspace
         topic: topic
-        niche: niche
+        niche: Fitness
         network: instagram
       properties:
         topic:
           description: What the post is about.
-          maxLength: 1000
+          maxLength: 200
           minLength: 1
           type: string
         niche:
-          description: "Optional niche, e.g. \"fitness\" or \"real estate\"."
-          maxLength: 60
+          description: Optional niche from the hashtag generator page.
+          enum:
+          - Fitness
+          - Food and restaurants
+          - Travel
+          - Fashion
+          - Beauty and skincare
+          - Small business
+          - Real estate
+          - Photography
+          - Marketing and social media
+          - Tech and SaaS
+          - Pets
+          - Education and coaching
           type: string
         network:
           default: instagram
@@ -14008,7 +14020,7 @@ components:
       properties:
         text:
           description: What the post is about.
-          maxLength: 1000
+          maxLength: 500
           minLength: 1
           type: string
         tone:
@@ -14063,7 +14075,8 @@ components:
         - captions
       properties:
         captions:
-          description: Three different captions.
+          description: "Three different captions, each within the network's text limit\
+            \ (at most 2,200 characters)."
           items:
             type: string
           type: array

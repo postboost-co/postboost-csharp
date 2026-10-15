@@ -4,7 +4,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Captions** | **List&lt;string&gt;** | Three different captions. | [optional] 
+**Captions** | **List&lt;string&gt;** | Three different captions, each within the network&#39;s text limit (at most 2,200 characters). | [optional] 
 **CreditsSpent** | **int** | AI credits this call took from the workspace: 1, or 0 for a cached result. | [optional] 
 **Cached** | **bool** | True when the same request was answered before (free). | [optional] 
 
