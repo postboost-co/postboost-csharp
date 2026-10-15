@@ -11,6 +11,7 @@ Name | Type | Description | Notes
 **DaysLeft** | **int?** | Whole days until &#x60;expires_at&#x60; (0 &#x3D; less than a day). | 
 **Refreshable** | **bool** | PostBoost refreshes the token automatically until the hard expiry. | 
 **Note** | **string** | Plain-language explanation of the prediction. | 
+**ReconnectReason** | [**AccountConnectionHealthReconnectReason**](AccountConnectionHealthReconnectReason.md) |  | 
 **LastSuccessAt** | **DateTime?** | When the account last published successfully. | 
 **LastError** | **string** | The error of the account&#39;s latest failed publish, shortened to 300 characters. | 
 **ReconnectUrl** | **string** | Where a workspace member reconnects the account. | 

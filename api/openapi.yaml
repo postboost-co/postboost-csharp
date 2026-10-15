@@ -48,7 +48,7 @@ info:
     name: Commercial
     url: https://postboost.co/pages/terms
   title: PostBoost API
-  version: 1.30.0
+  version: 1.31.0
 servers:
 - description: Production
   url: https://postboost.co/app/api
@@ -7993,6 +7993,10 @@ components:
           expires_at: 2000-01-23T04:56:07.000+00:00
           days_left: 7
           last_error: last_error
+          reconnect_reason:
+            code: linkedin_revoked
+            message: message
+            found_at: 2000-01-23T04:56:07.000+00:00
           status: healthy
         id: 5
         uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
@@ -8050,6 +8054,10 @@ components:
             expires_at: 2000-01-23T04:56:07.000+00:00
             days_left: 7
             last_error: last_error
+            reconnect_reason:
+              code: linkedin_revoked
+              message: message
+              found_at: 2000-01-23T04:56:07.000+00:00
             status: healthy
           id: 5
           uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
@@ -8070,6 +8078,10 @@ components:
             expires_at: 2000-01-23T04:56:07.000+00:00
             days_left: 7
             last_error: last_error
+            reconnect_reason:
+              code: linkedin_revoked
+              message: message
+              found_at: 2000-01-23T04:56:07.000+00:00
             status: healthy
           id: 5
           uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
@@ -11204,6 +11216,10 @@ components:
         expires_at: 2000-01-23T04:56:07.000+00:00
         days_left: 7
         last_error: last_error
+        reconnect_reason:
+          code: linkedin_revoked
+          message: message
+          found_at: 2000-01-23T04:56:07.000+00:00
         status: healthy
       properties:
         status:
@@ -11245,6 +11261,8 @@ components:
         note:
           description: Plain-language explanation of the prediction.
           type: string
+        reconnect_reason:
+          $ref: '#/components/schemas/AccountConnectionHealth_reconnect_reason'
         last_success_at:
           description: When the account last published successfully.
           format: date-time
@@ -11266,6 +11284,7 @@ components:
       - last_error
       - last_success_at
       - note
+      - reconnect_reason
       - reconnect_url
       - refreshable
       - status
@@ -16259,6 +16278,10 @@ components:
             expires_at: 2000-01-23T04:56:07.000+00:00
             days_left: 7
             last_error: last_error
+            reconnect_reason:
+              code: linkedin_revoked
+              message: message
+              found_at: 2000-01-23T04:56:07.000+00:00
             status: healthy
           id: 5
           uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
@@ -16279,6 +16302,10 @@ components:
             expires_at: 2000-01-23T04:56:07.000+00:00
             days_left: 7
             last_error: last_error
+            reconnect_reason:
+              code: linkedin_revoked
+              message: message
+              found_at: 2000-01-23T04:56:07.000+00:00
             status: healthy
           id: 5
           uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
@@ -18120,6 +18147,30 @@ components:
       - account_uuid
       - date
       - time
+    AccountConnectionHealth_reconnect_reason:
+      description: |
+        Why the daily token check found the account's token dead, for an account that needs a reconnect;
+        null otherwise. Codes: `meta_190_<subcode>` (Facebook, Instagram), `refresh_expired` (TikTok,
+        Pinterest), `linkedin_revoked`, `linkedin_expired`, `google_revoked` (YouTube).
+      example:
+        code: linkedin_revoked
+        message: message
+        found_at: 2000-01-23T04:56:07.000+00:00
+      properties:
+        code:
+          example: linkedin_revoked
+          type: string
+        message:
+          description: The reason in plain language.
+          type: string
+        found_at:
+          description: When the check first found the token dead.
+          format: date-time
+          type: string
+      required:
+      - code
+      - found_at
+      - message
     TemplateInput_content_inner:
       properties:
         body:
