@@ -48,7 +48,7 @@ info:
     name: Commercial
     url: https://postboost.co/pages/terms
   title: PostBoost API
-  version: 1.27.1
+  version: 1.28.0
 servers:
 - description: Production
   url: https://postboost.co/app/api
@@ -7138,6 +7138,10 @@ components:
           `ai_generated` is `false`, so no network AI label is applied.
         - `meta_first_comment_unavailable`: a Facebook Page or Instagram first comment cannot
           be published yet (Meta is reviewing our access); the post itself publishes.
+        - `youtube_description_too_long`: the YouTube description is over 5,000 bytes (UTF-8;
+          emoji and non-Latin letters take 2 to 4 bytes each), so YouTube will reject the upload.
+        - `youtube_forbidden_characters`: the YouTube title or description contains `<` or `>`,
+          which YouTube does not allow, so the upload will fail.
       example:
         code: ai_media_without_disclosure
         account_id: 6
@@ -7147,6 +7151,8 @@ components:
           enum:
           - ai_media_without_disclosure
           - meta_first_comment_unavailable
+          - youtube_description_too_long
+          - youtube_forbidden_characters
           type: string
         account_id:
           description: The account the warning is about; null when it is about the
