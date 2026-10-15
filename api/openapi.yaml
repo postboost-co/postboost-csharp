@@ -48,7 +48,7 @@ info:
     name: Commercial
     url: https://postboost.co/pages/terms
   title: PostBoost API
-  version: 1.26.1
+  version: 1.26.2
 servers:
 - description: Production
   url: https://postboost.co/app/api
@@ -6015,7 +6015,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FreeToolError'
-          description: The request body is larger than 64 KB.
+          description: The request body is larger than 128 KB.
         "422":
           $ref: '#/components/responses/ValidationError'
         "429":
@@ -6131,7 +6131,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FreeToolError'
-          description: The request body is larger than 64 KB.
+          description: The request body is larger than 128 KB.
         "422":
           $ref: '#/components/responses/ValidationError'
         "429":
@@ -6250,7 +6250,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FreeToolError'
-          description: The request body is larger than 64 KB.
+          description: The request body is larger than 128 KB.
         "422":
           $ref: '#/components/responses/ValidationError'
         "429":
@@ -6347,7 +6347,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FreeToolError'
-          description: The request body is larger than 64 KB.
+          description: The request body is larger than 128 KB.
         "422":
           $ref: '#/components/responses/ValidationError'
         "429":
@@ -6454,7 +6454,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FreeToolError'
-          description: The request body is larger than 64 KB.
+          description: The request body is larger than 128 KB.
         "422":
           $ref: '#/components/responses/ValidationError'
         "429":
@@ -6553,7 +6553,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FreeToolError'
-          description: The request body is larger than 64 KB.
+          description: The request body is larger than 128 KB.
         "422":
           $ref: '#/components/responses/ValidationError'
         "429":
@@ -6655,7 +6655,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FreeToolError'
-          description: The request body is larger than 64 KB.
+          description: The request body is larger than 128 KB.
         "422":
           $ref: '#/components/responses/ValidationError'
         "429":
