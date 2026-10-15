@@ -5,6 +5,7 @@ All URIs are relative to *https://postboost.co/app/api*
 | Method | HTTP request | Description |
 |--------|--------------|-------------|
 | [**ConnectChannel**](AccountsApi.md#connectchannel) | **POST** /{workspaceUuid}/accounts/connect/{provider} | Connect a Telegram, Discord or Slack channel |
+| [**CreateConnectLink**](AccountsApi.md#createconnectlink) | **POST** /{workspaceUuid}/accounts/connect-links | Create a connect link |
 | [**CreateReconnectLink**](AccountsApi.md#createreconnectlink) | **POST** /{workspaceUuid}/accounts/{accountUuid}/reconnect-links | Create a reconnect link |
 | [**GetAccount**](AccountsApi.md#getaccount) | **GET** /{workspaceUuid}/accounts/{accountUuid} | Get account |
 | [**GetAccountHealth**](AccountsApi.md#getaccounthealth) | **GET** /{workspaceUuid}/account-health | Account health |
@@ -110,6 +111,106 @@ catch (ApiException e)
 | **403** | The caller is not a workspace admin, or the plan&#39;s social account limit is reached. |  -  |
 | **404** | Unknown provider, or the channel is switched off on this instance. |  -  |
 | **422** |  |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+<a id="createconnectlink"></a>
+# **CreateConnectLink**
+> ConnectLink CreateConnectLink (Guid workspaceUuid, CreateConnectLinkRequest createConnectLinkRequest)
+
+Create a connect link
+
+Creates a single-use link (valid 15 minutes) that lets the user connect a new account on an OAuth network to this workspace. Ask the user to open this link in their browser while logged in to PostBoost, wait until they confirm, then call `list-accounts` to get the new account id. The link signs no one in: only the user who created it, while a workspace admin, can use it. Telegram, Discord and Slack need no browser: connect them with `connectChannel`. Mastodon, Pixelfed and Bluesky ask for a server or handle first, so the user connects them in the app. Workspace admins only; at most 10 links per minute. 
+
+### Example
+```csharp
+using System.Collections.Generic;
+using System.Diagnostics;
+using PostBoost.Client.Api;
+using PostBoost.Client.Client;
+using PostBoost.Client.Model;
+
+namespace Example
+{
+    public class CreateConnectLinkExample
+    {
+        public static void Main()
+        {
+            Configuration config = new Configuration();
+            config.BasePath = "https://postboost.co/app/api";
+            // Configure Bearer token for authorization: bearerAuth
+            config.AccessToken = "YOUR_BEARER_TOKEN";
+
+            var apiInstance = new AccountsApi(config);
+            var workspaceUuid = "workspaceUuid_example";  // Guid | UUID of the workspace.
+            var createConnectLinkRequest = new CreateConnectLinkRequest(); // CreateConnectLinkRequest | 
+
+            try
+            {
+                // Create a connect link
+                ConnectLink result = apiInstance.CreateConnectLink(workspaceUuid, createConnectLinkRequest);
+                Debug.WriteLine(result);
+            }
+            catch (ApiException  e)
+            {
+                Debug.Print("Exception when calling AccountsApi.CreateConnectLink: " + e.Message);
+                Debug.Print("Status Code: " + e.ErrorCode);
+                Debug.Print(e.StackTrace);
+            }
+        }
+    }
+}
+```
+
+#### Using the CreateConnectLinkWithHttpInfo variant
+This returns an ApiResponse object which contains the response data, status code and headers.
+
+```csharp
+try
+{
+    // Create a connect link
+    ApiResponse<ConnectLink> response = apiInstance.CreateConnectLinkWithHttpInfo(workspaceUuid, createConnectLinkRequest);
+    Debug.Write("Status Code: " + response.StatusCode);
+    Debug.Write("Response Headers: " + response.Headers);
+    Debug.Write("Response Body: " + response.Data);
+}
+catch (ApiException e)
+{
+    Debug.Print("Exception when calling AccountsApi.CreateConnectLinkWithHttpInfo: " + e.Message);
+    Debug.Print("Status Code: " + e.ErrorCode);
+    Debug.Print(e.StackTrace);
+}
+```
+
+### Parameters
+
+| Name | Type | Description | Notes |
+|------|------|-------------|-------|
+| **workspaceUuid** | **Guid** | UUID of the workspace. |  |
+| **createConnectLinkRequest** | [**CreateConnectLinkRequest**](CreateConnectLinkRequest.md) |  |  |
+
+### Return type
+
+[**ConnectLink**](ConnectLink.md)
+
+### Authorization
+
+[bearerAuth](../README.md#bearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **201** | Link created. The URL is shown only once. |  -  |
+| **401** |  |  -  |
+| **403** |  |  -  |
+| **422** |  |  -  |
+| **429** | Too many connect links in the last minute. |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 

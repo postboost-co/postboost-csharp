@@ -13,7 +13,7 @@ dotnet add package PostBoost.Client
 | **NuGet** | [nuget.org/packages/PostBoost.Client](https://www.nuget.org/packages/PostBoost.Client/) |
 | **GitHub** | [postboost-co/postboost-csharp](https://github.com/postboost-co/postboost-csharp) |
 | **Docs** | [postboost.co/docs/api](https://postboost.co/docs/api) |
-| **Version** | v1.23.0 |
+| **Version** | v1.24.0 |
 
 ## Quick start
 
@@ -55,6 +55,7 @@ Class | Method | HTTP request | Description
 *AccountGroupsApi* | [**ListAccountGroups**](docs/AccountGroupsApi.md#listaccountgroups) | **GET** /{workspaceUuid}/account-groups | List account groups
 *AccountGroupsApi* | [**UpdateAccountGroup**](docs/AccountGroupsApi.md#updateaccountgroup) | **PUT** /{workspaceUuid}/account-groups/{accountGroupUuid} | Update an account group
 *AccountsApi* | [**ConnectChannel**](docs/AccountsApi.md#connectchannel) | **POST** /{workspaceUuid}/accounts/connect/{provider} | Connect a Telegram, Discord or Slack channel
+*AccountsApi* | [**CreateConnectLink**](docs/AccountsApi.md#createconnectlink) | **POST** /{workspaceUuid}/accounts/connect-links | Create a connect link
 *AccountsApi* | [**CreateReconnectLink**](docs/AccountsApi.md#createreconnectlink) | **POST** /{workspaceUuid}/accounts/{accountUuid}/reconnect-links | Create a reconnect link
 *AccountsApi* | [**GetAccount**](docs/AccountsApi.md#getaccount) | **GET** /{workspaceUuid}/accounts/{accountUuid} | Get account
 *AccountsApi* | [**GetAccountHealth**](docs/AccountsApi.md#getaccounthealth) | **GET** /{workspaceUuid}/account-health | Account health

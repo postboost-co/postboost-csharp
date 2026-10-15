@@ -48,7 +48,7 @@ info:
     name: Commercial
     url: https://postboost.co/pages/terms
   title: PostBoost API
-  version: 1.23.0
+  version: 1.24.0
 servers:
 - description: Production
   url: https://postboost.co/app/api
@@ -3000,6 +3000,47 @@ paths:
                 $ref: '#/components/schemas/MessageOnly'
           description: Reconnect links are not available for this account's network.
       summary: Create a reconnect link
+      tags:
+      - Accounts
+  /{workspaceUuid}/accounts/connect-links:
+    post:
+      description: |
+        Creates a single-use link (valid 15 minutes) that lets the user connect a new account on an
+        OAuth network to this workspace. Ask the user to open this link in their browser while logged
+        in to PostBoost, wait until they confirm, then call `list-accounts` to get the new account id.
+        The link signs no one in: only the user who created it, while a workspace admin, can use it.
+        Telegram, Discord and Slack need no browser: connect them with `connectChannel`. Mastodon,
+        Pixelfed and Bluesky ask for a server or handle first, so the user connects them in the app.
+        Workspace admins only; at most 10 links per minute.
+      operationId: createConnectLink
+      parameters:
+      - $ref: '#/components/parameters/workspaceUuid'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/createConnectLink_request'
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectLink'
+          description: Link created. The URL is shown only once.
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/WorkspaceForbidden'
+        "422":
+          $ref: '#/components/responses/ValidationError'
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageOnly'
+          description: Too many connect links in the last minute.
+      summary: Create a connect link
       tags:
       - Accounts
   /{workspaceUuid}/usage/x:
@@ -10229,6 +10270,26 @@ components:
       - account_uuid
       - expires_at
       - url
+    ConnectLink:
+      example:
+        expires_at: 2000-01-23T04:56:07.000+00:00
+        provider: provider
+        url: https://openapi-generator.tech
+      properties:
+        url:
+          description: Single-use link for the signed-in user who created it. Valid
+            15 minutes.
+          format: uri
+          type: string
+        expires_at:
+          format: date-time
+          type: string
+        provider:
+          type: string
+      required:
+      - expires_at
+      - provider
+      - url
     XUsageCounter:
       example:
         limit: 6
@@ -14874,6 +14935,25 @@ components:
           $ref: '#/components/schemas/createApiKey_201_response_data'
       required:
       - data
+    createConnectLink_request:
+      properties:
+        provider:
+          description: "The network to connect, as `provider` in the account list."
+          enum:
+          - twitter
+          - facebook_page
+          - instagram
+          - instagram_standalone
+          - threads
+          - linkedin
+          - linkedin_page
+          - tiktok
+          - youtube
+          - pinterest
+          - gbp
+          type: string
+      required:
+      - provider
     listTemplates_200_response:
       allOf:
       - $ref: '#/components/schemas/PaginationMeta'
