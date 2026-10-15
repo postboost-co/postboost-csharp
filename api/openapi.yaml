@@ -48,7 +48,7 @@ info:
     name: Commercial
     url: https://postboost.co/pages/terms
   title: PostBoost API
-  version: 1.28.0
+  version: 1.29.0
 servers:
 - description: Production
   url: https://postboost.co/app/api
@@ -90,7 +90,8 @@ tags:
   name: Webhooks
 - description: "Free social media tools (character counter, thread maker, UTM builder\
     \ and more), the same logic as https://postboost.co/tools. No account needed:\
-    \ call them without a token, or with any API token."
+    \ call them without a token, or with any API token. The AI tools need a token\
+    \ and spend AI credits."
   name: Free Tools
 paths:
   /workspaces:
@@ -6832,6 +6833,284 @@ paths:
       tags:
       - Free Tools
       x-free-tool: true
+  /tools/instagram-hashtag-generator:
+    post:
+      description: "Generate hashtags for a post topic with AI (needs a token, spends\
+        \ AI credits). The same logic as the free web tool at https://postboost.co/tools/instagram-hashtag-generator.\
+        \ Needs an API token (a scoped key needs the `ai` ability and pays with its\
+        \ own workspace). A new generation spends 1 AI credit of the workspace you\
+        \ name (or your active workspace); a repeated identical request is answered\
+        \ from the cache for free."
+      operationId: generateHashtags
+      requestBody:
+        content:
+          application/json:
+            examples:
+              example-1:
+                value:
+                  topic: Morning routine for busy founders
+                  network: instagram
+              example-2:
+                value:
+                  topic: Behind the scenes of our bakery
+                  network: tiktok
+                  niche: food
+            schema:
+              $ref: '#/components/schemas/FreeToolGenerateHashtagsRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                example-1:
+                  value:
+                    hashtags:
+                    - '#morningroutine'
+                    - '#founderlife'
+                    - '#productivity'
+                    - '#startuplife'
+                    - '#dailyhabits'
+                    credits_spent: 1
+                    cached: false
+                example-2:
+                  value:
+                    hashtags:
+                    - '#bakerytok'
+                    - '#behindthescenes'
+                    - '#smallbusiness'
+                    - '#freshbread'
+                    - '#baking'
+                    credits_spent: 0
+                    cached: true
+              schema:
+                $ref: '#/components/schemas/FreeToolGenerateHashtagsResponse'
+          description: The tool output.
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: "No API token, or an invalid one. The body has `register_url`\
+            \ to create a free account."
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: "`workspace` is not a workspace you belong to, or your account\
+            \ has no workspace, or a scoped API key lacks the `ai` ability or is bound\
+            \ to another workspace (`code: insufficient_scope`)."
+        "413":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: The request body is larger than 128 KB.
+        "422":
+          $ref: '#/components/responses/ValidationError'
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: "The workspace has no AI credits left this billing cycle (`code:\
+            \ ai_credits_exhausted`, `upgrade_url`), or the per-minute limit was reached.\
+            \ Rate limit reached. Without a token: 30 calls per minute and 500 per\
+            \ UTC day per IP address (IPv6 per /64). With a token: 300 per minute\
+            \ per user; the Free plan also has 1,000 calls per UTC day, paid plans\
+            \ have no daily cap."
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            Retry-After:
+              description: Seconds until the limit resets.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+        "502":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: The AI provider failed or timed out. No credit was spent.
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: AI tools are switched off or out of budget right now.
+      summary: "Generate hashtags for a post topic with AI (needs a token, spends\
+        \ AI credits)"
+      tags:
+      - Free Tools
+      x-free-tool: true
+  /tools/instagram-caption-generator:
+    post:
+      description: "Write three post captions for a topic with AI (needs a token,\
+        \ spends AI credits). The same logic as the free web tool at https://postboost.co/tools/instagram-caption-generator.\
+        \ Needs an API token (a scoped key needs the `ai` ability and pays with its\
+        \ own workspace). A new generation spends 1 AI credit of the workspace you\
+        \ name (or your active workspace); a repeated identical request is answered\
+        \ from the cache for free."
+      operationId: generateCaption
+      requestBody:
+        content:
+          application/json:
+            examples:
+              example-1:
+                value:
+                  text: Weekend sale on all candles
+                  network: instagram
+                  tone: playful
+                  hashtags: true
+              example-2:
+                value:
+                  text: We just launched a free UTM builder
+                  network: linkedin
+                  tone: professional
+                  length: short
+                  emoji: false
+            schema:
+              $ref: '#/components/schemas/FreeToolGenerateCaptionRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                example-1:
+                  value:
+                    captions:
+                    - |-
+                      Candle season just got brighter 🕯️
+                      Everything is on sale this weekend only. #candles #weekendsale #shopsmall
+                    - "Light up your weekend ✨ All our candles are on sale until Sunday.\
+                      \ #candlelover #sale #homedecor"
+                    - "Your shelf called. It wants more candles 😄 Weekend sale starts\
+                      \ now. #candles #giftideas #weekendvibes"
+                    credits_spent: 1
+                    cached: false
+                example-2:
+                  value:
+                    captions:
+                    - Our free UTM builder is live. Tag every campaign link in seconds
+                      and keep your reports clean.
+                    - "New free tool: build consistent UTM links without a spreadsheet."
+                    - Clean campaign data starts with clean links. Try our new free
+                      UTM builder.
+                    credits_spent: 1
+                    cached: false
+              schema:
+                $ref: '#/components/schemas/FreeToolGenerateCaptionResponse'
+          description: The tool output.
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: "No API token, or an invalid one. The body has `register_url`\
+            \ to create a free account."
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: "`workspace` is not a workspace you belong to, or your account\
+            \ has no workspace, or a scoped API key lacks the `ai` ability or is bound\
+            \ to another workspace (`code: insufficient_scope`)."
+        "413":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: The request body is larger than 128 KB.
+        "422":
+          $ref: '#/components/responses/ValidationError'
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: "The workspace has no AI credits left this billing cycle (`code:\
+            \ ai_credits_exhausted`, `upgrade_url`), or the per-minute limit was reached.\
+            \ Rate limit reached. Without a token: 30 calls per minute and 500 per\
+            \ UTC day per IP address (IPv6 per /64). With a token: 300 per minute\
+            \ per user; the Free plan also has 1,000 calls per UTC day, paid plans\
+            \ have no daily cap."
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            Retry-After:
+              description: Seconds until the limit resets.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+        "502":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: The AI provider failed or timed out. No credit was spent.
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: AI tools are switched off or out of budget right now.
+      summary: "Write three post captions for a topic with AI (needs a token, spends\
+        \ AI credits)"
+      tags:
+      - Free Tools
+      x-free-tool: true
 components:
   headers:
     IdempotentReplayed:
@@ -13098,6 +13377,7 @@ components:
       - name
     FreeToolError:
       example:
+        code: code
         register_url: https://openapi-generator.tech
         retry_after: 0
         message: message
@@ -13108,12 +13388,17 @@ components:
         retry_after:
           description: "429 only: seconds until the limit resets."
           type: integer
+        code:
+          description: "429 of a paid AI tool: `ai_credits_exhausted`."
+          type: string
         register_url:
-          description: "429 for guests: sign up for a token with higher limits."
+          description: "429 for guests: sign up for a token with higher limits. 401\
+            \ of a paid AI tool: sign up for a token."
           format: uri
           type: string
         upgrade_url:
-          description: 429 when a token user reached the plan's daily cap.
+          description: "429 when a token user reached the plan's daily cap, or a paid\
+            \ AI tool's workspace has no AI credits left."
           format: uri
           type: string
       required:
@@ -13657,6 +13942,138 @@ components:
           type: number
         formula:
           type: string
+    FreeToolGenerateHashtagsRequest:
+      example:
+        workspace: workspace
+        topic: topic
+        niche: niche
+        network: instagram
+      properties:
+        topic:
+          description: What the post is about.
+          maxLength: 1000
+          minLength: 1
+          type: string
+        niche:
+          description: "Optional niche, e.g. \"fitness\" or \"real estate\"."
+          maxLength: 60
+          type: string
+        network:
+          default: instagram
+          description: The network the text is written for.
+          enum:
+          - instagram
+          - tiktok
+          - linkedin
+          - x
+          - threads
+          - facebook
+          type: string
+        workspace:
+          description: "UUID of the workspace whose AI credits pay for the call. Default:\
+            \ your active workspace (a scoped API key: its own workspace)."
+          maxLength: 64
+          type: string
+      required:
+      - topic
+    FreeToolGenerateHashtagsResponse:
+      example:
+        hashtags:
+        - hashtags
+        - hashtags
+        credits_spent: 0
+        cached: true
+      properties:
+        hashtags:
+          description: "5 to 10 hashtags, best first."
+          items:
+            type: string
+          type: array
+        credits_spent:
+          description: "AI credits this call took from the workspace: 1, or 0 for\
+            \ a cached result."
+          type: integer
+        cached:
+          description: True when the same request was answered before (free).
+          type: boolean
+    FreeToolGenerateCaptionRequest:
+      example:
+        workspace: workspace
+        tone: friendly
+        emoji: true
+        hashtags: false
+        length: medium
+        text: text
+        network: instagram
+      properties:
+        text:
+          description: What the post is about.
+          maxLength: 1000
+          minLength: 1
+          type: string
+        tone:
+          default: friendly
+          enum:
+          - friendly
+          - professional
+          - playful
+          - inspirational
+          - bold
+          type: string
+        length:
+          default: medium
+          description: "short: 10-20 words, medium: 25-40, long: 45-60."
+          enum:
+          - short
+          - medium
+          - long
+          type: string
+        emoji:
+          default: true
+          description: Use a few fitting emoji.
+          type: boolean
+        hashtags:
+          default: false
+          description: End each caption with 3-5 relevant hashtags.
+          type: boolean
+        network:
+          default: instagram
+          description: The network the text is written for.
+          enum:
+          - instagram
+          - tiktok
+          - linkedin
+          - x
+          - threads
+          - facebook
+          type: string
+        workspace:
+          description: "UUID of the workspace whose AI credits pay for the call. Default:\
+            \ your active workspace (a scoped API key: its own workspace)."
+          maxLength: 64
+          type: string
+      required:
+      - text
+    FreeToolGenerateCaptionResponse:
+      example:
+        credits_spent: 0
+        cached: true
+        captions:
+        - captions
+        - captions
+      properties:
+        captions:
+          description: Three different captions.
+          items:
+            type: string
+          type: array
+        credits_spent:
+          description: "AI credits this call took from the workspace: 1, or 0 for\
+            \ a cached result."
+          type: integer
+        cached:
+          description: True when the same request was answered before (free).
+          type: boolean
     listMyWorkspaces_200_response:
       example:
         data:
