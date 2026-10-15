@@ -48,7 +48,7 @@ info:
     name: Commercial
     url: https://postboost.co/pages/terms
   title: PostBoost API
-  version: 1.26.2
+  version: 1.27.0
 servers:
 - description: Production
   url: https://postboost.co/app/api
@@ -6048,6 +6048,147 @@ paths:
               style: simple
       security: []
       summary: Count characters as each network counts them
+      tags:
+      - Free Tools
+      x-free-tool: true
+  /tools/social-media-post-checker:
+    post:
+      description: "Check a post against each network's publishing rules. The same\
+        \ logic as the free web tool at https://postboost.co/tools/social-media-post-checker.\
+        \ No account needed: call it without a token, or with any API token."
+      operationId: checkPost
+      requestBody:
+        content:
+          application/json:
+            examples:
+              example-1:
+                value:
+                  text: "Big news: https://postboost.co #launch"
+                  networks:
+                  - x
+                  - instagram
+              example-2:
+                value:
+                  text: "#a #b #c #d #e #f"
+                  networks:
+                  - instagram
+                  - linkedin
+                  media:
+                    count: 2
+                    type: video
+                    duration_s: 2
+            schema:
+              $ref: '#/components/schemas/FreeToolCheckPostRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                example-1:
+                  value:
+                    networks:
+                    - key: x
+                      label: X (Twitter) post
+                      ok: true
+                      count: 41
+                      limit: 280
+                      errors: []
+                      warnings: []
+                    - key: instagram
+                      label: Instagram caption
+                      ok: false
+                      count: 38
+                      limit: 2200
+                      errors:
+                      - code: media_required
+                        message: "Add media: posts here need an image or a video to\
+                          \ publish."
+                      warnings:
+                      - code: link_not_clickable
+                        message: Links in the text are not clickable here; put the
+                          link in a comment or your bio.
+                example-2:
+                  value:
+                    networks:
+                    - key: linkedin
+                      label: LinkedIn post
+                      ok: false
+                      count: 17
+                      limit: 3000
+                      errors:
+                      - code: too_many_media
+                        message: 2 videos; up to 1 per post.
+                      - code: video_too_short
+                        message: The video is shorter than the 3 s minimum.
+                      warnings: []
+                    - key: instagram
+                      label: Instagram caption
+                      ok: false
+                      count: 17
+                      limit: 2200
+                      errors:
+                      - code: too_many_hashtags
+                        message: 6 hashtags; up to 5 are allowed per post.
+                      - code: too_many_media
+                        message: 2 videos; up to 1 per post.
+                      warnings: []
+              schema:
+                $ref: '#/components/schemas/FreeToolCheckPostResponse'
+          description: The tool output.
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "413":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: The request body is larger than 128 KB.
+        "422":
+          $ref: '#/components/responses/ValidationError'
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: "Rate limit reached. Without a token: 30 calls per minute and\
+            \ 500 per UTC day per IP address (IPv6 per /64). With a token: 300 per\
+            \ minute per user; the Free plan also has 1,000 calls per UTC day, paid\
+            \ plans have no daily cap."
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            Retry-After:
+              description: Seconds until the limit resets.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+      security: []
+      summary: Check a post against each network's publishing rules
       tags:
       - Free Tools
       x-free-tool: true
@@ -13090,6 +13231,88 @@ components:
           items:
             $ref: '#/components/schemas/FreeToolCountCharactersResponse_networks_inner'
           type: array
+    FreeToolCheckPostRequest:
+      example:
+        text: ""
+        media:
+          count: 1
+          type: image
+          duration_s: 52077.22142172828
+        networks:
+        - x
+        - x
+        - x
+        - x
+        - x
+      properties:
+        text:
+          default: ""
+          description: "The post text, up to 10,000 characters; 5,000 without an API\
+            \ token."
+          maxLength: 10000
+          type: string
+        networks:
+          description: The networks to check the post for.
+          items:
+            enum:
+            - x
+            - threads
+            - bluesky
+            - mastodon
+            - linkedin
+            - instagram
+            - facebook
+            - tiktok
+            - pinterest
+            - youtube_title
+            - youtube
+            - gbp
+            type: string
+          maxItems: 12
+          minItems: 1
+          type: array
+        media:
+          $ref: '#/components/schemas/FreeToolCheckPostRequest_media'
+      required:
+      - networks
+    FreeToolCheckPostResponse:
+      example:
+        networks:
+        - warnings:
+          - code: code
+            message: message
+          - code: code
+            message: message
+          count: 0
+          limit: 6
+          label: label
+          ok: true
+          key: key
+          errors:
+          - code: code
+            message: message
+          - code: code
+            message: message
+        - warnings:
+          - code: code
+            message: message
+          - code: code
+            message: message
+          count: 0
+          limit: 6
+          label: label
+          ok: true
+          key: key
+          errors:
+          - code: code
+            message: message
+          - code: code
+            message: message
+      properties:
+        networks:
+          items:
+            $ref: '#/components/schemas/FreeToolCheckPostResponse_networks_inner'
+          type: array
     FreeToolSplitThreadRequest:
       example:
         numbering: false
@@ -16971,6 +17194,81 @@ components:
           type: integer
         over:
           type: boolean
+    FreeToolCheckPostRequest_media:
+      description: "The attached media, all of one type. Omit for a text-only post."
+      example:
+        count: 1
+        type: image
+        duration_s: 52077.22142172828
+      properties:
+        count:
+          maximum: 20
+          minimum: 0
+          type: integer
+        type:
+          default: image
+          enum:
+          - image
+          - video
+          - gif
+          type: string
+        duration_s:
+          description: Video length in seconds.
+          maximum: 86400
+          minimum: 0
+          type: number
+      required:
+      - count
+    FreeToolCheckPostResponse_networks_inner_errors_inner:
+      example:
+        code: code
+        message: message
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+    FreeToolCheckPostResponse_networks_inner:
+      example:
+        warnings:
+        - code: code
+          message: message
+        - code: code
+          message: message
+        count: 0
+        limit: 6
+        label: label
+        ok: true
+        key: key
+        errors:
+        - code: code
+          message: message
+        - code: code
+          message: message
+      properties:
+        key:
+          type: string
+        label:
+          type: string
+        ok:
+          description: False when an error would stop the post from publishing.
+          type: boolean
+        count:
+          description: Characters as this network counts them.
+          type: integer
+        limit:
+          type: integer
+        errors:
+          description: "Codes: too_long, too_many_hashtags, media_required, too_many_media,\
+            \ media_type, video_too_long, video_too_short."
+          items:
+            $ref: '#/components/schemas/FreeToolCheckPostResponse_networks_inner_errors_inner'
+          type: array
+        warnings:
+          description: "Codes: cut_by_fold, link_not_clickable."
+          items:
+            $ref: '#/components/schemas/FreeToolCheckPostResponse_networks_inner_errors_inner'
+          type: array
     FreeToolSplitThreadResponse_posts_inner:
       example:
         count: 6
