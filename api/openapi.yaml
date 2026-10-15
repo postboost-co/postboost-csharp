@@ -48,7 +48,7 @@ info:
     name: Commercial
     url: https://postboost.co/pages/terms
   title: PostBoost API
-  version: 1.25.0
+  version: 1.26.0
 servers:
 - description: Production
   url: https://postboost.co/app/api
@@ -6382,6 +6382,113 @@ paths:
               style: simple
       security: []
       summary: Convert text to fancy Unicode styles
+      tags:
+      - Free Tools
+      x-free-tool: true
+  /tools/ai-text-cleaner:
+    post:
+      description: "Clean AI-written text: dashes, quotes, invisible characters, markdown.\
+        \ The same logic as the free web tool at https://postboost.co/tools/ai-text-cleaner.\
+        \ No account needed: call it without a token, or with any API token."
+      operationId: cleanText
+      requestBody:
+        content:
+          application/json:
+            examples:
+              example-1:
+                value:
+                  text: Fast — reliable… and “simple”.
+              example-2:
+                value:
+                  text: Let's **delve** into it—now.
+                  dashes: spaced
+            schema:
+              $ref: '#/components/schemas/FreeToolCleanTextRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                example-1:
+                  value:
+                    text: "Fast, reliable... and \"simple\"."
+                    changes:
+                    - type: dashes
+                      count: 1
+                    - type: quotes
+                      count: 2
+                    - type: ellipsis
+                      count: 1
+                    flags: []
+                example-2:
+                  value:
+                    text: Let's delve into it - now.
+                    changes:
+                    - type: markdown
+                      count: 1
+                    - type: dashes
+                      count: 1
+                    flags:
+                    - phrase: delve
+                      offset: 6
+                      length: 5
+              schema:
+                $ref: '#/components/schemas/FreeToolCleanTextResponse'
+          description: The tool output.
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "413":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: The request body is larger than 64 KB.
+        "422":
+          $ref: '#/components/responses/ValidationError'
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: "Rate limit reached. Without a token: 30 calls per minute and\
+            \ 500 per UTC day per IP address (IPv6 per /64). With a token: 300 per\
+            \ minute per user; the Free plan also has 1,000 calls per UTC day, paid\
+            \ plans have no daily cap."
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            Retry-After:
+              description: Seconds until the limit resets.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+      security: []
+      summary: "Clean AI-written text: dashes, quotes, invisible characters, markdown"
       tags:
       - Free Tools
       x-free-tool: true
@@ -13124,6 +13231,89 @@ components:
           items:
             $ref: '#/components/schemas/FreeToolGenerateFancyTextResponse_styles_inner'
           type: array
+    FreeToolCleanTextRequest:
+      example:
+        dashes: comma
+        flag_phrases: true
+        spaces: true
+        markdown: true
+        invisible: true
+        text: text
+        ellipsis: true
+        quotes: true
+      properties:
+        text:
+          maxLength: 10000
+          type: string
+        dashes:
+          default: comma
+          description: "What replaces an em or en dash between words: \", \" (comma),\
+            \ \"-\" (hyphen), \" - \" (spaced) or nothing (keep). Number ranges like\
+            \ 2020–2024 always get a hyphen."
+          enum:
+          - comma
+          - hyphen
+          - spaced
+          - keep
+          type: string
+        quotes:
+          default: true
+          description: Curly quotes and apostrophes to straight ones.
+          type: boolean
+        invisible:
+          default: true
+          description: Remove zero-width characters and soft hyphens; turn non-breaking
+            and thin spaces into normal spaces.
+          type: boolean
+        spaces:
+          default: true
+          description: Collapse double spaces between words and remove spaces at line
+            ends.
+          type: boolean
+        ellipsis:
+          default: true
+          description: The ellipsis character to three dots.
+          type: boolean
+        markdown:
+          default: true
+          description: "Strip **bold**, __bold__, *italic* and _italic_ markers, keeping\
+            \ the words."
+          type: boolean
+        flag_phrases:
+          default: true
+          description: List common AI phrases (e.g. "delve") with their offsets. They
+            are never changed.
+          type: boolean
+      required:
+      - text
+    FreeToolCleanTextResponse:
+      example:
+        changes:
+        - count: 0
+          type: invisible
+        - count: 0
+          type: invisible
+        flags:
+        - phrase: phrase
+          offset: 6
+          length: 1
+        - phrase: phrase
+          offset: 6
+          length: 1
+        text: text
+      properties:
+        text:
+          type: string
+        changes:
+          description: One entry per change type that changed something.
+          items:
+            $ref: '#/components/schemas/FreeToolCleanTextResponse_changes_inner'
+          type: array
+        flags:
+          description: "AI phrases in the cleaned text, by offset (Unicode code points)."
+          items:
+            $ref: '#/components/schemas/FreeToolCleanTextResponse_flags_inner'
+          type: array
     FreeToolBuildUtmUrlRequest:
       example:
         utm_term: utm_term
@@ -16808,6 +16998,34 @@ components:
           description: "Characters with no styled form (accents, emoji) pass through\
             \ unchanged."
           type: string
+    FreeToolCleanTextResponse_changes_inner:
+      example:
+        count: 0
+        type: invisible
+      properties:
+        type:
+          enum:
+          - invisible
+          - markdown
+          - dashes
+          - quotes
+          - ellipsis
+          - spaces
+          type: string
+        count:
+          type: integer
+    FreeToolCleanTextResponse_flags_inner:
+      example:
+        phrase: phrase
+        offset: 6
+        length: 1
+      properties:
+        phrase:
+          type: string
+        offset:
+          type: integer
+        length:
+          type: integer
   securitySchemes:
     bearerAuth:
       description: |
