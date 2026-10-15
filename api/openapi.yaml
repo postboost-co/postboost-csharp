@@ -48,7 +48,7 @@ info:
     name: Commercial
     url: https://postboost.co/pages/terms
   title: PostBoost API
-  version: 1.29.1
+  version: 1.30.0
 servers:
 - description: Production
   url: https://postboost.co/app/api
@@ -6830,6 +6830,494 @@ paths:
               style: simple
       security: []
       summary: Calculate an engagement rate
+      tags:
+      - Free Tools
+      x-free-tool: true
+  /tools/social-media-image-sizes:
+    get:
+      description: "Get social media image sizes per network, each with its source.\
+        \ The same logic as the free web tool at https://postboost.co/tools/social-media-image-sizes.\
+        \ No account needed: call it without a token, or with any API token."
+      operationId: getImageSizes
+      parameters:
+      - explode: true
+        in: query
+        name: network
+        required: false
+        schema:
+          description: "Network key, e.g. `instagram`. Omit it for every network;\
+            \ an unknown key is a 422 that lists the allowed ones."
+          maxLength: 64
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                example-1:
+                  value:
+                    sizes:
+                    - network: Bluesky
+                      network_key: bluesky
+                      placement: Profile photo
+                      format_key: profile-photo
+                      size: 1000×1000
+                      width: 1000
+                      height: 1000
+                      ratio: 1:1
+                      limits: Post images are stored at 1000 px on the long side
+                      basis: common practice
+                      source: Hootsuite
+                    - network: Bluesky
+                      network_key: bluesky
+                      placement: Banner
+                      format_key: banner
+                      size: 3000×1000
+                      width: 3000
+                      height: 1000
+                      ratio: 3:1
+                      limits: ""
+                      basis: common practice
+                      source: Hootsuite
+                    last_verified: 2026-10-13
+                    sources:
+                    - label: "Sprout Social, social media image sizes guide (updated\
+                        \ 2026-05-11)"
+                      url: https://sproutsocial.com/insights/social-media-image-sizes-guide/
+                    - label: "Hootsuite, social media image sizes guide (2026-10-01)"
+                      url: https://blog.hootsuite.com/social-media-image-sizes-guide/
+                example-2:
+                  value:
+                    sizes:
+                    - network: Google Business Profile
+                      network_key: google-business-profile
+                      placement: Photos
+                      format_key: photos
+                      size: 720×720 recommended (minimum 250×250)
+                      width: 720
+                      height: 720
+                      ratio: ""
+                      limits: "JPG/PNG, 10 KB to 5 MB"
+                      basis: official
+                      source: https://support.google.com/business/answer/6103862
+                    last_verified: 2026-10-13
+                    sources:
+                    - label: "Sprout Social, social media image sizes guide (updated\
+                        \ 2026-05-11)"
+                      url: https://sproutsocial.com/insights/social-media-image-sizes-guide/
+                    - label: "Hootsuite, social media image sizes guide (2026-10-01)"
+                      url: https://blog.hootsuite.com/social-media-image-sizes-guide/
+              schema:
+                $ref: '#/components/schemas/FreeToolGetImageSizesResponse'
+          description: The tool output.
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "422":
+          $ref: '#/components/responses/ValidationError'
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: "Rate limit reached. Without a token: 30 calls per minute and\
+            \ 500 per UTC day per IP address (IPv6 per /64). With a token: 300 per\
+            \ minute per user; the Free plan also has 1,000 calls per UTC day, paid\
+            \ plans have no daily cap."
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            Retry-After:
+              description: Seconds until the limit resets.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+      security: []
+      summary: "Get social media image sizes per network, each with its source"
+      tags:
+      - Free Tools
+      x-free-tool: true
+  /tools/social-media-image-sizes/crop:
+    post:
+      description: "Calculate the crop box that fits an image to a social media size.\
+        \ The same logic as the free web tool at https://postboost.co/tools/social-media-image-sizes.\
+        \ No account needed: call it without a token, or with any API token."
+      operationId: calculateCrop
+      requestBody:
+        content:
+          application/json:
+            examples:
+              example-1:
+                value:
+                  width: 4000
+                  height: 3000
+                  network: instagram
+                  format: feed-square
+              example-2:
+                value:
+                  width: 4000
+                  height: 3000
+                  target_width: 1080
+                  target_height: 1080
+                  fit: contain
+            schema:
+              $ref: '#/components/schemas/FreeToolCalculateCropRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                example-1:
+                  value:
+                    crop:
+                      x: 500
+                      "y": 0
+                      width: 3000
+                      height: 3000
+                    output:
+                      width: 1080
+                      height: 1080
+                    image:
+                      x: 0
+                      "y": 0
+                      width: 1080
+                      height: 1080
+                    scale: 0.36
+                    upscaled: false
+                example-2:
+                  value:
+                    crop:
+                      x: 0
+                      "y": 0
+                      width: 4000
+                      height: 3000
+                    output:
+                      width: 1080
+                      height: 1080
+                    image:
+                      x: 0
+                      "y": 135
+                      width: 1080
+                      height: 810
+                    scale: 0.27
+                    upscaled: false
+              schema:
+                $ref: '#/components/schemas/FreeToolCalculateCropResponse'
+          description: The tool output.
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "413":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: The request body is larger than 128 KB.
+        "422":
+          $ref: '#/components/responses/ValidationError'
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: "Rate limit reached. Without a token: 30 calls per minute and\
+            \ 500 per UTC day per IP address (IPv6 per /64). With a token: 300 per\
+            \ minute per user; the Free plan also has 1,000 calls per UTC day, paid\
+            \ plans have no daily cap."
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            Retry-After:
+              description: Seconds until the limit resets.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+      security: []
+      summary: Calculate the crop box that fits an image to a social media size
+      tags:
+      - Free Tools
+      x-free-tool: true
+  /tools/best-time-to-post:
+    get:
+      description: "Get the best times to post per network from published studies,\
+        \ with sources. The same logic as the free web tool at https://postboost.co/tools/best-time-to-post.\
+        \ No account needed: call it without a token, or with any API token."
+      operationId: getBestTimesToPost
+      parameters:
+      - explode: true
+        in: query
+        name: network
+        required: false
+        schema:
+          description: "Network key, e.g. `linkedin`. Omit it for every network; an\
+            \ unknown key is a 422 that lists the allowed ones."
+          maxLength: 64
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                example-1:
+                  value:
+                    networks:
+                    - network: LinkedIn
+                      network_key: linkedin
+                      columns:
+                      - Sprout Social 2026
+                      - Buffer (top 3 hours)
+                      - Hootsuite
+                      rows:
+                      - - Mon
+                        - 1–2 p.m.
+                        - "10 p.m., 5 p.m., 9 p.m."
+                        - 11 a.m.
+                      - - Tue
+                        - 11 a.m.–5 p.m.
+                        - "4 p.m., 5 p.m., 10 p.m."
+                        - 6–8 a.m.
+                      - - Wed
+                        - 11 a.m.–4 p.m.
+                        - "4 p.m., 3 p.m., 5 p.m."
+                        - 9 a.m.
+                      - - Thu
+                        - "11 a.m., 1–5 p.m."
+                        - "5 p.m., 7 p.m., 9 p.m."
+                        - 2 p.m.
+                      - - Fri
+                        - "11 a.m., 1–2 p.m."
+                        - "3 p.m., 4 p.m., 5 p.m."
+                        - 8 p.m.
+                      - - Sat
+                        - —
+                        - "9 a.m., 6 p.m., 10 p.m."
+                        - 4–5 a.m.
+                      - - Sun
+                        - —
+                        - "10 p.m., 9 p.m., 6 a.m."
+                        - 6 a.m.
+                      - - Best
+                        - Tue–Thu 11 a.m.–5 p.m.
+                        - Wed 4 p.m.; weekdays 3–8 p.m.; best day Wed
+                        - the page contradicts itself (Tue/Wed 8–9 a.m. vs 4–6 a.m.)
+                      - - Worst
+                        - weekends
+                        - Mon (Tue close)
+                        - weekends
+                    last_verified: 2026-10-13
+                    sources:
+                    - label: "Sprout Social, Best times to post on social media (2026-03-31;\
+                        \ local time; ~2B engagements, ~307k profiles, 2025-11-27\
+                        \ to 2026-02-27)"
+                      url: https://sproutsocial.com/insights/best-times-to-post-on-social-media/
+                    - label: "Buffer, best time to post on Instagram (2026-09-23;\
+                        \ 9.6M posts)"
+                      url: https://buffer.com/resources/when-is-the-best-time-to-post-on-instagram/
+                    - label: "Buffer, best time to post on Facebook (2026-02-26; 14M+\
+                        \ posts)"
+                      url: https://buffer.com/resources/best-time-to-post-on-facebook/
+                    - label: "Buffer, best time to post on LinkedIn (2026-09-09; 4.8M+\
+                        \ posts)"
+                      url: https://buffer.com/resources/best-time-to-post-on-linkedin/
+                    - label: "Buffer, best time to post on X (2026-03-13; 8.7M+ posts)"
+                      url: https://buffer.com/resources/best-time-to-post-on-twitter-x/
+                    - label: "Buffer, best time to post on TikTok (2026-09-14; 7.1M+\
+                        \ posts)"
+                      url: https://buffer.com/resources/best-time-to-post-on-tiktok/
+                    - label: "Hootsuite, best time to post on Instagram (2026-07-14)"
+                      url: https://blog.hootsuite.com/best-time-to-post-on-instagram/
+                    - label: "Hootsuite, best time to post on Facebook (2025-11-19)"
+                      url: https://blog.hootsuite.com/best-time-to-post-on-facebook/
+                    - label: "Hootsuite, best time to post on LinkedIn (2025-11-19)"
+                      url: https://blog.hootsuite.com/best-time-to-post-on-linkedin/
+                    - label: "Hootsuite, best time to post on TikTok (2025-11-19)"
+                      url: https://blog.hootsuite.com/best-time-to-post-on-tiktok/
+                    - label: "Hootsuite, best time to post on social media, overview\
+                        \ with X times (2025-11-19)"
+                      url: https://blog.hootsuite.com/best-time-to-post-on-social-media/
+                    per_account: "These are study averages. With a PostBoost account,\
+                      \ the getBestPostingTimes API operation (also an MCP tool) returns\
+                      \ the best times from your own accounts' results."
+                example-2:
+                  value:
+                    networks:
+                    - network: TikTok
+                      network_key: tiktok
+                      columns:
+                      - Sprout Social 2026
+                      - Buffer (top 3 hours)
+                      - Hootsuite
+                      rows:
+                      - - Mon
+                        - 3–5 p.m.
+                        - "1 p.m., 11 a.m., 8 a.m."
+                        - 5 p.m.
+                      - - Tue
+                        - 2–6 p.m.
+                        - "6 a.m., 10 p.m., 7 a.m."
+                        - 10 a.m.–1 p.m.
+                      - - Wed
+                        - 1–8 p.m.
+                        - "10 p.m., 6 a.m., 9 p.m."
+                        - 4–6 p.m.
+                      - - Thu
+                        - 1–5 p.m.
+                        - "1 p.m., 10 p.m., 6 a.m."
+                        - 7–9 a.m.
+                      - - Fri
+                        - 3–5 p.m.
+                        - "6 p.m., 10 p.m., 8 p.m."
+                        - 4–6 p.m.
+                      - - Sat
+                        - —
+                        - "5 p.m., 4 p.m., 3 p.m."
+                        - 10 a.m.–7 p.m.
+                      - - Sun
+                        - —
+                        - "9 a.m., 1 p.m., 12 p.m."
+                        - 8 a.m.–12 p.m.
+                      - - Best
+                        - Tue–Fri 2–6 p.m.
+                        - Sun 9 a.m.; best day Sat
+                        - "Thu 6–9 a.m., Sat 10 a.m.–6 p.m."
+                      - - Worst
+                        - "weekends, early mornings"
+                        - none named
+                        - before 7 a.m. on weekends
+                    last_verified: 2026-10-13
+                    sources:
+                    - label: "Sprout Social, Best times to post on social media (2026-03-31;\
+                        \ local time; ~2B engagements, ~307k profiles, 2025-11-27\
+                        \ to 2026-02-27)"
+                      url: https://sproutsocial.com/insights/best-times-to-post-on-social-media/
+                    - label: "Buffer, best time to post on Instagram (2026-09-23;\
+                        \ 9.6M posts)"
+                      url: https://buffer.com/resources/when-is-the-best-time-to-post-on-instagram/
+                    - label: "Buffer, best time to post on Facebook (2026-02-26; 14M+\
+                        \ posts)"
+                      url: https://buffer.com/resources/best-time-to-post-on-facebook/
+                    - label: "Buffer, best time to post on LinkedIn (2026-09-09; 4.8M+\
+                        \ posts)"
+                      url: https://buffer.com/resources/best-time-to-post-on-linkedin/
+                    - label: "Buffer, best time to post on X (2026-03-13; 8.7M+ posts)"
+                      url: https://buffer.com/resources/best-time-to-post-on-twitter-x/
+                    - label: "Buffer, best time to post on TikTok (2026-09-14; 7.1M+\
+                        \ posts)"
+                      url: https://buffer.com/resources/best-time-to-post-on-tiktok/
+                    - label: "Hootsuite, best time to post on Instagram (2026-07-14)"
+                      url: https://blog.hootsuite.com/best-time-to-post-on-instagram/
+                    - label: "Hootsuite, best time to post on Facebook (2025-11-19)"
+                      url: https://blog.hootsuite.com/best-time-to-post-on-facebook/
+                    - label: "Hootsuite, best time to post on LinkedIn (2025-11-19)"
+                      url: https://blog.hootsuite.com/best-time-to-post-on-linkedin/
+                    - label: "Hootsuite, best time to post on TikTok (2025-11-19)"
+                      url: https://blog.hootsuite.com/best-time-to-post-on-tiktok/
+                    - label: "Hootsuite, best time to post on social media, overview\
+                        \ with X times (2025-11-19)"
+                      url: https://blog.hootsuite.com/best-time-to-post-on-social-media/
+                    per_account: "These are study averages. With a PostBoost account,\
+                      \ the getBestPostingTimes API operation (also an MCP tool) returns\
+                      \ the best times from your own accounts' results."
+              schema:
+                $ref: '#/components/schemas/FreeToolGetBestTimesToPostResponse'
+          description: The tool output.
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "422":
+          $ref: '#/components/responses/ValidationError'
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: "Rate limit reached. Without a token: 30 calls per minute and\
+            \ 500 per UTC day per IP address (IPv6 per /64). With a token: 300 per\
+            \ minute per user; the Free plan also has 1,000 calls per UTC day, paid\
+            \ plans have no daily cap."
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            Retry-After:
+              description: Seconds until the limit resets.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+      security: []
+      summary: "Get the best times to post per network from published studies, with\
+        \ sources"
       tags:
       - Free Tools
       x-free-tool: true
@@ -13942,6 +14430,181 @@ components:
           type: number
         formula:
           type: string
+    FreeToolGetImageSizesResponse:
+      example:
+        sizes:
+        - size: size
+          format_key: format_key
+          network_key: network_key
+          width: 0
+          placement: placement
+          source: source
+          basis: basis
+          limits: limits
+          network: network
+          height: 6
+          ratio: ratio
+        - size: size
+          format_key: format_key
+          network_key: network_key
+          width: 0
+          placement: placement
+          source: source
+          basis: basis
+          limits: limits
+          network: network
+          height: 6
+          ratio: ratio
+        sources:
+        - label: label
+          url: https://openapi-generator.tech
+        - label: label
+          url: https://openapi-generator.tech
+        last_verified: 2000-01-23
+      properties:
+        sizes:
+          items:
+            $ref: '#/components/schemas/FreeToolGetImageSizesResponse_sizes_inner'
+          type: array
+        last_verified:
+          description: When the data was last checked against its sources.
+          format: date
+          nullable: true
+          type: string
+        sources:
+          description: Sources of the whole dataset (rows may name their own).
+          items:
+            $ref: '#/components/schemas/FreeToolGetImageSizesResponse_sources_inner'
+          type: array
+    FreeToolCalculateCropRequest:
+      example:
+        fit: cover
+        target_height: 59621
+        width: 8009
+        format: format
+        height: 60274
+        network: network
+        target_width: 14658
+      properties:
+        width:
+          description: Source image width in pixels.
+          maximum: 100000
+          minimum: 1
+          type: integer
+        height:
+          description: Source image height in pixels.
+          maximum: 100000
+          minimum: 1
+          type: integer
+        network:
+          description: "Network key from getImageSizes (`network_key`), e.g. `instagram`.\
+            \ With `format`, picks the target size."
+          maxLength: 64
+          type: string
+        format:
+          description: "Format key from getImageSizes (`format_key`), e.g. `feed-square`."
+          maxLength: 64
+          type: string
+        target_width:
+          description: "Target width in pixels, instead of `network` + `format`."
+          maximum: 100000
+          minimum: 1
+          type: integer
+        target_height:
+          description: "Target height in pixels, instead of `network` + `format`."
+          maximum: 100000
+          minimum: 1
+          type: integer
+        fit:
+          default: cover
+          description: '`cover` crops to fill the target; `contain` keeps the whole
+            image and centres it.'
+          enum:
+          - cover
+          - contain
+          type: string
+      required:
+      - height
+      - width
+    FreeToolCalculateCropResponse:
+      example:
+        output:
+          width: 5
+          height: 2
+        image:
+          x: 7
+          width: 3
+          "y": 9
+          height: 2
+        upscaled: true
+        scale: 4.145608029883936
+        crop:
+          x: 0
+          width: 1
+          "y": 6
+          height: 5
+      properties:
+        crop:
+          $ref: '#/components/schemas/FreeToolCalculateCropResponse_crop'
+        output:
+          $ref: '#/components/schemas/FreeToolCalculateCropResponse_output'
+        image:
+          $ref: '#/components/schemas/FreeToolCalculateCropResponse_image'
+        scale:
+          description: "Output pixels per source pixel, 4 decimals."
+          type: number
+        upscaled:
+          description: "True when the source is enlarged (scale above 1), which can\
+            \ look soft."
+          type: boolean
+    FreeToolGetBestTimesToPostResponse:
+      example:
+        sources:
+        - label: label
+          url: https://openapi-generator.tech
+        - label: label
+          url: https://openapi-generator.tech
+        networks:
+        - columns:
+          - columns
+          - columns
+          network_key: network_key
+          rows:
+          - - rows
+            - rows
+          - - rows
+            - rows
+          network: network
+        - columns:
+          - columns
+          - columns
+          network_key: network_key
+          rows:
+          - - rows
+            - rows
+          - - rows
+            - rows
+          network: network
+        last_verified: 2000-01-23
+        per_account: per_account
+      properties:
+        networks:
+          items:
+            $ref: '#/components/schemas/FreeToolGetBestTimesToPostResponse_networks_inner'
+          type: array
+        last_verified:
+          description: When the data was last checked against its sources.
+          format: date
+          nullable: true
+          type: string
+        sources:
+          description: Sources of the whole dataset (rows may name their own).
+          items:
+            $ref: '#/components/schemas/FreeToolGetImageSizesResponse_sources_inner'
+          type: array
+        per_account:
+          description: Where to get times from your own accounts.
+          type: string
     FreeToolGenerateHashtagsRequest:
       example:
         workspace: workspace
@@ -17758,6 +18421,140 @@ components:
           type: integer
         length:
           type: integer
+    FreeToolGetImageSizesResponse_sizes_inner:
+      example:
+        size: size
+        format_key: format_key
+        network_key: network_key
+        width: 0
+        placement: placement
+        source: source
+        basis: basis
+        limits: limits
+        network: network
+        height: 6
+        ratio: ratio
+      properties:
+        network:
+          description: Network name.
+          type: string
+        network_key:
+          description: Key for `network` here and in calculateCrop.
+          type: string
+        placement:
+          description: Where the image appears.
+          type: string
+        format_key:
+          description: Key for `format` in calculateCrop.
+          type: string
+        size:
+          description: "The size as the network states it, ranges included."
+          type: string
+        width:
+          description: "Recommended width in pixels, when the size is one fixed size."
+          nullable: true
+          type: integer
+        height:
+          description: "Recommended height in pixels, when the size is one fixed size."
+          nullable: true
+          type: integer
+        ratio:
+          description: Aspect ratio.
+          type: string
+        limits:
+          description: File type and size limits.
+          type: string
+        basis:
+          description: "`official` when the network itself states it, else how it\
+            \ was found."
+          type: string
+        source:
+          description: URL of the source.
+          type: string
+    FreeToolGetImageSizesResponse_sources_inner:
+      example:
+        label: label
+        url: https://openapi-generator.tech
+      properties:
+        label:
+          type: string
+        url:
+          format: uri
+          type: string
+    FreeToolCalculateCropResponse_crop:
+      description: "The part of the source image to keep, in source pixels."
+      example:
+        x: 0
+        width: 1
+        "y": 6
+        height: 5
+      properties:
+        x:
+          type: integer
+        "y":
+          type: integer
+        width:
+          type: integer
+        height:
+          type: integer
+    FreeToolCalculateCropResponse_output:
+      description: Size of the finished image in pixels.
+      example:
+        width: 5
+        height: 2
+      properties:
+        width:
+          type: integer
+        height:
+          type: integer
+    FreeToolCalculateCropResponse_image:
+      description: Where the kept part is drawn in the finished image (`contain` leaves
+        a margin).
+      example:
+        x: 7
+        width: 3
+        "y": 9
+        height: 2
+      properties:
+        x:
+          type: integer
+        "y":
+          type: integer
+        width:
+          type: integer
+        height:
+          type: integer
+    FreeToolGetBestTimesToPostResponse_networks_inner:
+      example:
+        columns:
+        - columns
+        - columns
+        network_key: network_key
+        rows:
+        - - rows
+          - rows
+        - - rows
+          - rows
+        network: network
+      properties:
+        network:
+          type: string
+        network_key:
+          description: Key for `network`.
+          type: string
+        columns:
+          description: One column per study.
+          items:
+            type: string
+          type: array
+        rows:
+          description: "Weekday (or `Best`), then one cell per study, in the audience's\
+            \ local time."
+          items:
+            items:
+              type: string
+            type: array
+          type: array
   securitySchemes:
     bearerAuth:
       description: |
