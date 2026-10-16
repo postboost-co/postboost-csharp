@@ -48,7 +48,7 @@ info:
     name: Commercial
     url: https://postboost.co/pages/terms
   title: PostBoost API
-  version: 1.38.0
+  version: 1.39.0
 servers:
 - description: Production
   url: https://postboost.co/app/api
@@ -8311,6 +8311,397 @@ paths:
       tags:
       - Free Tools
       x-free-tool: true
+  /tools/hook-generator:
+    post:
+      description: "Generate hooks (opening lines) for a social media post with AI\
+        \ (needs a token, spends AI credits). The same logic as the free web tool\
+        \ at https://postboost.co/tools/hook-generator. Needs an API token (a scoped\
+        \ key needs the `ai` ability and pays with its own workspace). A new generation\
+        \ spends 1 AI credit of the workspace you name (or your active workspace);\
+        \ a repeated identical request is answered from the cache for free."
+      operationId: generateHooks
+      requestBody:
+        content:
+          application/json:
+            examples:
+              example-1:
+                value:
+                  topic: Email newsletters for a small bakery
+                  network: instagram
+                  count: 2
+              example-2:
+                value:
+                  topic: Hiring our first developer
+                  network: linkedin
+                  tone: professional
+                  count: 1
+            schema:
+              $ref: '#/components/schemas/FreeToolGenerateHooksRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                example-1:
+                  value:
+                    hooks:
+                    - text: What would you want in your inbox from your favourite
+                        bakery?
+                      category: question
+                    - text: We sent our first newsletter with no discount in it. People
+                        still opened it.
+                      category: story
+                    credits_spent: 1
+                    cached: false
+                example-2:
+                  value:
+                    hooks:
+                    - text: "We waited too long to hire our first developer, and it\
+                        \ cost us more than the salary."
+                      category: mistake
+                    credits_spent: 0
+                    cached: true
+              schema:
+                $ref: '#/components/schemas/FreeToolGenerateHooksResponse'
+          description: The tool output.
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: "No API token, or an invalid one. The body has `register_url`\
+            \ to create a free account."
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: "`workspace` is not a workspace you belong to, or your account\
+            \ has no workspace, or a scoped API key lacks the `ai` ability or is bound\
+            \ to another workspace (`code: insufficient_scope`)."
+        "413":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: The request body is larger than 128 KB.
+        "422":
+          $ref: '#/components/responses/ValidationError'
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: "The workspace has no AI credits left this billing cycle (`code:\
+            \ ai_credits_exhausted`, `upgrade_url`), or the per-minute limit was reached.\
+            \ Rate limit reached. Without a token: 30 calls per minute and 500 per\
+            \ UTC day per IP address (IPv6 per /64). With a token: 300 per minute\
+            \ per user; the Free plan also has 1,000 calls per UTC day, paid plans\
+            \ have no daily cap."
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            Retry-After:
+              description: Seconds until the limit resets.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+        "502":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: The AI provider failed or timed out. No credit was spent.
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: AI tools are switched off right now.
+      summary: "Generate hooks (opening lines) for a social media post with AI (needs\
+        \ a token, spends AI credits)"
+      tags:
+      - Free Tools
+      x-free-tool: true
+  /tools/hook-generator/library:
+    get:
+      description: "Get free hook templates for social media posts, filtered by style\
+        \ and network. The same logic as the free web tool at https://postboost.co/tools/hook-generator.\
+        \ No account needed: call it without a token, or with any API token."
+      operationId: getHookTemplates
+      parameters:
+      - explode: true
+        in: query
+        name: topic
+        required: false
+        schema:
+          description: "What the post is about. Fills the `{topic}` placeholder of\
+            \ every template; omit it to get the templates as they are."
+          maxLength: 300
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: category
+        required: false
+        schema:
+          description: Hook style. Omit it for every style.
+          enum:
+          - question
+          - contrarian
+          - list
+          - story
+          - mistake
+          - how-to
+          - curiosity
+          - social-proof
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: network
+        required: false
+        schema:
+          description: Only templates that suit this network. Omit it for every network.
+          enum:
+          - instagram
+          - tiktok
+          - linkedin
+          - x
+          - threads
+          - facebook
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: search
+        required: false
+        schema:
+          description: Only templates whose text contains these words (case-insensitive).
+          maxLength: 100
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                example-1:
+                  value:
+                    hooks:
+                    - text: What would change if you treated email marketing as a
+                        weekly habit instead of a one-off project?
+                      template: "What would change if you treated {topic} as a weekly\
+                        \ habit instead of a one-off project?"
+                      category: question
+                      networks:
+                      - instagram
+                      - tiktok
+                      - linkedin
+                      - x
+                      - threads
+                      - facebook
+                    - text: "Which part of email marketing do you keep putting off,\
+                        \ and why?"
+                      template: "Which part of {topic} do you keep putting off, and\
+                        \ why?"
+                      category: question
+                      networks:
+                      - instagram
+                      - tiktok
+                      - linkedin
+                      - x
+                      - threads
+                      - facebook
+                    - text: Is email marketing worth the time it takes? My honest
+                        answer after trying it.
+                      template: "Is {topic} worth the time it takes? My honest answer\
+                        \ after trying it."
+                      category: question
+                      networks:
+                      - instagram
+                      - tiktok
+                      - linkedin
+                      - x
+                      - threads
+                      - facebook
+                    - text: What do people get wrong about email marketing when they
+                        first start?
+                      template: "What do people get wrong about {topic} when they\
+                        \ first start?"
+                      category: question
+                      networks:
+                      - instagram
+                      - tiktok
+                      - linkedin
+                      - x
+                      - threads
+                      - facebook
+                    - text: "If you could keep only one rule for email marketing,\
+                        \ which would it be?"
+                      template: "If you could keep only one rule for {topic}, which\
+                        \ would it be?"
+                      category: question
+                      networks:
+                      - linkedin
+                      - x
+                      - threads
+                      - facebook
+                    - text: Why does email marketing feel harder than it should?
+                      template: "Why does {topic} feel harder than it should?"
+                      category: question
+                      networks:
+                      - instagram
+                      - tiktok
+                      - linkedin
+                      - x
+                      - threads
+                      - facebook
+                    - text: How much time do you really spend on email marketing each
+                        week?
+                      template: "How much time do you really spend on {topic} each\
+                        \ week?"
+                      category: question
+                      networks:
+                      - linkedin
+                      - x
+                      - threads
+                      - facebook
+                    - text: What would you tell a beginner about email marketing that
+                        nobody told you?
+                      template: "What would you tell a beginner about {topic} that\
+                        \ nobody told you?"
+                      category: question
+                      networks:
+                      - instagram
+                      - linkedin
+                      - x
+                      - threads
+                      - facebook
+                    - text: Do you plan email marketing ahead or make it up as you
+                        go?
+                      template: "Do you plan {topic} ahead or make it up as you go?"
+                      category: question
+                      networks:
+                      - instagram
+                      - tiktok
+                      - linkedin
+                      - x
+                      - threads
+                      - facebook
+                    - text: What is the smallest step that would make email marketing
+                        easier tomorrow?
+                      template: "What is the smallest step that would make {topic}\
+                        \ easier tomorrow?"
+                      category: question
+                      networks:
+                      - linkedin
+                      - x
+                      - threads
+                      - facebook
+                    - text: "Quick poll: how do you handle email marketing?"
+                      template: "Quick poll: how do you handle {topic}?"
+                      category: question
+                      networks:
+                      - linkedin
+                      - x
+                      - threads
+                      - facebook
+                    total: 11
+                example-2:
+                  value:
+                    hooks:
+                    - text: "Unpopular opinion: most advice about {topic} is too complicated."
+                      template: "Unpopular opinion: most advice about {topic} is too\
+                        \ complicated."
+                      category: contrarian
+                      networks:
+                      - instagram
+                      - tiktok
+                      - linkedin
+                      - x
+                      - threads
+                      - facebook
+                    total: 1
+              schema:
+                $ref: '#/components/schemas/FreeToolGetHookTemplatesResponse'
+          description: The tool output.
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "422":
+          $ref: '#/components/responses/ValidationError'
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: "Rate limit reached. Without a token: 30 calls per minute and\
+            \ 500 per UTC day per IP address (IPv6 per /64). With a token: 300 per\
+            \ minute per user; the Free plan also has 1,000 calls per UTC day, paid\
+            \ plans have no daily cap."
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            Retry-After:
+              description: Seconds until the limit resets.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+      security: []
+      summary: "Get free hook templates for social media posts, filtered by style\
+        \ and network"
+      tags:
+      - Free Tools
+      x-free-tool: true
 components:
   headers:
     IdempotentReplayed:
@@ -15855,6 +16246,105 @@ components:
         cached:
           description: True when the same request was answered before (free).
           type: boolean
+    FreeToolGenerateHooksRequest:
+      example:
+        workspace: workspace
+        tone: friendly
+        count: 1
+        topic: topic
+        network: instagram
+      properties:
+        topic:
+          description: What the post is about.
+          maxLength: 300
+          minLength: 1
+          type: string
+        tone:
+          default: friendly
+          description: "Tone of the hooks, as on the caption generator."
+          enum:
+          - friendly
+          - professional
+          - playful
+          - inspirational
+          - bold
+          type: string
+        count:
+          default: 5
+          description: How many hooks to write.
+          maximum: 10
+          minimum: 1
+          type: integer
+        network:
+          default: instagram
+          description: The network the text is written for.
+          enum:
+          - instagram
+          - tiktok
+          - linkedin
+          - x
+          - threads
+          - facebook
+          type: string
+        workspace:
+          description: "UUID of the workspace whose AI credits pay for the call. Default:\
+            \ your active workspace (a scoped API key: its own workspace)."
+          maxLength: 64
+          type: string
+      required:
+      - topic
+    FreeToolGenerateHooksResponse:
+      example:
+        credits_spent: 0
+        cached: true
+        hooks:
+        - text: text
+          category: question
+        - text: text
+          category: question
+        notice: notice
+      properties:
+        hooks:
+          description: '`count` hooks in several styles.'
+          items:
+            $ref: '#/components/schemas/FreeToolGenerateHooksResponse_hooks_inner'
+          type: array
+        notice:
+          description: "Only while AI is switched off: the hooks are templates from\
+            \ the free library (getHookTemplates) with the topic filled in, free of\
+            \ charge."
+          type: string
+        credits_spent:
+          description: "AI credits this call took from the workspace: 1, or 0 for\
+            \ a cached result."
+          type: integer
+        cached:
+          description: True when the same request was answered before (free).
+          type: boolean
+    FreeToolGetHookTemplatesResponse:
+      example:
+        total: 0
+        hooks:
+        - template: template
+          text: text
+          category: question
+          networks:
+          - instagram
+          - instagram
+        - template: template
+          text: text
+          category: question
+          networks:
+          - instagram
+          - instagram
+      properties:
+        hooks:
+          items:
+            $ref: '#/components/schemas/FreeToolGetHookTemplatesResponse_hooks_inner'
+          type: array
+        total:
+          description: Number of hooks returned.
+          type: integer
     listMyWorkspaces_200_response:
       example:
         data:
@@ -19922,6 +20412,65 @@ components:
             items:
               type: string
             type: array
+          type: array
+    FreeToolGenerateHooksResponse_hooks_inner:
+      example:
+        text: text
+        category: question
+      properties:
+        text:
+          description: The hook.
+          type: string
+        category:
+          description: "Hook style, as in getHookTemplates."
+          enum:
+          - question
+          - contrarian
+          - list
+          - story
+          - mistake
+          - how-to
+          - curiosity
+          - social-proof
+          type: string
+    FreeToolGetHookTemplatesResponse_hooks_inner:
+      example:
+        template: template
+        text: text
+        category: question
+        networks:
+        - instagram
+        - instagram
+      properties:
+        text:
+          description: "The hook, with `{topic}` filled in when a topic was given."
+          type: string
+        template:
+          description: "The template with its `{topic}` placeholder."
+          type: string
+        category:
+          description: Hook style.
+          enum:
+          - question
+          - contrarian
+          - list
+          - story
+          - mistake
+          - how-to
+          - curiosity
+          - social-proof
+          type: string
+        networks:
+          description: Networks the hook suits.
+          items:
+            enum:
+            - instagram
+            - tiktok
+            - linkedin
+            - x
+            - threads
+            - facebook
+            type: string
           type: array
   securitySchemes:
     bearerAuth:
