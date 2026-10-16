@@ -48,7 +48,7 @@ info:
     name: Commercial
     url: https://postboost.co/pages/terms
   title: PostBoost API
-  version: 1.36.0
+  version: 1.37.0
 servers:
 - description: Production
   url: https://postboost.co/app/api
@@ -2481,7 +2481,8 @@ paths:
         **Developer mode**: provide `prompt` directly to bypass prompt building.
         If both `caption` and `prompt` are sent, standard mode runs.
 
-        Credits: `count x credit_weight` (default: 5 per image).
+        Credits: 1 image credit per image (`429 image_credits_exhausted` when the monthly pool is empty).
+        If the image pool is switched off, `count × credit_weight` text credits instead.
       operationId: imageGenerate
       parameters:
       - $ref: '#/components/parameters/workspaceUuid'
@@ -2533,7 +2534,9 @@ paths:
       description: |
         Edits an existing workspace media item using the source image and a text
         prompt. Optionally accepts a mask (transparent areas are replaced).
-        Saves results to the media library. Credits: `count × credit_weight`.
+        Saves results to the media library.
+        Credits: 1 image credit per image (`429 image_credits_exhausted` when the monthly pool is empty).
+        If the image pool is switched off, `count × credit_weight` text credits instead.
       operationId: imageEdit
       parameters:
       - $ref: '#/components/parameters/workspaceUuid'
@@ -2566,7 +2569,8 @@ paths:
       description: |
         Creates one or more variations of an existing workspace media item.
         Saves results to the media library.
-        Credits: `count × credit_weight`.
+        Credits: 1 image credit per image (`429 image_credits_exhausted` when the monthly pool is empty).
+        If the image pool is switched off, `count × credit_weight` text credits instead.
       operationId: imageVariations
       parameters:
       - $ref: '#/components/parameters/workspaceUuid'
@@ -9297,26 +9301,29 @@ components:
     Media:
       example:
         thumb_url: https://openapi-generator.tech
-        created_at: 2000-01-23T04:56:07.000+00:00
+        created_at: 2026-10-16 05:30:00
         type: image
         uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
         url: https://openapi-generator.tech
-        duration_ms: 2
+        duration_ms: 3
         is_video: true
         folder:
           name: name
           uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
-        size: 4
+        size: 2
         mime_type: image/jpeg
         alt_text: alt_text
         name: name
-        width: 9
-        id: 7
+        width: 7
+        id: "42"
         is_processing: true
-        height: 3
+        height: 9
       properties:
         id:
-          type: integer
+          description: "Numeric media id, returned as a string (the engine casts it).\
+            \ Use `uuid` to address media in the API."
+          example: "42"
+          type: string
         uuid:
           format: uuid
           type: string
@@ -9336,8 +9343,8 @@ components:
           type: string
         thumb_url:
           format: uri
-          type: string
           nullable: true
+          type: string
         is_video:
           type: boolean
         is_processing:
@@ -9345,27 +9352,28 @@ components:
           type: boolean
         width:
           description: "Width in pixels, when stored."
-          type: integer
           nullable: true
+          type: integer
         height:
           description: "Height in pixels, when stored."
-          type: integer
           nullable: true
+          type: integer
         duration_ms:
           description: Video duration in milliseconds; null for images or videos not
             read yet.
-          type: integer
           nullable: true
+          type: integer
         size:
           description: File size in bytes.
           type: integer
         alt_text:
-          type: string
           nullable: true
+          type: string
         folder:
           $ref: '#/components/schemas/MediaFolderRef'
         created_at:
-          format: date-time
+          description: '`Y-m-d H:i:s` in UTC (not RFC 3339).'
+          example: 2026-10-16 05:30:00
           type: string
       required:
       - created_at
@@ -11400,43 +11408,45 @@ components:
         aspect_ratio: 1:1
         images:
         - thumb_url: https://openapi-generator.tech
-          created_at: 2000-01-23T04:56:07.000+00:00
+          created_at: 2026-10-16 05:30:00
           type: image
           uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
           url: https://openapi-generator.tech
-          duration_ms: 2
+          duration_ms: 3
           is_video: true
           folder:
             name: name
             uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
-          size: 4
+          size: 2
           mime_type: image/jpeg
           alt_text: alt_text
           name: name
-          width: 9
-          id: 7
+          width: 7
+          id: "42"
           is_processing: true
-          height: 3
+          height: 9
         - thumb_url: https://openapi-generator.tech
-          created_at: 2000-01-23T04:56:07.000+00:00
+          created_at: 2026-10-16 05:30:00
           type: image
           uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
           url: https://openapi-generator.tech
-          duration_ms: 2
+          duration_ms: 3
           is_video: true
           folder:
             name: name
             uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
-          size: 4
+          size: 2
           mime_type: image/jpeg
           alt_text: alt_text
           name: name
-          width: 9
-          id: 7
+          width: 7
+          id: "42"
           is_processing: true
-          height: 3
+          height: 9
+        image_credits_used: 1
         credits_remaining: 45
-        credits_used: 5
+        image_credits_remaining: 29
+        credits_used: 0
         quality: standard
       properties:
         images:
@@ -11450,15 +11460,31 @@ components:
           example: standard
           type: string
         credits_used:
-          example: 5
+          description: Text credits only. 0 while the image credit pool is on; `count
+            × credit_weight` when it is switched off.
+          example: 0
           type: integer
         credits_remaining:
+          description: Text credits left this billing cycle (null = no limit).
           example: 45
-          type: integer
           nullable: true
+          type: integer
+        image_credits_used:
+          description: Image credits this call spent (1 per image; 0 when the image
+            credit pool is switched off).
+          example: 1
+          type: integer
+        image_credits_remaining:
+          description: "Image credits left this month (null = no limit, or the image\
+            \ credit pool is switched off)."
+          example: 29
+          nullable: true
+          type: integer
       required:
       - aspect_ratio
       - credits_used
+      - image_credits_remaining
+      - image_credits_used
       - images
       - quality
     ImageGenerationResponse:
@@ -11466,45 +11492,47 @@ components:
         aspect_ratio: 1:1
         images:
         - thumb_url: https://openapi-generator.tech
-          created_at: 2000-01-23T04:56:07.000+00:00
+          created_at: 2026-10-16 05:30:00
           type: image
           uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
           url: https://openapi-generator.tech
-          duration_ms: 2
+          duration_ms: 3
           is_video: true
           folder:
             name: name
             uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
-          size: 4
+          size: 2
           mime_type: image/jpeg
           alt_text: alt_text
           name: name
-          width: 9
-          id: 7
+          width: 7
+          id: "42"
           is_processing: true
-          height: 3
+          height: 9
         - thumb_url: https://openapi-generator.tech
-          created_at: 2000-01-23T04:56:07.000+00:00
+          created_at: 2026-10-16 05:30:00
           type: image
           uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
           url: https://openapi-generator.tech
-          duration_ms: 2
+          duration_ms: 3
           is_video: true
           folder:
             name: name
             uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
-          size: 4
+          size: 2
           mime_type: image/jpeg
           alt_text: alt_text
           name: name
-          width: 9
-          id: 7
+          width: 7
+          id: "42"
           is_processing: true
-          height: 3
+          height: 9
         prompt_used: prompt_used
+        image_credits_used: 1
         revised_prompt: revised_prompt
         credits_remaining: 45
-        credits_used: 5
+        image_credits_remaining: 29
+        credits_used: 0
         quality: standard
       properties:
         images:
@@ -11514,8 +11542,8 @@ components:
         prompt_used:
           type: string
         revised_prompt:
-          type: string
           nullable: true
+          type: string
         aspect_ratio:
           example: 1:1
           type: string
@@ -11523,15 +11551,31 @@ components:
           example: standard
           type: string
         credits_used:
-          example: 5
+          description: Text credits only. 0 while the image credit pool is on; `count
+            × credit_weight` when it is switched off.
+          example: 0
           type: integer
         credits_remaining:
+          description: Text credits left this billing cycle (null = no limit).
           example: 45
-          type: integer
           nullable: true
+          type: integer
+        image_credits_used:
+          description: Image credits this call spent (1 per image; 0 when the image
+            credit pool is switched off).
+          example: 1
+          type: integer
+        image_credits_remaining:
+          description: "Image credits left this month (null = no limit, or the image\
+            \ credit pool is switched off)."
+          example: 29
+          nullable: true
+          type: integer
       required:
       - aspect_ratio
       - credits_used
+      - image_credits_remaining
+      - image_credits_used
       - images
       - prompt_used
       - quality
@@ -15830,41 +15874,41 @@ components:
       example:
         data:
         - thumb_url: https://openapi-generator.tech
-          created_at: 2000-01-23T04:56:07.000+00:00
+          created_at: 2026-10-16 05:30:00
           type: image
           uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
           url: https://openapi-generator.tech
-          duration_ms: 2
+          duration_ms: 3
           is_video: true
           folder:
             name: name
             uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
-          size: 4
+          size: 2
           mime_type: image/jpeg
           alt_text: alt_text
           name: name
-          width: 9
-          id: 7
+          width: 7
+          id: "42"
           is_processing: true
-          height: 3
+          height: 9
         - thumb_url: https://openapi-generator.tech
-          created_at: 2000-01-23T04:56:07.000+00:00
+          created_at: 2026-10-16 05:30:00
           type: image
           uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
           url: https://openapi-generator.tech
-          duration_ms: 2
+          duration_ms: 3
           is_video: true
           folder:
             name: name
             uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
-          size: 4
+          size: 2
           mime_type: image/jpeg
           alt_text: alt_text
           name: name
-          width: 9
-          id: 7
+          width: 7
+          id: "42"
           is_processing: true
-          height: 3
+          height: 9
         meta:
           per_page: 5
           total: 2
@@ -16014,23 +16058,23 @@ components:
       example:
         media:
           thumb_url: https://openapi-generator.tech
-          created_at: 2000-01-23T04:56:07.000+00:00
+          created_at: 2026-10-16 05:30:00
           type: image
           uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
           url: https://openapi-generator.tech
-          duration_ms: 2
+          duration_ms: 3
           is_video: true
           folder:
             name: name
             uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
-          size: 4
+          size: 2
           mime_type: image/jpeg
           alt_text: alt_text
           name: name
-          width: 9
-          id: 7
+          width: 7
+          id: "42"
           is_processing: true
-          height: 3
+          height: 9
         status: pending
       properties:
         status:
@@ -17124,45 +17168,47 @@ components:
           aspect_ratio: 1:1
           images:
           - thumb_url: https://openapi-generator.tech
-            created_at: 2000-01-23T04:56:07.000+00:00
+            created_at: 2026-10-16 05:30:00
             type: image
             uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
             url: https://openapi-generator.tech
-            duration_ms: 2
+            duration_ms: 3
             is_video: true
             folder:
               name: name
               uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
-            size: 4
+            size: 2
             mime_type: image/jpeg
             alt_text: alt_text
             name: name
-            width: 9
-            id: 7
+            width: 7
+            id: "42"
             is_processing: true
-            height: 3
+            height: 9
           - thumb_url: https://openapi-generator.tech
-            created_at: 2000-01-23T04:56:07.000+00:00
+            created_at: 2026-10-16 05:30:00
             type: image
             uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
             url: https://openapi-generator.tech
-            duration_ms: 2
+            duration_ms: 3
             is_video: true
             folder:
               name: name
               uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
-            size: 4
+            size: 2
             mime_type: image/jpeg
             alt_text: alt_text
             name: name
-            width: 9
-            id: 7
+            width: 7
+            id: "42"
             is_processing: true
-            height: 3
+            height: 9
           prompt_used: prompt_used
+          image_credits_used: 1
           revised_prompt: revised_prompt
           credits_remaining: 45
-          credits_used: 5
+          image_credits_remaining: 29
+          credits_used: 0
           quality: standard
         meta:
           brand_voice_applied: true
@@ -17188,43 +17234,45 @@ components:
           aspect_ratio: 1:1
           images:
           - thumb_url: https://openapi-generator.tech
-            created_at: 2000-01-23T04:56:07.000+00:00
+            created_at: 2026-10-16 05:30:00
             type: image
             uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
             url: https://openapi-generator.tech
-            duration_ms: 2
+            duration_ms: 3
             is_video: true
             folder:
               name: name
               uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
-            size: 4
+            size: 2
             mime_type: image/jpeg
             alt_text: alt_text
             name: name
-            width: 9
-            id: 7
+            width: 7
+            id: "42"
             is_processing: true
-            height: 3
+            height: 9
           - thumb_url: https://openapi-generator.tech
-            created_at: 2000-01-23T04:56:07.000+00:00
+            created_at: 2026-10-16 05:30:00
             type: image
             uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
             url: https://openapi-generator.tech
-            duration_ms: 2
+            duration_ms: 3
             is_video: true
             folder:
               name: name
               uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
-            size: 4
+            size: 2
             mime_type: image/jpeg
             alt_text: alt_text
             name: name
-            width: 9
-            id: 7
+            width: 7
+            id: "42"
             is_processing: true
-            height: 3
+            height: 9
+          image_credits_used: 1
           credits_remaining: 45
-          credits_used: 5
+          image_credits_remaining: 29
+          credits_used: 0
           quality: standard
       properties:
         data:

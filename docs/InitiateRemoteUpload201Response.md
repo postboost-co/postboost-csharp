@@ -4,7 +4,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Id** | **int** |  | 
+**Id** | **string** | Numeric media id, returned as a string (the engine casts it). Use &#x60;uuid&#x60; to address media in the API. | 
 **Uuid** | **Guid** |  | 
 **Name** | **string** |  | 
 **MimeType** | **string** |  | 
@@ -19,7 +19,7 @@ Name | Type | Description | Notes
 **Size** | **int** | File size in bytes. | [optional] 
 **AltText** | **string** |  | [optional] 
 **Folder** | [**MediaFolderRef**](MediaFolderRef.md) |  | [optional] 
-**CreatedAt** | **DateTime** |  | 
+**CreatedAt** | **string** | &#x60;Y-m-d H:i:s&#x60; in UTC (not RFC 3339). | 
 **DownloadId** | **string** |  | [optional] 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
