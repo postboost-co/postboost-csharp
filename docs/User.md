@@ -9,7 +9,7 @@ Name | Type | Description | Notes
 **Email** | **string** |  | 
 **Avatar** | **string** | URL of the user&#39;s avatar, or null when none is set. | [optional] 
 **IsAdmin** | **bool** |  | 
-**EmailVerifiedAt** | **DateTime** |  | [optional] 
+**EmailVerifiedAt** | **DateTime?** |  | [optional] 
 **CreatedAt** | **DateTime** |  | 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

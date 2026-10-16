@@ -7,7 +7,7 @@ Name | Type | Description | Notes
 **TransactionId** | **string** |  | 
 **InvoiceNumber** | **string** |  | 
 **Amount** | **decimal** |  | 
-**Tax** | **decimal** |  | [optional] 
+**Tax** | **decimal?** |  | [optional] 
 **Currency** | **string** |  | 
 **Description** | **string** |  | [optional] 
 **ReceiptUrl** | **string** |  | [optional] 

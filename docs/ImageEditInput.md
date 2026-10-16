@@ -6,8 +6,8 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **MediaUuid** | **Guid** | UUID of the source media item to edit | 
 **Prompt** | **string** | Describe what to change in the image | 
-**MaskUuid** | **Guid** | UUID of a mask image. Transparent areas will be edited. | [optional] 
-**UseBrandVoice** | **bool** | Append the workspace brand voice&#39;s visual tone to the edit prompt. Off by default because edits are literal instructions. | [optional] [default to false]
+**MaskUuid** | **Guid?** | UUID of a mask image. Transparent areas will be edited. | [optional] 
+**UseBrandVoice** | **bool?** | Append the workspace brand voice&#39;s visual tone to the edit prompt. Off by default because edits are literal instructions. | [optional] [default to false]
 **AspectRatio** | **string** |  | [optional] [default to AspectRatioEnum._11]
 **Count** | **int** |  | [optional] [default to 1]
 **Quality** | **string** |  | [optional] [default to QualityEnum.Standard]

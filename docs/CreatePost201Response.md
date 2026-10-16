@@ -11,9 +11,9 @@ Name | Type | Description | Notes
 **Accounts** | [**List&lt;Account&gt;**](Account.md) |  | 
 **Versions** | [**List&lt;PostVersion&gt;**](PostVersion.md) |  | 
 **Tags** | [**List&lt;Tag&gt;**](Tag.md) |  | 
-**ScheduledAt** | **DateTime** |  | [optional] 
-**PublishedAt** | **DateTime** |  | [optional] 
-**CreatedAt** | **DateTime** |  | 
+**ScheduledAt** | **string** | &#x60;Y-m-d H:i:s&#x60; in UTC (not RFC 3339). | [optional] 
+**PublishedAt** | **string** | &#x60;Y-m-d H:i:s&#x60; in UTC (not RFC 3339). | [optional] 
+**CreatedAt** | **string** | &#x60;Y-m-d H:i:s&#x60; in UTC (not RFC 3339). | 
 **Trashed** | **bool** |  | 
 **Warnings** | [**List&lt;PostWarning&gt;**](PostWarning.md) | Present only when there is at least one warning. | [optional] 
 

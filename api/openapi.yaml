@@ -48,7 +48,7 @@ info:
     name: Commercial
     url: https://postboost.co/pages/terms
   title: PostBoost API
-  version: 1.37.0
+  version: 1.38.0
 servers:
 - description: Production
   url: https://postboost.co/app/api
@@ -5012,6 +5012,7 @@ paths:
       summary: Download a report file
       tags:
       - Analytics
+      x-mcp-exclude: true
   /{workspaceUuid}/report-branding:
     get:
       description: The white-label header of the workspace's PDF reports. Unset fields
@@ -5035,8 +5036,8 @@ paths:
       - Analytics
     put:
       description: "Name, colour and footer of PDF reports. Fields you leave out keep\
-        \ their value. Upload the logo with `uploadReportBrandingLogo`. Admins and\
-        \ members only."
+        \ their value. Upload the logo with `uploadReportBrandingLogo` (a multipart\
+        \ file upload, so it is not an MCP tool). Admins and members only."
       operationId: updateReportBranding
       parameters:
       - $ref: '#/components/parameters/workspaceUuid'
@@ -5096,6 +5097,7 @@ paths:
       summary: Upload the report logo
       tags:
       - Analytics
+      x-mcp-exclude: true
   /{workspaceUuid}/ai/repurpose:
     post:
       description: |
@@ -8956,8 +8958,8 @@ components:
           example: https://example.com/images/post-cover.jpg
           format: uri
           maxLength: 2000
-          type: string
           nullable: true
+          type: string
         platforms:
           description: |
             Target social media platforms. Only connected accounts matching these platforms are used. If omitted, all connected accounts in the workspace are targeted.
@@ -8979,8 +8981,8 @@ components:
             - tiktok
             - bluesky
             type: string
-          type: array
           nullable: true
+          type: array
         account_ids:
           description: |
             Specific account IDs to generate captions for. Takes precedence over `platforms` when both are provided.
@@ -8989,8 +8991,8 @@ components:
           - 12
           items:
             type: integer
-          type: array
           nullable: true
+          type: array
         tone:
           default: engaging
           description: Writing tone for all generated captions.
@@ -9005,9 +9007,10 @@ components:
           - humorous
           - inspirational
           - conversational
+          - null
           example: professional
-          type: string
           nullable: true
+          type: string
         content_length:
           default: medium
           description: Desired length of the generated captions.
@@ -9015,9 +9018,10 @@ components:
           - short
           - medium
           - long
+          - null
           example: medium
-          type: string
           nullable: true
+          type: string
         hashtags:
           default: few
           description: "Hashtag quantity: none (0), few (1-3), some (3-5), many (5+)."
@@ -9026,9 +9030,10 @@ components:
           - few
           - some
           - many
+          - null
           example: few
-          type: string
           nullable: true
+          type: string
         cta:
           default: none
           description: Call-to-action type appended to each caption.
@@ -9043,36 +9048,37 @@ components:
           - signup
           - buy
           - download
+          - null
           example: link
-          type: string
           nullable: true
+          type: string
         language:
           default: auto
           description: |
             Output language as an ISO 639-1 code (e.g. `en`, `de`, `fr`). Use `auto` to match the blog post's language automatically.
           example: auto
           maxLength: 10
-          type: string
           nullable: true
+          type: string
         custom_instructions:
           description: Additional instructions appended to the AI prompt (e.g. "always
             mention our free tier").
           example: Always mention that PostBoost has a free plan.
           maxLength: 500
-          type: string
           nullable: true
+          type: string
         create_post:
           default: false
           description: |
             When `true`, creates a draft post in the workspace with per-account caption versions. If an image is available, it is imported and attached to the post.
-          type: boolean
           nullable: true
+          type: boolean
         use_brand_voice:
           default: true
           description: |
             Apply the workspace brand voice (see `GET brand-voice`) to the captions. An explicit `tone` is kept, but the brand voice wins on vocabulary, words to avoid and calls to action.
-          type: boolean
           nullable: true
+          type: boolean
     BlogToSocialResponse:
       example:
         post_uuid: 01942c3d-1234-7abc-8ef0-1234567890ab
@@ -9117,8 +9123,8 @@ components:
             was `true`.
           example: 01942c3d-1234-7abc-8ef0-1234567890ab
           format: uuid
-          type: string
           nullable: true
+          type: string
         media:
           $ref: '#/components/schemas/BlogToSocialMedia'
         credits_used:
@@ -9130,8 +9136,8 @@ components:
           description: Remaining AI credits for the current billing period. `null`
             for unlimited plans.
           example: 37
-          type: integer
           nullable: true
+          type: integer
     BlogToSocialCaption:
       example:
         account_id: 5
@@ -9155,14 +9161,14 @@ components:
             this account.
           example: "Unlock better social media results with these 10 proven tips.\
             \ #SocialMedia #Marketing"
-          type: string
           nullable: true
+          type: string
         character_count:
           description: Character count of the generated content. `null` if generation
             failed.
           example: 87
-          type: integer
           nullable: true
+          type: integer
         character_limit:
           description: Maximum allowed character count for this platform.
           example: 280
@@ -9170,8 +9176,8 @@ components:
         error:
           description: Error message if caption generation failed for this account.
             `null` on success.
-          type: string
           nullable: true
+          type: string
     BlogToSocialMedia:
       description: The imported featured image. Only present when `create_post` was
         `true` and an image was available.
@@ -9188,7 +9194,6 @@ components:
           example: https://postboost.co/storage/workspaces/1/blog-images/2026/04/cover.jpg
           format: uri
           type: string
-      nullable: true
     PaginationMeta:
       properties:
         links:
@@ -9228,18 +9233,12 @@ components:
           type: string
         image:
           format: uri
-          type: string
           nullable: true
+          type: string
         provider:
-          enum:
-          - instagram
-          - tiktok
-          - pinterest
-          - twitter
-          - linkedin
-          - facebook_page
-          - youtube
-          - mastodon
+          description: |
+            Network key. Known values: `twitter`, `facebook_page`, `instagram`, `instagram_standalone`, `threads`, `linkedin`, `linkedin_page`, `tiktok`, `youtube`, `pinterest`, `gbp`, `bluesky`, `mastodon`, `pixelfed`, `telegram`, `discord`, `slack`. New networks add new keys, so treat unknown values as valid.
+          example: instagram
           type: string
         data:
           description: Provider-specific metadata.
@@ -9249,8 +9248,8 @@ components:
         profile_url:
           description: "Public URL of the account's profile on the network, when known."
           format: uri
-          type: string
           nullable: true
+          type: string
         publish_status:
           description: Only present when the account is embedded in a post. Publishing
             state of this account for the post.
@@ -9413,8 +9412,8 @@ components:
         parent:
           description: UUID of the parent folder; null for a top-level folder.
           format: uuid
-          type: string
           nullable: true
+          type: string
         media_count:
           description: "Media filed anywhere below the folder, including its sub-folders."
           type: integer
@@ -9436,8 +9435,8 @@ components:
           description: "UUID of the parent folder, or null for the top level. Folders\
             \ nest to a limited depth."
           format: uuid
-          type: string
           nullable: true
+          type: string
     Tag:
       example:
         name: Campaign 2025
@@ -9593,12 +9592,12 @@ components:
         body:
           description: "Post text/caption. For a second item on Facebook Page, Instagram\
             \ or LinkedIn this is the first comment."
-          type: string
           nullable: true
+          type: string
         url:
           format: uri
-          type: string
           nullable: true
+          type: string
         media:
           description: Array of media IDs from the media library.
           items:
@@ -9681,8 +9680,8 @@ components:
             \ original), or null when it is edited independently. Ignored on the original\
             \ version."
           minimum: 0
-          type: integer
           nullable: true
+          type: integer
         content:
           description: |
             Ordered content items. Item 0 is the post. Item 1 is the first comment on
@@ -10146,8 +10145,8 @@ components:
             - 5
             body: body
             url: https://openapi-generator.tech
-        scheduled_at: 2000-01-23T04:56:07.000+00:00
-        created_at: 2000-01-23T04:56:07.000+00:00
+        scheduled_at: 2026-10-16 10:00:00
+        created_at: 2026-10-16 09:58:12
         id: 0
         accounts:
         - image: https://openapi-generator.tech
@@ -10184,7 +10183,7 @@ components:
           - Account_errors_inner
           - Account_errors_inner
           username: myhandle
-        published_at: 2000-01-23T04:56:07.000+00:00
+        published_at: 2026-10-16 10:00:04
         uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
         status: draft
         tags:
@@ -10222,15 +10221,18 @@ components:
             $ref: '#/components/schemas/Tag'
           type: array
         scheduled_at:
-          format: date-time
-          type: string
+          description: '`Y-m-d H:i:s` in UTC (not RFC 3339).'
+          example: 2026-10-16 10:00:00
           nullable: true
+          type: string
         published_at:
-          format: date-time
-          type: string
+          description: '`Y-m-d H:i:s` in UTC (not RFC 3339).'
+          example: 2026-10-16 10:00:04
           nullable: true
+          type: string
         created_at:
-          format: date-time
+          description: '`Y-m-d H:i:s` in UTC (not RFC 3339).'
+          example: 2026-10-16 09:58:12
           type: string
         trashed:
           type: boolean
@@ -10259,8 +10261,8 @@ components:
           example: '#1d4ed8'
           type: string
         owner_id:
-          type: integer
           nullable: true
+          type: integer
         access_status:
           enum:
           - subscription
@@ -10327,8 +10329,8 @@ components:
           description: "URL of the workspace avatar, or null when none is set. Supersedes\
             \ `hex_color`."
           format: uri
-          type: string
           nullable: true
+          type: string
         owner:
           $ref: '#/components/schemas/User'
         access_status:
@@ -10420,16 +10422,16 @@ components:
           type: boolean
         trial_ends_at:
           format: date-time
-          type: string
           nullable: true
+          type: string
         paused_from:
           format: date-time
-          type: string
           nullable: true
+          type: string
         ends_at:
           format: date-time
-          type: string
           nullable: true
+          type: string
       required:
       - name
       - platform_plan_id
@@ -10480,8 +10482,8 @@ components:
         password:
           description: Omit or set to null to keep the current password.
           format: password
-          type: string
           nullable: true
+          type: string
         password_confirmation:
           format: password
           type: string
@@ -10511,14 +10513,14 @@ components:
         avatar:
           description: "URL of the user's avatar, or null when none is set."
           format: uri
-          type: string
           nullable: true
+          type: string
         is_admin:
           type: boolean
         email_verified_at:
           format: date-time
-          type: string
           nullable: true
+          type: string
         created_at:
           format: date-time
           type: string
@@ -10565,8 +10567,8 @@ components:
         balance:
           description: "Remaining credit balance (2 decimals), or null when no balance\
             \ is tracked."
-          type: number
           nullable: true
+          type: number
         low:
           description: True when the balance is above 0 and at most 10.
           type: boolean
@@ -10588,14 +10590,14 @@ components:
         provider_id:
           description: "The profile's network ID, when resolved. Never accepted from\
             \ clients."
-          type: string
           nullable: true
+          type: string
         handle:
           example: janedoe
           type: string
         label:
-          type: string
           nullable: true
+          type: string
       required:
       - handle
       - provider
@@ -10627,8 +10629,8 @@ components:
           example: Jane Doe
           type: string
         avatar:
-          type: string
           nullable: true
+          type: string
         identities:
           items:
             $ref: '#/components/schemas/MentionIdentity'
@@ -10658,19 +10660,19 @@ components:
           type: string
         label:
           maxLength: 255
-          type: string
           nullable: true
+          type: string
         token:
           description: Sealed lookup result that names the profile's network ID.
           maxLength: 2048
-          type: string
           nullable: true
+          type: string
         account_uuid:
           description: A connected account of this workspace that names the profile.
             Wins over `token` when both are sent.
           format: uuid
-          type: string
           nullable: true
+          type: string
       required:
       - handle
       - provider
@@ -10695,8 +10697,8 @@ components:
           type: string
         avatar:
           maxLength: 2048
-          type: string
           nullable: true
+          type: string
         identities:
           items:
             $ref: '#/components/schemas/MentionIdentityInput'
@@ -11037,12 +11039,12 @@ components:
           example: USD
           type: string
         description:
-          type: string
           nullable: true
+          type: string
         receipt_url:
           format: uri
-          type: string
           nullable: true
+          type: string
         paid_at:
           format: date
           type: string
@@ -11072,17 +11074,17 @@ components:
         amount:
           type: number
         tax:
-          type: number
           nullable: true
+          type: number
         currency:
           type: string
         description:
-          type: string
           nullable: true
+          type: string
         receipt_url:
           format: uri
-          type: string
           nullable: true
+          type: string
         paid_at:
           format: date
           type: string
@@ -11120,11 +11122,11 @@ components:
           type: string
         receipt_url:
           format: uri
-          type: string
           nullable: true
+          type: string
         description:
-          type: string
           nullable: true
+          type: string
         paid_at:
           format: date-time
           type: string
@@ -11167,29 +11169,30 @@ components:
           - event_promo
           - carousel_slide
           - ad_creative
-          type: string
+          - null
           nullable: true
+          type: string
         style:
           example: minimalist
-          type: string
           nullable: true
+          type: string
         brand_voice:
           description: "Free-text tone for the image. When sent, it replaces the stored\
             \ workspace brand voice for this call."
           example: friendly
           maxLength: 200
-          type: string
           nullable: true
+          type: string
         use_brand_voice:
           default: true
           description: "When `brand_voice` is not sent, derive the image tone from\
             \ the workspace brand voice. Ignored in developer mode (`prompt`)."
-          type: boolean
           nullable: true
+          type: boolean
         custom_instructions:
           maxLength: 1000
-          type: string
           nullable: true
+          type: string
       required:
       - caption
       - platform
@@ -11235,29 +11238,30 @@ components:
           - event_promo
           - carousel_slide
           - ad_creative
-          type: string
+          - null
           nullable: true
+          type: string
         style:
           example: minimalist
-          type: string
           nullable: true
+          type: string
         brand_voice:
           description: "Free-text tone for the image. When sent, it replaces the stored\
             \ workspace brand voice for this call."
           example: friendly
           maxLength: 200
-          type: string
           nullable: true
+          type: string
         use_brand_voice:
           default: true
           description: "When `brand_voice` is not sent, derive the image tone from\
             \ the workspace brand voice. Ignored in developer mode (`prompt`)."
-          type: boolean
           nullable: true
+          type: boolean
         custom_instructions:
           maxLength: 1000
-          type: string
           nullable: true
+          type: string
         prompt:
           description: Developer escape hatch. Bypasses internal prompt builder. Ignored
             if caption is present.
@@ -11270,8 +11274,9 @@ components:
           - 16:9
           - 9:16
           - 4:5
-          type: string
+          - null
           nullable: true
+          type: string
         count:
           default: 1
           maximum: 4
@@ -11305,14 +11310,14 @@ components:
         mask_uuid:
           description: UUID of a mask image. Transparent areas will be edited.
           format: uuid
-          type: string
           nullable: true
+          type: string
         use_brand_voice:
           default: false
           description: Append the workspace brand voice's visual tone to the edit
             prompt. Off by default because edits are literal instructions.
-          type: boolean
           nullable: true
+          type: boolean
         aspect_ratio:
           default: 1:1
           enum:
@@ -11320,8 +11325,9 @@ components:
           - 16:9
           - 9:16
           - 4:5
-          type: string
+          - null
           nullable: true
+          type: string
         count:
           default: 1
           maximum: 4
@@ -11353,8 +11359,9 @@ components:
           - 16:9
           - 9:16
           - 4:5
-          type: string
+          - null
           nullable: true
+          type: string
         count:
           default: 1
           maximum: 4
@@ -11397,8 +11404,8 @@ components:
           type: integer
         credits_remaining:
           example: 49
-          type: integer
           nullable: true
+          type: integer
       required:
       - alt_text
       - credits_used
@@ -14314,6 +14321,55 @@ components:
       - name
       - provider
       - uuid
+    WebhookEnvelope:
+      description: |
+        Body of every webhook delivery. Verify `X-Signature` (HMAC-SHA256 of the raw body with the webhook secret)
+        before trusting it, and de-duplicate on `id`. See [Webhooks](/webhooks).
+      properties:
+        event:
+          enum:
+          - post.created
+          - post.updated
+          - post.scheduled
+          - post.published
+          - post.publishing_failed
+          - post.published_all
+          - post.deleted
+          - account.added
+          - account.updated
+          - account.deleted
+          - account.token_expiring
+          - account.disconnected
+          - inbox.draft.created
+          - inbox.draft.sent
+          type: string
+        id:
+          description: "Delivery ID, one per event. Retries and manual resends repeat\
+            \ it."
+          format: uuid
+          type: string
+        occurred_at:
+          description: "When the event happened (ISO 8601, UTC)."
+          example: 2026-10-12T10:00:03+00:00
+          format: date-time
+          type: string
+        workspace_uuid:
+          description: The workspace the event belongs to (null only on instance-wide
+            system webhooks). Also sent as the `X-PostBoost-Workspace` header.
+          format: uuid
+          nullable: true
+          type: string
+        data:
+          additionalProperties: {}
+          description: "The post (`post.*`, as `getPost` returns it, plus `account`\
+            \ on per-account events), the account (`account.*`) or the reply draft\
+            \ (`inbox.*`)."
+      required:
+      - data
+      - event
+      - id
+      - occurred_at
+      - workspace_uuid
     WebhookEventName:
       description: "A workspace webhook event. See [Webhooks](/webhooks)."
       enum:
@@ -15935,8 +15991,8 @@ components:
           description: UUID of the media folder to file the upload in. Omit or null
             for the library root.
           format: uuid
-          type: string
           nullable: true
+          type: string
       required:
       - file
     deleteMediaBulk_request_items_inner:
@@ -15958,19 +16014,19 @@ components:
       properties:
         name:
           maxLength: 255
-          type: string
           nullable: true
+          type: string
         alt_text:
           description: Alternative text for accessibility.
           maxLength: 500
-          type: string
           nullable: true
+          type: string
         folder:
           description: "UUID of the media folder to move the item to, or null for\
             \ the library root."
           format: uuid
-          type: string
           nullable: true
+          type: string
     initiateChunkedUpload_request:
       properties:
         filename:
@@ -16012,8 +16068,8 @@ components:
           description: UUID of the media folder to file the item in. Omit or null
             for the library root.
           format: uuid
-          type: string
           nullable: true
+          type: string
       required:
       - url
     initiateRemoteUpload_201_response_oneOf:
@@ -16046,14 +16102,14 @@ components:
       properties:
         alt_text:
           maxLength: 255
-          type: string
           nullable: true
+          type: string
         folder:
           description: UUID of the media folder to file the item in. Omit or null
             for the library root.
           format: uuid
-          type: string
           nullable: true
+          type: string
     getRemoteUploadStatus_200_response:
       example:
         media:
@@ -16329,8 +16385,8 @@ components:
               - 5
               body: body
               url: https://openapi-generator.tech
-          scheduled_at: 2000-01-23T04:56:07.000+00:00
-          created_at: 2000-01-23T04:56:07.000+00:00
+          scheduled_at: 2026-10-16 10:00:00
+          created_at: 2026-10-16 09:58:12
           id: 0
           accounts:
           - image: https://openapi-generator.tech
@@ -16367,7 +16423,7 @@ components:
             - Account_errors_inner
             - Account_errors_inner
             username: myhandle
-          published_at: 2000-01-23T04:56:07.000+00:00
+          published_at: 2026-10-16 10:00:04
           uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
           status: draft
           tags:
@@ -16500,8 +16556,8 @@ components:
               - 5
               body: body
               url: https://openapi-generator.tech
-          scheduled_at: 2000-01-23T04:56:07.000+00:00
-          created_at: 2000-01-23T04:56:07.000+00:00
+          scheduled_at: 2026-10-16 10:00:00
+          created_at: 2026-10-16 09:58:12
           id: 0
           accounts:
           - image: https://openapi-generator.tech
@@ -16538,7 +16594,7 @@ components:
             - Account_errors_inner
             - Account_errors_inner
             username: myhandle
-          published_at: 2000-01-23T04:56:07.000+00:00
+          published_at: 2026-10-16 10:00:04
           uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
           status: draft
           tags:
@@ -16695,8 +16751,8 @@ components:
         - code: ai_media_without_disclosure
           account_id: 6
           message: message
-        scheduled_at: 2000-01-23T04:56:07.000+00:00
-        created_at: 2000-01-23T04:56:07.000+00:00
+        scheduled_at: 2026-10-16 10:00:00
+        created_at: 2026-10-16 09:58:12
         id: 0
         accounts:
         - image: https://openapi-generator.tech
@@ -16733,7 +16789,7 @@ components:
           - Account_errors_inner
           - Account_errors_inner
           username: myhandle
-        published_at: 2000-01-23T04:56:07.000+00:00
+        published_at: 2026-10-16 10:00:04
         uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
         status: draft
         tags:
@@ -19060,12 +19116,12 @@ components:
           type: object
         best_account:
           additionalProperties: true
-          type: object
           nullable: true
+          type: object
         needs_attention:
           additionalProperties: true
-          type: object
           nullable: true
+          type: object
         audience_chart:
           items:
             additionalProperties: true
@@ -19078,12 +19134,12 @@ components:
           type: array
         most_active:
           additionalProperties: true
-          type: object
           nullable: true
+          type: object
         least_active:
           additionalProperties: true
-          type: object
           nullable: true
+          type: object
         follower_distribution:
           items:
             additionalProperties: true

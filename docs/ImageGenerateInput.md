@@ -9,7 +9,7 @@ Name | Type | Description | Notes
 **Template** | **string** |  | [optional] 
 **Style** | **string** |  | [optional] 
 **BrandVoice** | **string** | Free-text tone for the image. When sent, it replaces the stored workspace brand voice for this call. | [optional] 
-**UseBrandVoice** | **bool** | When &#x60;brand_voice&#x60; is not sent, derive the image tone from the workspace brand voice. Ignored in developer mode (&#x60;prompt&#x60;). | [optional] [default to true]
+**UseBrandVoice** | **bool?** | When &#x60;brand_voice&#x60; is not sent, derive the image tone from the workspace brand voice. Ignored in developer mode (&#x60;prompt&#x60;). | [optional] [default to true]
 **CustomInstructions** | **string** |  | [optional] 
 **Prompt** | **string** | Developer escape hatch. Bypasses internal prompt builder. Ignored if caption is present. | [optional] 
 **AspectRatio** | **string** |  | [optional] [default to AspectRatioEnum._11]

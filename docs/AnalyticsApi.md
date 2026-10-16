@@ -1033,7 +1033,7 @@ catch (ApiException e)
 
 Update the report branding
 
-Name, colour and footer of PDF reports. Fields you leave out keep their value. Upload the logo with `uploadReportBrandingLogo`. Admins and members only.
+Name, colour and footer of PDF reports. Fields you leave out keep their value. Upload the logo with `uploadReportBrandingLogo` (a multipart file upload, so it is not an MCP tool). Admins and members only.
 
 ### Example
 ```csharp
