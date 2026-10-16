@@ -48,7 +48,7 @@ info:
     name: Commercial
     url: https://postboost.co/pages/terms
   title: PostBoost API
-  version: 1.39.0
+  version: 1.40.0
 servers:
 - description: Production
   url: https://postboost.co/app/api
@@ -7657,6 +7657,267 @@ paths:
               style: simple
       security: []
       summary: Calculate the crop box that fits an image to a social media size
+      tags:
+      - Free Tools
+      x-free-tool: true
+  /tools/social-media-video-specs:
+    get:
+      description: "Get social media video ratios, resolutions, lengths and file size\
+        \ limits per network, with sources. The same logic as the free web tool at\
+        \ https://postboost.co/tools/social-media-video-specs. No account needed:\
+        \ call it without a token, or with any API token."
+      operationId: getVideoSpecs
+      parameters:
+      - explode: true
+        in: query
+        name: network
+        required: false
+        schema:
+          description: "Network key, e.g. `tiktok`. Omit it for every network; an\
+            \ unknown key is a 422 that lists the allowed ones."
+          maxLength: 64
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                example-1:
+                  value:
+                    specs:
+                    - network: TikTok
+                      placement: Video (Content Posting API)
+                      ratio: Not stated by the API; 9:16 is common
+                      resolution: 360–4096 px per side; 23–60 fps; 1080×1920 is common
+                      length: Up to 10 min through the API; each creator's maximum
+                        (often 3 min) comes from the creator info call
+                      max_size: 4 GB
+                      formats: "MP4 (recommended), WebM, MOV; H.264 recommended, H.265,\
+                        \ VP8, VP9"
+                      safe_zone: "TikTok publishes templates only, no pixel values"
+                      basis: official
+                      sources:
+                      - https://developers.tiktok.com/doc/content-posting-api-media-transfer-guide
+                      limits:
+                        min_seconds: null
+                        max_seconds: 600
+                        warn_over_seconds: 180
+                        min_ratio: null
+                        max_ratio: null
+                        recommended_ratio: null
+                        max_mb: 4096
+                      network_key: tiktok
+                      placement_key: video-content-posting-api
+                    last_verified: 2026-10-14
+                    sources: []
+                example-2:
+                  value:
+                    specs:
+                    - network: Google Business Profile
+                      placement: Video
+                      ratio: Not stated
+                      resolution: 720p or higher
+                      length: Up to 30 s
+                      max_size: 75 MB
+                      formats: Not stated
+                      safe_zone: ""
+                      basis: official
+                      sources:
+                      - https://support.google.com/business/answer/6103862
+                      limits:
+                        min_seconds: null
+                        max_seconds: 30
+                        warn_over_seconds: null
+                        min_ratio: null
+                        max_ratio: null
+                        recommended_ratio: null
+                        max_mb: 75
+                      network_key: google-business-profile
+                      placement_key: video
+                    last_verified: 2026-10-14
+                    sources: []
+              schema:
+                $ref: '#/components/schemas/FreeToolGetVideoSpecsResponse'
+          description: The tool output.
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "422":
+          $ref: '#/components/responses/ValidationError'
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: "Rate limit reached. Without a token: 30 calls per minute and\
+            \ 500 per UTC day per IP address (IPv6 per /64). With a token: 300 per\
+            \ minute per user; the Free plan also has 1,000 calls per UTC day, paid\
+            \ plans have no daily cap."
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            Retry-After:
+              description: Seconds until the limit resets.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+      security: []
+      summary: "Get social media video ratios, resolutions, lengths and file size\
+        \ limits per network, with sources"
+      tags:
+      - Free Tools
+      x-free-tool: true
+  /tools/youtube-thumbnail-size-checker:
+    post:
+      description: "Check a YouTube thumbnail's ratio, width, file size and format\
+        \ against YouTube's requirements. The same logic as the free web tool at https://postboost.co/tools/youtube-thumbnail-size-checker.\
+        \ No account needed: call it without a token, or with any API token."
+      operationId: checkYoutubeThumbnail
+      requestBody:
+        content:
+          application/json:
+            examples:
+              example-1:
+                value:
+                  width: 1280
+                  height: 720
+                  file_size_bytes: 921600
+                  format: image/png
+              example-2:
+                value:
+                  width: 640
+                  height: 640
+                  file_size_bytes: 3145728
+                  format: image/webp
+            schema:
+              $ref: '#/components/schemas/FreeToolCheckYoutubeThumbnailRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                example-1:
+                  value:
+                    ok: true
+                    checks:
+                    - key: ratio
+                      label: Aspect ratio
+                      status: pass
+                      detail: "16:9, needs 16:9"
+                    - key: width
+                      label: Width
+                      status: pass
+                      detail: "1280 px, needs at least 640 px"
+                    - key: file_size
+                      label: File size
+                      status: pass
+                      detail: "0.88 MB, needs 2 MB or less"
+                    - key: format
+                      label: Format
+                      status: pass
+                      detail: PNG
+                example-2:
+                  value:
+                    ok: false
+                    checks:
+                    - key: ratio
+                      label: Aspect ratio
+                      status: fail
+                      detail: "1:1, needs 16:9"
+                    - key: width
+                      label: Width
+                      status: pass
+                      detail: "640 px, needs at least 640 px"
+                    - key: file_size
+                      label: File size
+                      status: fail
+                      detail: "3 MB, needs 2 MB or less"
+                    - key: format
+                      label: Format
+                      status: check
+                      detail: "Not JPG or PNG: check that YouTube accepts it"
+              schema:
+                $ref: '#/components/schemas/FreeToolCheckYoutubeThumbnailResponse'
+          description: The tool output.
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "413":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: The request body is larger than 128 KB.
+        "422":
+          $ref: '#/components/responses/ValidationError'
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: "Rate limit reached. Without a token: 30 calls per minute and\
+            \ 500 per UTC day per IP address (IPv6 per /64). With a token: 300 per\
+            \ minute per user; the Free plan also has 1,000 calls per UTC day, paid\
+            \ plans have no daily cap."
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            Retry-After:
+              description: Seconds until the limit resets.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+      security: []
+      summary: "Check a YouTube thumbnail's ratio, width, file size and format against\
+        \ YouTube's requirements"
       tags:
       - Free Tools
       x-free-tool: true
@@ -15983,6 +16244,125 @@ components:
           description: "True when the source is enlarged (scale above 1), which can\
             \ look soft."
           type: boolean
+    FreeToolGetVideoSpecsResponse:
+      example:
+        specs:
+        - formats: formats
+          sources:
+          - https://openapi-generator.tech
+          - https://openapi-generator.tech
+          safe_zone: safe_zone
+          length: length
+          placement_key: placement_key
+          basis: basis
+          resolution: resolution
+          max_size: max_size
+          network: network
+          network_key: network_key
+          placement: placement
+          limits:
+            max_seconds: 6.027456183070403
+            warn_over_seconds: 1.4658129805029452
+            max_ratio: 5.637376656633329
+            min_ratio: 5.962133916683182
+            min_seconds: 0.8008281904610115
+            recommended_ratio: recommended_ratio
+            max_mb: 2.3021358869347655
+          ratio: ratio
+        - formats: formats
+          sources:
+          - https://openapi-generator.tech
+          - https://openapi-generator.tech
+          safe_zone: safe_zone
+          length: length
+          placement_key: placement_key
+          basis: basis
+          resolution: resolution
+          max_size: max_size
+          network: network
+          network_key: network_key
+          placement: placement
+          limits:
+            max_seconds: 6.027456183070403
+            warn_over_seconds: 1.4658129805029452
+            max_ratio: 5.637376656633329
+            min_ratio: 5.962133916683182
+            min_seconds: 0.8008281904610115
+            recommended_ratio: recommended_ratio
+            max_mb: 2.3021358869347655
+          ratio: ratio
+        sources:
+        - label: label
+          url: https://openapi-generator.tech
+        - label: label
+          url: https://openapi-generator.tech
+        last_verified: 2000-01-23
+      properties:
+        specs:
+          items:
+            $ref: '#/components/schemas/FreeToolGetVideoSpecsResponse_specs_inner'
+          type: array
+        last_verified:
+          description: When the data was last checked against its sources.
+          format: date
+          nullable: true
+          type: string
+        sources:
+          description: Sources of the whole dataset (rows may name their own).
+          items:
+            $ref: '#/components/schemas/FreeToolGetImageSizesResponse_sources_inner'
+          type: array
+    FreeToolCheckYoutubeThumbnailRequest:
+      example:
+        width: 1602
+        format: format
+        file_size_bytes: 157390470
+        height: 12055
+      properties:
+        width:
+          description: Image width in pixels.
+          maximum: 20000
+          minimum: 1
+          type: integer
+        height:
+          description: Image height in pixels.
+          maximum: 20000
+          minimum: 1
+          type: integer
+        file_size_bytes:
+          description: File size in bytes.
+          maximum: 1073741824
+          minimum: 0
+          type: integer
+        format:
+          description: "MIME type, e.g. `image/png` or `image/jpeg`."
+          maxLength: 64
+          type: string
+      required:
+      - file_size_bytes
+      - format
+      - height
+      - width
+    FreeToolCheckYoutubeThumbnailResponse:
+      example:
+        checks:
+        - label: label
+          detail: detail
+          key: ratio
+          status: pass
+        - label: label
+          detail: detail
+          key: ratio
+          status: pass
+        ok: true
+      properties:
+        ok:
+          description: False when any check fails.
+          type: boolean
+        checks:
+          items:
+            $ref: '#/components/schemas/FreeToolCheckYoutubeThumbnailResponse_checks_inner'
+          type: array
     FreeToolCalculateAspectRatioRequest:
       example:
         width: 1602
@@ -20341,6 +20721,140 @@ components:
           type: integer
         height:
           type: integer
+    FreeToolGetVideoSpecsResponse_specs_inner_limits:
+      description: "The row as numbers, for checking a video."
+      example:
+        max_seconds: 6.027456183070403
+        warn_over_seconds: 1.4658129805029452
+        max_ratio: 5.637376656633329
+        min_ratio: 5.962133916683182
+        min_seconds: 0.8008281904610115
+        recommended_ratio: recommended_ratio
+        max_mb: 2.3021358869347655
+      properties:
+        min_seconds:
+          description: Shortest length. Null when the source states no figure.
+          nullable: true
+          type: number
+        max_seconds:
+          description: Longest length. Null when the source states no figure.
+          nullable: true
+          type: number
+        warn_over_seconds:
+          description: "Longer videos need a check (account type, reach), see `length`.\
+            \ Null when the source states no figure."
+          nullable: true
+          type: number
+        min_ratio:
+          description: Narrowest width / height. Null when the source states no figure.
+          nullable: true
+          type: number
+        max_ratio:
+          description: Widest width / height. Null when the source states no figure.
+          nullable: true
+          type: number
+        recommended_ratio:
+          description: "Recommended ratio, e.g. `9:16`."
+          nullable: true
+          type: string
+        max_mb:
+          description: Largest file in MB. Null when the source states no figure.
+          nullable: true
+          type: number
+    FreeToolGetVideoSpecsResponse_specs_inner:
+      example:
+        formats: formats
+        sources:
+        - https://openapi-generator.tech
+        - https://openapi-generator.tech
+        safe_zone: safe_zone
+        length: length
+        placement_key: placement_key
+        basis: basis
+        resolution: resolution
+        max_size: max_size
+        network: network
+        network_key: network_key
+        placement: placement
+        limits:
+          max_seconds: 6.027456183070403
+          warn_over_seconds: 1.4658129805029452
+          max_ratio: 5.637376656633329
+          min_ratio: 5.962133916683182
+          min_seconds: 0.8008281904610115
+          recommended_ratio: recommended_ratio
+          max_mb: 2.3021358869347655
+        ratio: ratio
+      properties:
+        network:
+          description: Network name.
+          type: string
+        network_key:
+          description: Key for `network`.
+          type: string
+        placement:
+          description: Placement; `(app)` and `(publishing API)` rows differ where
+            the network says so.
+          type: string
+        placement_key:
+          description: Key for `placement`.
+          type: string
+        ratio:
+          description: Aspect ratios as the source states them.
+          type: string
+        resolution:
+          description: "Resolution, frame rate and codec notes."
+          type: string
+        length:
+          description: Length limits.
+          type: string
+        max_size:
+          description: File size limit.
+          type: string
+        formats:
+          description: Container and codec formats.
+          type: string
+        safe_zone:
+          description: "Text safe zone, only where the network publishes one."
+          type: string
+        basis:
+          description: "`official` when the network itself states it, else how it\
+            \ was found."
+          type: string
+        sources:
+          description: URLs of the sources.
+          items:
+            format: uri
+            type: string
+          type: array
+        limits:
+          $ref: '#/components/schemas/FreeToolGetVideoSpecsResponse_specs_inner_limits'
+    FreeToolCheckYoutubeThumbnailResponse_checks_inner:
+      example:
+        label: label
+        detail: detail
+        key: ratio
+        status: pass
+      properties:
+        key:
+          enum:
+          - ratio
+          - width
+          - file_size
+          - format
+          type: string
+        label:
+          type: string
+        status:
+          description: "`check`: a format YouTube may accept but does not name."
+          enum:
+          - pass
+          - fail
+          - check
+          type: string
+        detail:
+          description: The value found and the requirement.
+          type: string
     FreeToolCalculateAspectRatioResponse_rounding:
       description: "Set when the calculated side is not a whole number: which side,\
         \ its exact value (2 decimals) and the rounded pixels returned."
