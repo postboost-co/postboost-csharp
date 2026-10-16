@@ -48,7 +48,7 @@ info:
     name: Commercial
     url: https://postboost.co/pages/terms
   title: PostBoost API
-  version: 1.43.0
+  version: 1.44.0
 servers:
 - description: Production
   url: https://postboost.co/app/api
@@ -8407,6 +8407,245 @@ paths:
       security: []
       summary: "Get the best times to post per network from published studies, with\
         \ sources"
+      tags:
+      - Free Tools
+      x-free-tool: true
+  /tools/social-media-content-calendar-generator:
+    post:
+      description: "Plan a social media content calendar and get it as CSV and ICS.\
+        \ The same logic as the free web tool at https://postboost.co/tools/social-media-content-calendar-generator.\
+        \ No account needed: call it without a token, or with any API token."
+      operationId: planContentCalendar
+      requestBody:
+        content:
+          application/json:
+            examples:
+              example-1:
+                value:
+                  start_date: 2026-11-02
+                  weeks: 1
+                  posts_per_week:
+                    instagram: 3
+                    linkedin: 2
+                  times:
+                    linkedin: 08:30
+                  pillars:
+                  - Tips
+                  - Product
+              example-2:
+                value:
+                  start_date: 2026-11-07
+                  weeks: 1
+                  posts_per_week:
+                    x: 8
+                    bluesky: 1
+                  times:
+                    x: 21:30
+                    bluesky: 09:00
+            schema:
+              $ref: '#/components/schemas/FreeToolPlanContentCalendarRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                example-1:
+                  value:
+                    end_date: 2026-11-08
+                    total: 5
+                    slots:
+                    - date: 2026-11-02
+                      weekday: Monday
+                      time: 08:30
+                      network: linkedin
+                      network_label: LinkedIn
+                      pillar: Tips
+                    - date: 2026-11-02
+                      weekday: Monday
+                      time: 10:00
+                      network: instagram
+                      network_label: Instagram
+                      pillar: Product
+                    - date: 2026-11-04
+                      weekday: Wednesday
+                      time: 10:00
+                      network: instagram
+                      network_label: Instagram
+                      pillar: Tips
+                    - date: 2026-11-05
+                      weekday: Thursday
+                      time: 08:30
+                      network: linkedin
+                      network_label: LinkedIn
+                      pillar: Product
+                    - date: 2026-11-06
+                      weekday: Friday
+                      time: 10:00
+                      network: instagram
+                      network_label: Instagram
+                      pillar: Tips
+                    csv: "﻿Date,Day,Time,Network,Pillar,Idea\r\n2026-11-02,Monday,08:30,LinkedIn,Tips,\r\
+                      \n2026-11-02,Monday,10:00,Instagram,Product,\r\n2026-11-04,Wednesday,10:00,Instagram,Tips,\r\
+                      \n2026-11-05,Thursday,08:30,LinkedIn,Product,\r\n2026-11-06,Friday,10:00,Instagram,Tips,\r\
+                      \n"
+                    ics: "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//PostBoost//Free\
+                      \ tools//EN\r\nCALSCALE:GREGORIAN\r\nMETHOD:PUBLISH\r\nX-WR-CALNAME:Social\
+                      \ media content calendar\r\nBEGIN:VEVENT\r\nUID:20261102T083000-linkedin@postboost.co\r\
+                      \nDTSTAMP:20261102T000000Z\r\nDTSTART:20261102T083000\r\nDTEND:20261102T084500\r\
+                      \nSUMMARY:LinkedIn: Tips\r\nEND:VEVENT\r\nBEGIN:VEVENT\r\nUID:20261102T100000-instagram@postboost.co\r\
+                      \nDTSTAMP:20261102T000000Z\r\nDTSTART:20261102T100000\r\nDTEND:20261102T101500\r\
+                      \nSUMMARY:Instagram: Product\r\nEND:VEVENT\r\nBEGIN:VEVENT\r\
+                      \nUID:20261104T100000-instagram@postboost.co\r\nDTSTAMP:20261102T000000Z\r\
+                      \nDTSTART:20261104T100000\r\nDTEND:20261104T101500\r\nSUMMARY:Instagram:\
+                      \ Tips\r\nEND:VEVENT\r\nBEGIN:VEVENT\r\nUID:20261105T083000-linkedin@postboost.co\r\
+                      \nDTSTAMP:20261102T000000Z\r\nDTSTART:20261105T083000\r\nDTEND:20261105T084500\r\
+                      \nSUMMARY:LinkedIn: Product\r\nEND:VEVENT\r\nBEGIN:VEVENT\r\n\
+                      UID:20261106T100000-instagram@postboost.co\r\nDTSTAMP:20261102T000000Z\r\
+                      \nDTSTART:20261106T100000\r\nDTEND:20261106T101500\r\nSUMMARY:Instagram:\
+                      \ Tips\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n"
+                example-2:
+                  value:
+                    end_date: 2026-11-13
+                    total: 9
+                    slots:
+                    - date: 2026-11-07
+                      weekday: Saturday
+                      time: 09:00
+                      network: bluesky
+                      network_label: Bluesky
+                      pillar: ""
+                    - date: 2026-11-07
+                      weekday: Saturday
+                      time: 18:30
+                      network: x
+                      network_label: X
+                      pillar: ""
+                    - date: 2026-11-07
+                      weekday: Saturday
+                      time: 21:30
+                      network: x
+                      network_label: X
+                      pillar: ""
+                    - date: 2026-11-08
+                      weekday: Sunday
+                      time: 21:30
+                      network: x
+                      network_label: X
+                      pillar: ""
+                    - date: 2026-11-09
+                      weekday: Monday
+                      time: 21:30
+                      network: x
+                      network_label: X
+                      pillar: ""
+                    - date: 2026-11-10
+                      weekday: Tuesday
+                      time: 21:30
+                      network: x
+                      network_label: X
+                      pillar: ""
+                    - date: 2026-11-11
+                      weekday: Wednesday
+                      time: 21:30
+                      network: x
+                      network_label: X
+                      pillar: ""
+                    - date: 2026-11-12
+                      weekday: Thursday
+                      time: 21:30
+                      network: x
+                      network_label: X
+                      pillar: ""
+                    - date: 2026-11-13
+                      weekday: Friday
+                      time: 21:30
+                      network: x
+                      network_label: X
+                      pillar: ""
+                    csv: "﻿Date,Day,Time,Network,Pillar,Idea\r\n2026-11-07,Saturday,09:00,Bluesky,,\r\
+                      \n2026-11-07,Saturday,18:30,X,,\r\n2026-11-07,Saturday,21:30,X,,\r\
+                      \n2026-11-08,Sunday,21:30,X,,\r\n2026-11-09,Monday,21:30,X,,\r\
+                      \n2026-11-10,Tuesday,21:30,X,,\r\n2026-11-11,Wednesday,21:30,X,,\r\
+                      \n2026-11-12,Thursday,21:30,X,,\r\n2026-11-13,Friday,21:30,X,,\r\
+                      \n"
+                    ics: "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//PostBoost//Free\
+                      \ tools//EN\r\nCALSCALE:GREGORIAN\r\nMETHOD:PUBLISH\r\nX-WR-CALNAME:Social\
+                      \ media content calendar\r\nBEGIN:VEVENT\r\nUID:20261107T090000-bluesky@postboost.co\r\
+                      \nDTSTAMP:20261107T000000Z\r\nDTSTART:20261107T090000\r\nDTEND:20261107T091500\r\
+                      \nSUMMARY:Bluesky post\r\nEND:VEVENT\r\nBEGIN:VEVENT\r\nUID:20261107T183000-x@postboost.co\r\
+                      \nDTSTAMP:20261107T000000Z\r\nDTSTART:20261107T183000\r\nDTEND:20261107T184500\r\
+                      \nSUMMARY:X post\r\nEND:VEVENT\r\nBEGIN:VEVENT\r\nUID:20261107T213000-x@postboost.co\r\
+                      \nDTSTAMP:20261107T000000Z\r\nDTSTART:20261107T213000\r\nDTEND:20261107T214500\r\
+                      \nSUMMARY:X post\r\nEND:VEVENT\r\nBEGIN:VEVENT\r\nUID:20261108T213000-x@postboost.co\r\
+                      \nDTSTAMP:20261107T000000Z\r\nDTSTART:20261108T213000\r\nDTEND:20261108T214500\r\
+                      \nSUMMARY:X post\r\nEND:VEVENT\r\nBEGIN:VEVENT\r\nUID:20261109T213000-x@postboost.co\r\
+                      \nDTSTAMP:20261107T000000Z\r\nDTSTART:20261109T213000\r\nDTEND:20261109T214500\r\
+                      \nSUMMARY:X post\r\nEND:VEVENT\r\nBEGIN:VEVENT\r\nUID:20261110T213000-x@postboost.co\r\
+                      \nDTSTAMP:20261107T000000Z\r\nDTSTART:20261110T213000\r\nDTEND:20261110T214500\r\
+                      \nSUMMARY:X post\r\nEND:VEVENT\r\nBEGIN:VEVENT\r\nUID:20261111T213000-x@postboost.co\r\
+                      \nDTSTAMP:20261107T000000Z\r\nDTSTART:20261111T213000\r\nDTEND:20261111T214500\r\
+                      \nSUMMARY:X post\r\nEND:VEVENT\r\nBEGIN:VEVENT\r\nUID:20261112T213000-x@postboost.co\r\
+                      \nDTSTAMP:20261107T000000Z\r\nDTSTART:20261112T213000\r\nDTEND:20261112T214500\r\
+                      \nSUMMARY:X post\r\nEND:VEVENT\r\nBEGIN:VEVENT\r\nUID:20261113T213000-x@postboost.co\r\
+                      \nDTSTAMP:20261107T000000Z\r\nDTSTART:20261113T213000\r\nDTEND:20261113T214500\r\
+                      \nSUMMARY:X post\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n"
+              schema:
+                $ref: '#/components/schemas/FreeToolPlanContentCalendarResponse'
+          description: The tool output.
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "413":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: The request body is larger than 128 KB.
+        "422":
+          $ref: '#/components/responses/ValidationError'
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: "Rate limit reached. Without a token: 30 calls per minute and\
+            \ 500 per UTC day per IP address (IPv6 per /64). With a token: 300 per\
+            \ minute per user; the Free plan also has 1,000 calls per UTC day, paid\
+            \ plans have no daily cap."
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            Retry-After:
+              description: Seconds until the limit resets.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+      security: []
+      summary: Plan a social media content calendar and get it as CSV and ICS
       tags:
       - Free Tools
       x-free-tool: true
@@ -16819,6 +17058,104 @@ components:
         per_account:
           description: Where to get times from your own accounts.
           type: string
+    FreeToolPlanContentCalendarRequest:
+      example:
+        times:
+          youtube: 10:00
+          gbp: 10:00
+          tiktok: 10:00
+          facebook: 10:00
+          x: 10:00
+          threads: 10:00
+          bluesky: 10:00
+          mastodon: 10:00
+          pinterest: 10:00
+          instagram: 10:00
+          linkedin: 10:00
+        pillars:
+        - pillars
+        - pillars
+        - pillars
+        - pillars
+        - pillars
+        weeks: 1
+        start_date: start_date
+        posts_per_week:
+          youtube: 9
+          gbp: 10
+          tiktok: 3
+          facebook: 2
+          x: 7
+          threads: 5
+          bluesky: 2
+          mastodon: 5
+          pinterest: 13
+          instagram: 8
+          linkedin: 8
+      properties:
+        start_date:
+          description: First day of the calendar (YYYY-MM-DD). Each week starts on
+            this weekday.
+          pattern: "^\\d{4}-\\d{2}-\\d{2}$"
+          type: string
+        weeks:
+          default: 4
+          maximum: 12
+          minimum: 1
+          type: integer
+        posts_per_week:
+          $ref: '#/components/schemas/FreeToolPlanContentCalendarRequest_posts_per_week'
+        times:
+          $ref: '#/components/schemas/FreeToolPlanContentCalendarRequest_times'
+        pillars:
+          description: "Content themes, rotated over the posts in date order."
+          items:
+            maxLength: 40
+            minLength: 1
+            type: string
+          maxItems: 6
+          type: array
+      required:
+      - posts_per_week
+      - start_date
+    FreeToolPlanContentCalendarResponse:
+      example:
+        end_date: end_date
+        total: 0
+        slots:
+        - date: date
+          network_label: network_label
+          pillar: pillar
+          weekday: weekday
+          time: time
+          network: network
+        - date: date
+          network_label: network_label
+          pillar: pillar
+          weekday: weekday
+          time: time
+          network: network
+        csv: csv
+        ics: ics
+      properties:
+        end_date:
+          description: Last day of the calendar (YYYY-MM-DD).
+          type: string
+        total:
+          description: Number of posts planned.
+          type: integer
+        slots:
+          items:
+            $ref: '#/components/schemas/FreeToolPlanContentCalendarResponse_slots_inner'
+          type: array
+        csv:
+          description: "The calendar as CSV (UTF-8 with BOM): Date, Day, Time, Network,\
+            \ Pillar, Idea."
+          type: string
+        ics:
+          description: "The calendar as an iCalendar file: one 15-minute event per\
+            \ post, in floating local time."
+          type: string
     FreeToolGenerateHashtagsRequest:
       example:
         workspace: workspace
@@ -21416,6 +21753,161 @@ components:
               type: string
             type: array
           type: array
+    FreeToolPlanContentCalendarRequest_posts_per_week:
+      description: Posts per week for each network you plan for (0 or missing = none).
+      example:
+        youtube: 9
+        gbp: 10
+        tiktok: 3
+        facebook: 2
+        x: 7
+        threads: 5
+        bluesky: 2
+        mastodon: 5
+        pinterest: 13
+        instagram: 8
+        linkedin: 8
+      properties:
+        instagram:
+          default: 0
+          maximum: 14
+          minimum: 0
+          type: integer
+        facebook:
+          default: 0
+          maximum: 14
+          minimum: 0
+          type: integer
+        linkedin:
+          default: 0
+          maximum: 14
+          minimum: 0
+          type: integer
+        x:
+          default: 0
+          maximum: 14
+          minimum: 0
+          type: integer
+        tiktok:
+          default: 0
+          maximum: 14
+          minimum: 0
+          type: integer
+        youtube:
+          default: 0
+          maximum: 14
+          minimum: 0
+          type: integer
+        pinterest:
+          default: 0
+          maximum: 14
+          minimum: 0
+          type: integer
+        threads:
+          default: 0
+          maximum: 14
+          minimum: 0
+          type: integer
+        bluesky:
+          default: 0
+          maximum: 14
+          minimum: 0
+          type: integer
+        mastodon:
+          default: 0
+          maximum: 14
+          minimum: 0
+          type: integer
+        gbp:
+          default: 0
+          maximum: 14
+          minimum: 0
+          type: integer
+    FreeToolPlanContentCalendarRequest_times:
+      description: "Posting time per network (HH:MM, local time). A second post on\
+        \ the same day (over 7 a week) goes 3 hours later, or 3 hours earlier if later\
+        \ passes midnight."
+      example:
+        youtube: 10:00
+        gbp: 10:00
+        tiktok: 10:00
+        facebook: 10:00
+        x: 10:00
+        threads: 10:00
+        bluesky: 10:00
+        mastodon: 10:00
+        pinterest: 10:00
+        instagram: 10:00
+        linkedin: 10:00
+      properties:
+        instagram:
+          default: 10:00
+          pattern: "^([01]\\d|2[0-3]):[0-5]\\d$"
+          type: string
+        facebook:
+          default: 10:00
+          pattern: "^([01]\\d|2[0-3]):[0-5]\\d$"
+          type: string
+        linkedin:
+          default: 10:00
+          pattern: "^([01]\\d|2[0-3]):[0-5]\\d$"
+          type: string
+        x:
+          default: 10:00
+          pattern: "^([01]\\d|2[0-3]):[0-5]\\d$"
+          type: string
+        tiktok:
+          default: 10:00
+          pattern: "^([01]\\d|2[0-3]):[0-5]\\d$"
+          type: string
+        youtube:
+          default: 10:00
+          pattern: "^([01]\\d|2[0-3]):[0-5]\\d$"
+          type: string
+        pinterest:
+          default: 10:00
+          pattern: "^([01]\\d|2[0-3]):[0-5]\\d$"
+          type: string
+        threads:
+          default: 10:00
+          pattern: "^([01]\\d|2[0-3]):[0-5]\\d$"
+          type: string
+        bluesky:
+          default: 10:00
+          pattern: "^([01]\\d|2[0-3]):[0-5]\\d$"
+          type: string
+        mastodon:
+          default: 10:00
+          pattern: "^([01]\\d|2[0-3]):[0-5]\\d$"
+          type: string
+        gbp:
+          default: 10:00
+          pattern: "^([01]\\d|2[0-3]):[0-5]\\d$"
+          type: string
+    FreeToolPlanContentCalendarResponse_slots_inner:
+      example:
+        date: date
+        network_label: network_label
+        pillar: pillar
+        weekday: weekday
+        time: time
+        network: network
+      properties:
+        date:
+          description: YYYY-MM-DD
+          type: string
+        weekday:
+          type: string
+        time:
+          description: "HH:MM, local time"
+          type: string
+        network:
+          type: string
+        network_label:
+          type: string
+        pillar:
+          description: Empty when no pillars were given.
+          type: string
     FreeToolGenerateHooksResponse_hooks_inner:
       example:
         text: text

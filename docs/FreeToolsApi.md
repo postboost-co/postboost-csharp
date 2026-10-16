@@ -26,6 +26,7 @@ All URIs are relative to *https://postboost.co/app/api*
 | [**GetImageSizes**](FreeToolsApi.md#getimagesizes) | **GET** /tools/social-media-image-sizes | Get social media image sizes per network, each with its source |
 | [**GetVideoSpecs**](FreeToolsApi.md#getvideospecs) | **GET** /tools/social-media-video-specs | Get social media video ratios, resolutions, lengths and file size limits per network, with sources |
 | [**ListFreeTools**](FreeToolsApi.md#listfreetools) | **GET** /tools | List the free tools |
+| [**PlanContentCalendar**](FreeToolsApi.md#plancontentcalendar) | **POST** /tools/social-media-content-calendar-generator | Plan a social media content calendar and get it as CSV and ICS |
 | [**PreviewPost**](FreeToolsApi.md#previewpost) | **POST** /tools/social-media-post-preview | Preview where a post folds and when its image is cropped on Instagram, X, LinkedIn and Facebook |
 | [**SplitThread**](FreeToolsApi.md#splitthread) | **POST** /tools/x-thread-maker | Split long text into a thread |
 
@@ -2135,6 +2136,101 @@ No authorization required
 |-------------|-------------|------------------|
 | **200** | The free tools. |  * X-RateLimit-Limit - Calls allowed in the limit window closest to running out. <br>  * X-RateLimit-Remaining - Calls left in that window. <br>  |
 | **401** |  |  -  |
+| **429** | Rate limit reached. Without a token: 30 calls per minute and 500 per UTC day per IP address (IPv6 per /64). With a token: 300 per minute per user; the Free plan also has 1,000 calls per UTC day, paid plans have no daily cap. |  * X-RateLimit-Limit - Calls allowed in the limit window closest to running out. <br>  * X-RateLimit-Remaining - Calls left in that window. <br>  * Retry-After - Seconds until the limit resets. <br>  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+<a id="plancontentcalendar"></a>
+# **PlanContentCalendar**
+> FreeToolPlanContentCalendarResponse PlanContentCalendar (FreeToolPlanContentCalendarRequest freeToolPlanContentCalendarRequest)
+
+Plan a social media content calendar and get it as CSV and ICS
+
+Plan a social media content calendar and get it as CSV and ICS. The same logic as the free web tool at https://postboost.co/tools/social-media-content-calendar-generator. No account needed: call it without a token, or with any API token.
+
+### Example
+```csharp
+using System.Collections.Generic;
+using System.Diagnostics;
+using PostBoost.Client.Api;
+using PostBoost.Client.Client;
+using PostBoost.Client.Model;
+
+namespace Example
+{
+    public class PlanContentCalendarExample
+    {
+        public static void Main()
+        {
+            Configuration config = new Configuration();
+            config.BasePath = "https://postboost.co/app/api";
+            var apiInstance = new FreeToolsApi(config);
+            var freeToolPlanContentCalendarRequest = new FreeToolPlanContentCalendarRequest(); // FreeToolPlanContentCalendarRequest | 
+
+            try
+            {
+                // Plan a social media content calendar and get it as CSV and ICS
+                FreeToolPlanContentCalendarResponse result = apiInstance.PlanContentCalendar(freeToolPlanContentCalendarRequest);
+                Debug.WriteLine(result);
+            }
+            catch (ApiException  e)
+            {
+                Debug.Print("Exception when calling FreeToolsApi.PlanContentCalendar: " + e.Message);
+                Debug.Print("Status Code: " + e.ErrorCode);
+                Debug.Print(e.StackTrace);
+            }
+        }
+    }
+}
+```
+
+#### Using the PlanContentCalendarWithHttpInfo variant
+This returns an ApiResponse object which contains the response data, status code and headers.
+
+```csharp
+try
+{
+    // Plan a social media content calendar and get it as CSV and ICS
+    ApiResponse<FreeToolPlanContentCalendarResponse> response = apiInstance.PlanContentCalendarWithHttpInfo(freeToolPlanContentCalendarRequest);
+    Debug.Write("Status Code: " + response.StatusCode);
+    Debug.Write("Response Headers: " + response.Headers);
+    Debug.Write("Response Body: " + response.Data);
+}
+catch (ApiException e)
+{
+    Debug.Print("Exception when calling FreeToolsApi.PlanContentCalendarWithHttpInfo: " + e.Message);
+    Debug.Print("Status Code: " + e.ErrorCode);
+    Debug.Print(e.StackTrace);
+}
+```
+
+### Parameters
+
+| Name | Type | Description | Notes |
+|------|------|-------------|-------|
+| **freeToolPlanContentCalendarRequest** | [**FreeToolPlanContentCalendarRequest**](FreeToolPlanContentCalendarRequest.md) |  |  |
+
+### Return type
+
+[**FreeToolPlanContentCalendarResponse**](FreeToolPlanContentCalendarResponse.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | The tool output. |  * X-RateLimit-Limit - Calls allowed in the limit window closest to running out. <br>  * X-RateLimit-Remaining - Calls left in that window. <br>  |
+| **401** |  |  -  |
+| **413** | The request body is larger than 128 KB. |  -  |
+| **422** |  |  -  |
 | **429** | Rate limit reached. Without a token: 30 calls per minute and 500 per UTC day per IP address (IPv6 per /64). With a token: 300 per minute per user; the Free plan also has 1,000 calls per UTC day, paid plans have no daily cap. |  * X-RateLimit-Limit - Calls allowed in the limit window closest to running out. <br>  * X-RateLimit-Remaining - Calls left in that window. <br>  * Retry-After - Seconds until the limit resets. <br>  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
