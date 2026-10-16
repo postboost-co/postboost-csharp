@@ -48,7 +48,7 @@ info:
     name: Commercial
     url: https://postboost.co/pages/terms
   title: PostBoost API
-  version: 1.41.0
+  version: 1.42.0
 servers:
 - description: Production
   url: https://postboost.co/app/api
@@ -6817,6 +6817,122 @@ paths:
               style: simple
       security: []
       summary: "Clean AI-written text: dashes, quotes, invisible characters, markdown"
+      tags:
+      - Free Tools
+      x-free-tool: true
+  /tools/instagram-line-break-generator:
+    post:
+      description: "Keep blank lines in an Instagram caption with spacer lines, and\
+        \ count it. The same logic as the free web tool at https://postboost.co/tools/instagram-line-break-generator.\
+        \ No account needed: call it without a token, or with any API token."
+      operationId: formatInstagramCaption
+      requestBody:
+        content:
+          application/json:
+            examples:
+              example-1:
+                value:
+                  text: "Line one\n\n\nLine two  "
+              example-2:
+                value:
+                  text: |-
+                    New roast today
+
+                    Link in bio #coffee #latte
+                  spacer: dot
+                  hashtags_to_end: true
+            schema:
+              $ref: '#/components/schemas/FreeToolFormatInstagramCaptionRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                example-1:
+                  value:
+                    text: |-
+                      Line one
+                      ⠀
+                      ⠀
+                      Line two
+                    count: 21
+                    limit: 2200
+                    over: false
+                    hashtags: 0
+                    max_hashtags: 5
+                example-2:
+                  value:
+                    text: |-
+                      New roast today
+                      .
+                      Link in bio
+                      .
+                      .
+                      .
+                      #coffee #latte
+                    count: 50
+                    limit: 2200
+                    over: false
+                    hashtags: 2
+                    max_hashtags: 5
+              schema:
+                $ref: '#/components/schemas/FreeToolFormatInstagramCaptionResponse'
+          description: The tool output.
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "413":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: The request body is larger than 128 KB.
+        "422":
+          $ref: '#/components/responses/ValidationError'
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: "Rate limit reached. Without a token: 30 calls per minute and\
+            \ 500 per UTC day per IP address (IPv6 per /64). With a token: 300 per\
+            \ minute per user; the Free plan also has 1,000 calls per UTC day, paid\
+            \ plans have no daily cap."
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            Retry-After:
+              description: Seconds until the limit resets.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+      security: []
+      summary: "Keep blank lines in an Instagram caption with spacer lines, and count\
+        \ it"
       tags:
       - Free Tools
       x-free-tool: true
@@ -16021,6 +16137,57 @@ components:
           items:
             $ref: '#/components/schemas/FreeToolCleanTextResponse_flags_inner'
           type: array
+    FreeToolFormatInstagramCaptionRequest:
+      example:
+        spacer: braille
+        text: text
+        hashtags_to_end: false
+      properties:
+        text:
+          maxLength: 10000
+          type: string
+        spacer:
+          default: braille
+          description: "What fills a blank line: braille (U+2800 Braille blank, shows\
+            \ as an empty line) or dot (a line with \".\")."
+          enum:
+          - braille
+          - dot
+          type: string
+        hashtags_to_end:
+          default: false
+          description: "Move the hashtags that end a line to the bottom, after three\
+            \ spacer lines. A hashtag inside a sentence stays where it is."
+          type: boolean
+      required:
+      - text
+    FreeToolFormatInstagramCaptionResponse:
+      example:
+        over: true
+        max_hashtags: 5
+        hashtags: 1
+        count: 0
+        limit: 6
+        text: text
+      properties:
+        text:
+          description: "The caption with spacer lines, ready to paste into Instagram."
+          type: string
+        count:
+          description: "Characters, counted like the PostBoost composer counts an\
+            \ Instagram caption."
+          type: integer
+        limit:
+          description: Instagram caption limit.
+          type: integer
+        over:
+          type: boolean
+        hashtags:
+          description: Hashtags in the caption.
+          type: integer
+        max_hashtags:
+          description: Hashtags PostBoost allows per Instagram post.
+          type: integer
     FreeToolBuildUtmUrlRequest:
       example:
         utm_term: utm_term
