@@ -48,7 +48,7 @@ info:
     name: Commercial
     url: https://postboost.co/pages/terms
   title: PostBoost API
-  version: 1.42.0
+  version: 1.43.0
 servers:
 - description: Production
   url: https://postboost.co/app/api
@@ -9559,6 +9559,8 @@ components:
           which YouTube does not allow, so the upload will fail.
         - `threads_too_long`: a Threads post is over 500 characters as Threads counts them
           (each emoji counts as its UTF-8 bytes, most as 4), so Threads will reject it.
+        - `instagram_image_ratio`: an image in an Instagram feed post is outside 4:5 to 1.91:1
+          (for example a 3:4 phone photo), so Instagram will reject it. Crop it to 4:5.
       example:
         code: ai_media_without_disclosure
         account_id: 6
@@ -9571,6 +9573,7 @@ components:
           - youtube_description_too_long
           - youtube_forbidden_characters
           - threads_too_long
+          - instagram_image_ratio
           type: string
         account_id:
           description: The account the warning is about; null when it is about the
