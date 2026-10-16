@@ -48,7 +48,7 @@ info:
     name: Commercial
     url: https://postboost.co/pages/terms
   title: PostBoost API
-  version: 1.46.0
+  version: 1.49.0
 servers:
 - description: Production
   url: https://postboost.co/app/api
@@ -6936,6 +6936,270 @@ paths:
       tags:
       - Free Tools
       x-free-tool: true
+  /tools/post-readability-checker:
+    post:
+      description: "Check the readability of a post: Flesch scores, long sentences\
+        \ and passive hints. The same logic as the free web tool at https://postboost.co/tools/post-readability-checker.\
+        \ No account needed: call it without a token, or with any API token."
+      operationId: checkReadability
+      requestBody:
+        content:
+          application/json:
+            examples:
+              example-1:
+                value:
+                  text: "The cat sat on the mat. 🐱 #cats"
+              example-2:
+                value:
+                  text: The Australian platypus is seemingly a hybrid of a mammal
+                    and reptilian creature. It was described in 1799.
+            schema:
+              $ref: '#/components/schemas/FreeToolCheckReadabilityRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                example-1:
+                  value:
+                    supported: true
+                    note: null
+                    flesch_reading_ease: 116.1
+                    flesch_kincaid_grade: -1.5
+                    sentences: 1
+                    words: 6
+                    syllables: 6
+                    avg_words_per_sentence: 6
+                    long_sentences: []
+                    passive_hints: 0
+                    emoji_count: 1
+                    hashtag_count: 1
+                    suggestions: []
+                example-2:
+                  value:
+                    supported: true
+                    note: null
+                    flesch_reading_ease: 56.7
+                    flesch_kincaid_grade: 7.6
+                    sentences: 2
+                    words: 18
+                    syllables: 30
+                    avg_words_per_sentence: 9
+                    long_sentences: []
+                    passive_hints: 1
+                    emoji_count: 0
+                    hashtag_count: 0
+                    suggestions:
+                    - "Reading ease 56.7 is harder than plain English: use shorter\
+                      \ words and sentences to reach 60 or more."
+                    - "1 possible passive phrase: check whether an active verb reads\
+                      \ better."
+              schema:
+                $ref: '#/components/schemas/FreeToolCheckReadabilityResponse'
+          description: The tool output.
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "413":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: The request body is larger than 128 KB.
+        "422":
+          $ref: '#/components/responses/ValidationError'
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: "Rate limit reached. Without a token: 30 calls per minute and\
+            \ 500 per UTC day per IP address (IPv6 per /64). With a token: 300 per\
+            \ minute per user; the Free plan also has 1,000 calls per UTC day, paid\
+            \ plans have no daily cap."
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            Retry-After:
+              description: Seconds until the limit resets.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+      security: []
+      summary: "Check the readability of a post: Flesch scores, long sentences and\
+        \ passive hints"
+      tags:
+      - Free Tools
+      x-free-tool: true
+  /tools/social-media-emoji-picker:
+    post:
+      description: "Search emoji by name or keyword, to copy and paste into a post.\
+        \ The same logic as the free web tool at https://postboost.co/tools/social-media-emoji-picker.\
+        \ No account needed: call it without a token, or with any API token."
+      operationId: searchEmoji
+      requestBody:
+        content:
+          application/json:
+            examples:
+              example-1:
+                value:
+                  query: fire
+                  limit: 2
+              example-2:
+                value:
+                  query: party
+                  category: Activities
+                  limit: 2
+            schema:
+              $ref: '#/components/schemas/FreeToolSearchEmojiRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                example-1:
+                  value:
+                    results:
+                    - emoji: 🔥
+                      name: fire
+                      keywords:
+                      - af
+                      - burn
+                      - flame
+                      - hot
+                      - lit
+                      - litaf
+                      - tool
+                      category: Travel & Places
+                      unicode_version: "0.6"
+                    - emoji: 🎆
+                      name: fireworks
+                      keywords:
+                      - boom
+                      - celebration
+                      - entertainment
+                      - yolo
+                      category: Activities
+                      unicode_version: "0.6"
+                    total: 11
+                example-2:
+                  value:
+                    results:
+                    - emoji: 🎉
+                      name: party popper
+                      keywords:
+                      - awesome
+                      - birthday
+                      - celebrate
+                      - celebration
+                      - excited
+                      - hooray
+                      - party
+                      - popper
+                      - tada
+                      - woohoo
+                      category: Activities
+                      unicode_version: "0.6"
+                    - emoji: 🪅
+                      name: piñata
+                      keywords:
+                      - candy
+                      - celebrate
+                      - celebration
+                      - cinco
+                      - de
+                      - festive
+                      - mayo
+                      - party
+                      - pinada
+                      - pinata
+                      category: Activities
+                      unicode_version: "13.0"
+                    total: 4
+              schema:
+                $ref: '#/components/schemas/FreeToolSearchEmojiResponse'
+          description: The tool output.
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "413":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: The request body is larger than 128 KB.
+        "422":
+          $ref: '#/components/responses/ValidationError'
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: "Rate limit reached. Without a token: 30 calls per minute and\
+            \ 500 per UTC day per IP address (IPv6 per /64). With a token: 300 per\
+            \ minute per user; the Free plan also has 1,000 calls per UTC day, paid\
+            \ plans have no daily cap."
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            Retry-After:
+              description: Seconds until the limit resets.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+      security: []
+      summary: "Search emoji by name or keyword, to copy and paste into a post"
+      tags:
+      - Free Tools
+      x-free-tool: true
   /tools/utm-builder:
     post:
       description: "Build a UTM-tagged campaign URL. The same logic as the free web\
@@ -8298,6 +8562,177 @@ paths:
       security: []
       summary: "Calculate an aspect ratio, or the missing side of an image at a given\
         \ ratio"
+      tags:
+      - Free Tools
+      x-free-tool: true
+  /tools/x-api-cost-calculator:
+    post:
+      description: "Calculate the monthly X API cost. The same logic as the free web\
+        \ tool at https://postboost.co/tools/x-api-cost-calculator. No account needed:\
+        \ call it without a token, or with any API token."
+      operationId: calculateXApiCost
+      requestBody:
+        content:
+          application/json:
+            examples:
+              example-1:
+                value:
+                  posts: 1000
+                  link_share: 20
+              example-2:
+                value:
+                  posts: 300
+                  link_share: 10
+                  replies: 200
+                  post_reads: 50000
+                  user_reads: 2000
+                  owned_reads: 10000
+            schema:
+              $ref: '#/components/schemas/FreeToolCalculateXApiCostRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                example-1:
+                  value:
+                    line_items:
+                    - key: posts
+                      label: Posts without a link
+                      count: 800
+                      unit_usd: 0.015
+                      cost_usd: 12
+                    - key: link_posts
+                      label: Posts with a link
+                      count: 200
+                      unit_usd: 0.2
+                      cost_usd: 40
+                    - key: replies
+                      label: Summoned replies
+                      count: 0
+                      unit_usd: 0.01
+                      cost_usd: 0
+                    - key: post_reads
+                      label: Post reads
+                      count: 0
+                      unit_usd: 0.005
+                      cost_usd: 0
+                    - key: user_reads
+                      label: User reads
+                      count: 0
+                      unit_usd: 0.01
+                      cost_usd: 0
+                    - key: owned_reads
+                      label: Owned reads
+                      count: 0
+                      unit_usd: 0.001
+                      cost_usd: 0
+                    total_usd: 52
+                    link_premium_usd: 37
+                    notes:
+                    - X bills pay-per-use from prepaid credits; there is no free tier.
+                    - "X lets you set an optional spending limit, so a busy month\
+                      \ cannot use up your credits."
+                    prices_last_verified: 2026-10-15
+                    source: https://docs.x.com/x-api/getting-started/pricing
+                example-2:
+                  value:
+                    line_items:
+                    - key: posts
+                      label: Posts without a link
+                      count: 270
+                      unit_usd: 0.015
+                      cost_usd: 4.05
+                    - key: link_posts
+                      label: Posts with a link
+                      count: 30
+                      unit_usd: 0.2
+                      cost_usd: 6
+                    - key: replies
+                      label: Summoned replies
+                      count: 200
+                      unit_usd: 0.01
+                      cost_usd: 2
+                    - key: post_reads
+                      label: Post reads
+                      count: 50000
+                      unit_usd: 0.005
+                      cost_usd: 250
+                    - key: user_reads
+                      label: User reads
+                      count: 2000
+                      unit_usd: 0.01
+                      cost_usd: 20
+                    - key: owned_reads
+                      label: Owned reads
+                      count: 10000
+                      unit_usd: 0.001
+                      cost_usd: 10
+                    total_usd: 292.05
+                    link_premium_usd: 5.55
+                    notes:
+                    - X bills pay-per-use from prepaid credits; there is no free tier.
+                    - "X lets you set an optional spending limit, so a busy month\
+                      \ cannot use up your credits."
+                    prices_last_verified: 2026-10-15
+                    source: https://docs.x.com/x-api/getting-started/pricing
+              schema:
+                $ref: '#/components/schemas/FreeToolCalculateXApiCostResponse'
+          description: The tool output.
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "413":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: The request body is larger than 128 KB.
+        "422":
+          $ref: '#/components/responses/ValidationError'
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: "Rate limit reached. Without a token: 30 calls per minute and\
+            \ 500 per UTC day per IP address (IPv6 per /64). With a token: 300 per\
+            \ minute per user; the Free plan also has 1,000 calls per UTC day, paid\
+            \ plans have no daily cap."
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            Retry-After:
+              description: Seconds until the limit resets.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+      security: []
+      summary: Calculate the monthly X API cost
       tags:
       - Free Tools
       x-free-tool: true
@@ -16576,6 +17011,155 @@ components:
         max_hashtags:
           description: Hashtags PostBoost allows per Instagram post.
           type: integer
+    FreeToolCheckReadabilityRequest:
+      example:
+        language: en
+        text: text
+      properties:
+        text:
+          description: The post text.
+          maxLength: 10000
+          minLength: 1
+          type: string
+        language:
+          default: en
+          description: "Language code. Only English (`en`) is scored; other languages\
+            \ return `supported: false` and no scores."
+          pattern: "^[A-Za-z]{2}(-[A-Za-z]{2})?$"
+          type: string
+      required:
+      - text
+    FreeToolCheckReadabilityResponse:
+      example:
+        note: note
+        passive_hints: 3
+        sentences: 1
+        words: 5
+        hashtag_count: 4
+        emoji_count: 2
+        flesch_kincaid_grade: 6.027456183070403
+        syllables: 5
+        flesch_reading_ease: 0.8008281904610115
+        suggestions:
+        - suggestions
+        - suggestions
+        long_sentences:
+        - words: 9
+          index: 7
+          excerpt: excerpt
+        - words: 9
+          index: 7
+          excerpt: excerpt
+        supported: true
+        avg_words_per_sentence: 2.3021358869347655
+      properties:
+        supported:
+          description: "False for a language other than English: no scores, hints\
+            \ or suggestions."
+          type: boolean
+        note:
+          description: "Why the text was not scored, or null."
+          nullable: true
+          type: string
+        flesch_reading_ease:
+          description: "Flesch reading ease, one decimal: higher is easier, 60-70\
+            \ is plain English. Null when not scored."
+          nullable: true
+          type: number
+        flesch_kincaid_grade:
+          description: "Flesch-Kincaid grade level, one decimal: the US school grade\
+            \ that can read the text. Null when not scored."
+          nullable: true
+          type: number
+        sentences:
+          description: Sentences with at least one word.
+          type: integer
+        words:
+          description: "Words, not counting hashtags, @mentions, links and emoji."
+          type: integer
+        syllables:
+          description: "Syllables, by the heuristic described in the docs."
+          type: integer
+        avg_words_per_sentence:
+          description: "Words per sentence, one decimal."
+          type: number
+        long_sentences:
+          description: Sentences of more than 25 words.
+          items:
+            $ref: '#/components/schemas/FreeToolCheckReadabilityResponse_long_sentences_inner'
+          type: array
+        passive_hints:
+          description: "Possible passive phrases (\"was written\", \"is being reviewed\"\
+            ). A hint, not a grammar check."
+          type: integer
+        emoji_count:
+          description: Emoji (Extended_Pictographic characters).
+          type: integer
+        hashtag_count:
+          description: Hashtags.
+          type: integer
+        suggestions:
+          description: "Plain fixes, e.g. which sentence to split. Empty when the\
+            \ text reads easily."
+          items:
+            type: string
+          type: array
+    FreeToolSearchEmojiRequest:
+      example:
+        query: ""
+        limit: 8
+        category: Smileys & Emotion
+      properties:
+        query:
+          default: ""
+          description: "Words to look for in the emoji name and keywords, e.g. `fire`\
+            \ or `party`. Empty lists the category in Unicode order."
+          maxLength: 50
+          type: string
+        category:
+          description: Only emoji of this Unicode category.
+          enum:
+          - Smileys & Emotion
+          - People & Body
+          - Animals & Nature
+          - Food & Drink
+          - Travel & Places
+          - Activities
+          - Objects
+          - Symbols
+          - Flags
+          type: string
+        limit:
+          default: 30
+          maximum: 100
+          minimum: 1
+          type: integer
+    FreeToolSearchEmojiResponse:
+      example:
+        total: 0
+        results:
+        - emoji: emoji
+          keywords:
+          - keywords
+          - keywords
+          unicode_version: unicode_version
+          name: name
+          category: category
+        - emoji: emoji
+          keywords:
+          - keywords
+          - keywords
+          unicode_version: unicode_version
+          name: name
+          category: category
+      properties:
+        results:
+          items:
+            $ref: '#/components/schemas/FreeToolSearchEmojiResponse_results_inner'
+          type: array
+        total:
+          description: Matches before `limit`.
+          type: integer
     FreeToolBuildUtmUrlRequest:
       example:
         utm_term: utm_term
@@ -17230,6 +17814,96 @@ components:
           items:
             $ref: '#/components/schemas/FreeToolCalculateAspectRatioResponse_matches_inner'
           type: array
+    FreeToolCalculateXApiCostRequest:
+      example:
+        link_share: 60
+        replies: 146581298
+        user_reads: 563737665
+        post_reads: 596213391
+        posts: 80082819
+        owned_reads: 230213588
+      properties:
+        posts:
+          default: 0
+          description: "Posts created per month, with or without a link."
+          maximum: 1000000000
+          minimum: 0
+          type: integer
+        link_share:
+          default: 0
+          description: Percent of those posts that contain a URL (billed at the link-post
+            price).
+          maximum: 100
+          minimum: 0
+          type: integer
+        replies:
+          default: 0
+          description: Summoned replies per month.
+          maximum: 1000000000
+          minimum: 0
+          type: integer
+        post_reads:
+          default: 0
+          description: Posts read per month.
+          maximum: 1000000000
+          minimum: 0
+          type: integer
+        user_reads:
+          default: 0
+          description: Users read per month.
+          maximum: 1000000000
+          minimum: 0
+          type: integer
+        owned_reads:
+          default: 0
+          description: "Owned resources read per month (your own posts, followers\
+            \ and so on)."
+          maximum: 1000000000
+          minimum: 0
+          type: integer
+    FreeToolCalculateXApiCostResponse:
+      example:
+        link_premium_usd: 5.637376656633329
+        prices_last_verified: 2000-01-23
+        notes:
+        - notes
+        - notes
+        total_usd: 5.962133916683182
+        line_items:
+        - cost_usd: 1.4658129805029452
+          count: 0
+          unit_usd: 6.027456183070403
+          label: label
+          key: posts
+        - cost_usd: 1.4658129805029452
+          count: 0
+          unit_usd: 6.027456183070403
+          label: label
+          key: posts
+        source: https://openapi-generator.tech
+      properties:
+        line_items:
+          description: "One row per billed resource: count × unit price."
+          items:
+            $ref: '#/components/schemas/FreeToolCalculateXApiCostResponse_line_items_inner'
+          type: array
+        total_usd:
+          description: Sum of every line item.
+          type: number
+        link_premium_usd:
+          description: What the link posts cost on top of the plain post price.
+          type: number
+        notes:
+          items:
+            type: string
+          type: array
+        prices_last_verified:
+          description: When the prices were last checked against the source.
+          format: date
+          type: string
+        source:
+          format: uri
+          type: string
     FreeToolGetBestTimesToPostResponse:
       example:
         sources:
@@ -21526,6 +22200,46 @@ components:
           type: integer
         length:
           type: integer
+    FreeToolCheckReadabilityResponse_long_sentences_inner:
+      example:
+        words: 9
+        index: 7
+        excerpt: excerpt
+      properties:
+        index:
+          description: "Sentence number, from 1."
+          type: integer
+        words:
+          type: integer
+        excerpt:
+          description: The first 8 words of the sentence.
+          type: string
+    FreeToolSearchEmojiResponse_results_inner:
+      example:
+        emoji: emoji
+        keywords:
+        - keywords
+        - keywords
+        unicode_version: unicode_version
+        name: name
+        category: category
+      properties:
+        emoji:
+          type: string
+        name:
+          description: Unicode name (emoji-test.txt).
+          type: string
+        keywords:
+          description: CLDR English keywords.
+          items:
+            type: string
+          type: array
+        category:
+          type: string
+        unicode_version:
+          description: "Emoji version the emoji was added in (emoji-test.txt, e.g.\
+            \ 0.6 = Unicode 6.0, 15.1)."
+          type: string
     FreeToolGenerateQrCodeRequest_utm:
       description: "UTM tags added to an http(s) link, the same way as buildUtmUrl."
       example:
@@ -22009,6 +22723,31 @@ components:
         exact:
           description: False when no preset has the same ratio and these are the nearest.
           type: boolean
+    FreeToolCalculateXApiCostResponse_line_items_inner:
+      example:
+        cost_usd: 1.4658129805029452
+        count: 0
+        unit_usd: 6.027456183070403
+        label: label
+        key: posts
+      properties:
+        key:
+          enum:
+          - posts
+          - link_posts
+          - replies
+          - post_reads
+          - user_reads
+          - owned_reads
+          type: string
+        label:
+          type: string
+        count:
+          type: integer
+        unit_usd:
+          type: number
+        cost_usd:
+          type: number
     FreeToolGetBestTimesToPostResponse_networks_inner:
       example:
         columns:
