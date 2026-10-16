@@ -48,7 +48,7 @@ info:
     name: Commercial
     url: https://postboost.co/pages/terms
   title: PostBoost API
-  version: 1.31.0
+  version: 1.32.0
 servers:
 - description: Production
   url: https://postboost.co/app/api
@@ -6425,6 +6425,188 @@ paths:
               style: simple
       security: []
       summary: "Format a LinkedIn post with bold, italic and lists"
+      tags:
+      - Free Tools
+      x-free-tool: true
+  /tools/social-media-post-preview:
+    post:
+      description: "Preview where a post folds and when its image is cropped on Instagram,\
+        \ X, LinkedIn and Facebook. The same logic as the free web tool at https://postboost.co/tools/social-media-post-preview.\
+        \ No account needed: call it without a token, or with any API token."
+      operationId: previewPost
+      requestBody:
+        content:
+          application/json:
+            examples:
+              example-1:
+                value:
+                  text: "New feature: schedule a month of posts in one sitting."
+              example-2:
+                value:
+                  text: |-
+                    Big news
+                    We moved
+                    New address inside
+                    See you there
+                  instagram_ratio: 4:5
+                  image_width: 1600
+                  image_height: 900
+            schema:
+              $ref: '#/components/schemas/FreeToolPreviewPostRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                example-1:
+                  value:
+                    networks:
+                    - key: instagram
+                      count: 54
+                      limit: 2200
+                      over: false
+                      preview: "New feature: schedule a month of posts in one sitting."
+                      folded: false
+                      min_ratio: 1:1
+                      max_ratio: 1:1
+                    - key: x
+                      count: 54
+                      limit: 280
+                      over: false
+                      preview: "New feature: schedule a month of posts in one sitting."
+                      folded: false
+                      min_ratio: 4:5
+                      max_ratio: 2:1
+                    - key: linkedin
+                      count: 54
+                      limit: 3000
+                      over: false
+                      preview: "New feature: schedule a month of posts in one sitting."
+                      folded: false
+                      min_ratio: 4:5
+                      max_ratio: 1.91:1
+                    - key: facebook
+                      count: 54
+                      limit: 5000
+                      over: false
+                      preview: "New feature: schedule a month of posts in one sitting."
+                      folded: false
+                      min_ratio: 4:5
+                      max_ratio: 1.91:1
+                example-2:
+                  value:
+                    networks:
+                    - key: instagram
+                      count: 50
+                      limit: 2200
+                      over: false
+                      preview: |-
+                        Big news
+                        We moved
+                      folded: true
+                      min_ratio: 4:5
+                      max_ratio: 4:5
+                      display_ratio: 0.8
+                      cropped: true
+                    - key: x
+                      count: 50
+                      limit: 280
+                      over: false
+                      preview: |-
+                        Big news
+                        We moved
+                        New address inside
+                        See you there
+                      folded: false
+                      min_ratio: 4:5
+                      max_ratio: 2:1
+                      display_ratio: 1.78
+                      cropped: false
+                    - key: linkedin
+                      count: 50
+                      limit: 3000
+                      over: false
+                      preview: |-
+                        Big news
+                        We moved
+                        New address inside
+                      folded: true
+                      min_ratio: 4:5
+                      max_ratio: 1.91:1
+                      display_ratio: 1.78
+                      cropped: false
+                    - key: facebook
+                      count: 50
+                      limit: 5000
+                      over: false
+                      preview: |-
+                        Big news
+                        We moved
+                        New address inside
+                        See you there
+                      folded: false
+                      min_ratio: 4:5
+                      max_ratio: 1.91:1
+                      display_ratio: 1.78
+                      cropped: false
+              schema:
+                $ref: '#/components/schemas/FreeToolPreviewPostResponse'
+          description: The tool output.
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "413":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: The request body is larger than 128 KB.
+        "422":
+          $ref: '#/components/responses/ValidationError'
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: "Rate limit reached. Without a token: 30 calls per minute and\
+            \ 500 per UTC day per IP address (IPv6 per /64). With a token: 300 per\
+            \ minute per user; the Free plan also has 1,000 calls per UTC day, paid\
+            \ plans have no daily cap."
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            Retry-After:
+              description: Seconds until the limit resets.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+      security: []
+      summary: "Preview where a post folds and when its image is cropped on Instagram,\
+        \ X, LinkedIn and Facebook"
       tags:
       - Free Tools
       x-free-tool: true
@@ -14207,6 +14389,65 @@ components:
           type: string
         folded:
           type: boolean
+    FreeToolPreviewPostRequest:
+      example:
+        instagram_ratio: 1:1
+        image_height: 12055
+        text: text
+        image_width: 1602
+      properties:
+        text:
+          maxLength: 10000
+          type: string
+        instagram_ratio:
+          default: 1:1
+          description: Image ratio of the Instagram feed post.
+          enum:
+          - 1:1
+          - 4:5
+          - 1.91:1
+          type: string
+        image_width:
+          description: Image width in pixels. Give it with image_height to get display_ratio
+            and cropped per card.
+          maximum: 20000
+          minimum: 1
+          type: integer
+        image_height:
+          description: Image height in pixels. Give it with image_width.
+          maximum: 20000
+          minimum: 1
+          type: integer
+      required:
+      - text
+    FreeToolPreviewPostResponse:
+      example:
+        networks:
+        - over: true
+          preview: preview
+          max_ratio: max_ratio
+          min_ratio: min_ratio
+          display_ratio: 1.4658129805029452
+          count: 0
+          limit: 6
+          folded: true
+          cropped: true
+          key: instagram
+        - over: true
+          preview: preview
+          max_ratio: max_ratio
+          min_ratio: min_ratio
+          display_ratio: 1.4658129805029452
+          count: 0
+          limit: 6
+          folded: true
+          cropped: true
+          key: instagram
+      properties:
+        networks:
+          items:
+            $ref: '#/components/schemas/FreeToolPreviewPostResponse_networks_inner'
+          type: array
     FreeToolGenerateFancyTextRequest:
       example:
         style: bold
@@ -18430,6 +18671,54 @@ components:
           description: Length as the network counts it; a single word longer than
             the limit stays whole.
           type: integer
+    FreeToolPreviewPostResponse_networks_inner:
+      example:
+        over: true
+        preview: preview
+        max_ratio: max_ratio
+        min_ratio: min_ratio
+        display_ratio: 1.4658129805029452
+        count: 0
+        limit: 6
+        folded: true
+        cropped: true
+        key: instagram
+      properties:
+        key:
+          enum:
+          - instagram
+          - x
+          - linkedin
+          - facebook
+          type: string
+        count:
+          type: integer
+        limit:
+          type: integer
+        over:
+          type: boolean
+        preview:
+          description: What the feed shows before the "more" link (approximate; varies
+            by device).
+          type: string
+        folded:
+          type: boolean
+        min_ratio:
+          description: "Tallest image ratio the feed shows uncropped (Instagram: the\
+            \ chosen ratio). Taller images are cropped from the centre."
+          type: string
+        max_ratio:
+          description: "Widest image ratio the feed shows uncropped (Instagram: the\
+            \ chosen ratio). Wider images are cropped from the centre."
+          type: string
+        display_ratio:
+          description: "Width / height the card shows the image at, 2 decimals. Only\
+            \ when image_width and image_height are given."
+          type: number
+        cropped:
+          description: Whether the card crops the image. Only when image_width and
+            image_height are given.
+          type: boolean
     FreeToolGenerateFancyTextResponse_styles_inner:
       example:
         label: label
