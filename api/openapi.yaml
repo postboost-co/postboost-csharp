@@ -48,7 +48,7 @@ info:
     name: Commercial
     url: https://postboost.co/pages/terms
   title: PostBoost API
-  version: 1.45.0
+  version: 1.46.0
 servers:
 - description: Production
   url: https://postboost.co/app/api
@@ -7521,6 +7521,133 @@ paths:
               style: simple
       security: []
       summary: Calculate an engagement rate
+      tags:
+      - Free Tools
+      x-free-tool: true
+  /tools/social-media-roi-calculator:
+    post:
+      description: "Calculate social media ROI. The same logic as the free web tool\
+        \ at https://postboost.co/tools/social-media-roi-calculator. No account needed:\
+        \ call it without a token, or with any API token."
+      operationId: calculateSocialRoi
+      requestBody:
+        content:
+          application/json:
+            examples:
+              example-1:
+                value:
+                  revenue: 5000
+                  costs:
+                    ad_spend: 1000
+                    labor_hours: 10
+                    hourly_rate: 50
+              example-2:
+                value:
+                  revenue: 800
+                  costs:
+                    tools: 99.99
+                    other: 900
+                  period: October
+            schema:
+              $ref: '#/components/schemas/FreeToolCalculateSocialRoiRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                example-1:
+                  value:
+                    period: null
+                    revenue: 5000
+                    total_cost: 1500
+                    net_return: 3500
+                    roi_percent: 233.3
+                    cost_breakdown:
+                    - key: ad_spend
+                      label: Ad spend
+                      amount: 1000
+                      share_percent: 66.7
+                    - key: labor
+                      label: Labor
+                      amount: 500
+                      share_percent: 33.3
+                    warnings: []
+                    formula: "(5,000 − 1,500) ÷ 1,500 × 100 = 233.3%"
+                example-2:
+                  value:
+                    period: October
+                    revenue: 800
+                    total_cost: 999.99
+                    net_return: -199.99
+                    roi_percent: -20
+                    cost_breakdown:
+                    - key: tools
+                      label: Tools and software
+                      amount: 99.99
+                      share_percent: 10
+                    - key: other
+                      label: Other
+                      amount: 900
+                      share_percent: 90
+                    warnings: []
+                    formula: (800 − 999.99) ÷ 999.99 × 100 = -20.0%
+              schema:
+                $ref: '#/components/schemas/FreeToolCalculateSocialRoiResponse'
+          description: The tool output.
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "413":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: The request body is larger than 128 KB.
+        "422":
+          $ref: '#/components/responses/ValidationError'
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: "Rate limit reached. Without a token: 30 calls per minute and\
+            \ 500 per UTC day per IP address (IPv6 per /64). With a token: 300 per\
+            \ minute per user; the Free plan also has 1,000 calls per UTC day, paid\
+            \ plans have no daily cap."
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            Retry-After:
+              description: Seconds until the limit resets.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+      security: []
+      summary: Calculate social media ROI
       tags:
       - Free Tools
       x-free-tool: true
@@ -16713,6 +16840,80 @@ components:
           type: number
         formula:
           type: string
+    FreeToolCalculateSocialRoiRequest:
+      example:
+        costs:
+          other: 7.061401241503109E11
+          ad_spend: 6.027456183070403E11
+          labor_hours: 59621.33916683182
+          hourly_rate: 5.637376656633329E11
+          tools: 1.4658129805029453E11
+          content: 2.3021358869347653E11
+        revenue: 8.008281904610115E10
+        period: period
+      properties:
+        revenue:
+          description: "Revenue attributed to social media in the period, in USD."
+          maximum: 1000000000000
+          minimum: 0
+          type: number
+        costs:
+          $ref: '#/components/schemas/FreeToolCalculateSocialRoiRequest_costs'
+        period:
+          description: "Optional label for the period, e.g. \"Q3 2026\"."
+          maxLength: 40
+          type: string
+      required:
+      - revenue
+    FreeToolCalculateSocialRoiResponse:
+      example:
+        period: period
+        revenue: 0.8008281904610115
+        total_cost: 6.027456183070403
+        cost_breakdown:
+        - amount: 5.637376656633329
+          label: label
+          key: ad_spend
+          share_percent: 2.3021358869347655
+        - amount: 5.637376656633329
+          label: label
+          key: ad_spend
+          share_percent: 2.3021358869347655
+        net_return: 1.4658129805029452
+        warnings:
+        - warnings
+        - warnings
+        formula: formula
+        roi_percent: 5.962133916683182
+      properties:
+        period:
+          nullable: true
+          type: string
+        revenue:
+          type: number
+        total_cost:
+          description: "Sum of every cost, labor = hours × hourly rate. 2 decimals."
+          type: number
+        net_return:
+          description: Revenue minus total cost. 2 decimals.
+          type: number
+        roi_percent:
+          description: "(revenue − total cost) ÷ total cost × 100, 1 decimal; null\
+            \ when the total cost is 0."
+          nullable: true
+          type: number
+        cost_breakdown:
+          description: "Every cost above 0, with its share of the total cost (percent,\
+            \ 1 decimal)."
+          items:
+            $ref: '#/components/schemas/FreeToolCalculateSocialRoiResponse_cost_breakdown_inner'
+          type: array
+        warnings:
+          items:
+            type: string
+          type: array
+        formula:
+          type: string
     FreeToolGetImageSizesResponse:
       example:
         sizes:
@@ -21463,6 +21664,73 @@ components:
           type: string
         domain:
           type: string
+    FreeToolCalculateSocialRoiRequest_costs:
+      description: "What social media cost in the period, in USD. Every field is optional."
+      example:
+        other: 7.061401241503109E11
+        ad_spend: 6.027456183070403E11
+        labor_hours: 59621.33916683182
+        hourly_rate: 5.637376656633329E11
+        tools: 1.4658129805029453E11
+        content: 2.3021358869347653E11
+      properties:
+        ad_spend:
+          default: 0
+          description: Paid social ad spend.
+          maximum: 1000000000000
+          minimum: 0
+          type: number
+        tools:
+          default: 0
+          description: Tools and software subscriptions.
+          maximum: 1000000000000
+          minimum: 0
+          type: number
+        labor_hours:
+          default: 0
+          description: Hours spent on social media.
+          maximum: 100000
+          minimum: 0
+          type: number
+        hourly_rate:
+          default: 0
+          description: Cost of one hour of that work.
+          maximum: 1000000000000
+          minimum: 0
+          type: number
+        content:
+          default: 0
+          description: "Content production: design, video, photography, freelancers."
+          maximum: 1000000000000
+          minimum: 0
+          type: number
+        other:
+          default: 0
+          description: Anything else.
+          maximum: 1000000000000
+          minimum: 0
+          type: number
+    FreeToolCalculateSocialRoiResponse_cost_breakdown_inner:
+      example:
+        amount: 5.637376656633329
+        label: label
+        key: ad_spend
+        share_percent: 2.3021358869347655
+      properties:
+        key:
+          enum:
+          - ad_spend
+          - tools
+          - labor
+          - content
+          - other
+          type: string
+        label:
+          type: string
+        amount:
+          type: number
+        share_percent:
+          type: number
     FreeToolGetImageSizesResponse_sizes_inner:
       example:
         size: size
