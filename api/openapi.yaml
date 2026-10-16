@@ -48,7 +48,7 @@ info:
     name: Commercial
     url: https://postboost.co/pages/terms
   title: PostBoost API
-  version: 1.40.0
+  version: 1.41.0
 servers:
 - description: Production
   url: https://postboost.co/app/api
@@ -8963,6 +8963,174 @@ paths:
       tags:
       - Free Tools
       x-free-tool: true
+  /tools/blog-to-social-media:
+    post:
+      description: "Turn a blog post (URL or text) into one social post per network\
+        \ with AI (needs a token, spends AI credits). The same logic as the free web\
+        \ tool at https://postboost.co/tools/blog-to-social-media. Needs an API token\
+        \ (a scoped key needs the `ai` ability and pays with its own workspace). Each\
+        \ post spends 1 AI credit of the workspace you name (or your active workspace),\
+        \ so a call costs one credit per platform that comes back; results are not\
+        \ cached."
+      operationId: generateSocialPostsFromBlog
+      requestBody:
+        content:
+          application/json:
+            examples:
+              example-1:
+                value:
+                  url: https://example.com/blog/utm-links
+                  platforms:
+                  - x
+                  - linkedin
+                  tone: professional
+                  hashtags: few
+              example-2:
+                value:
+                  text: "We moved our weekly newsletter from Friday to Tuesday morning.\
+                    \ Open rates went from 31% to 44% in six weeks, and replies doubled."
+                  platforms:
+                  - instagram
+                  tone: friendly
+                  cta: question
+            schema:
+              $ref: '#/components/schemas/FreeToolGenerateSocialPostsFromBlogRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                example-1:
+                  value:
+                    posts:
+                    - platform: x
+                      text: "Messy campaign data starts with messy links. Five UTM\
+                        \ rules that keep your reports clean: https://example.com/blog/utm-links\
+                        \ #marketing #analytics"
+                      hashtags:
+                      - '#marketing'
+                      - '#analytics'
+                      characters: 135
+                      limit: 280
+                    - platform: linkedin
+                      text: |-
+                        Most reporting problems start before the first click.
+
+                        Our new guide covers five UTM rules: lowercase only, one source name per network, no spaces, a campaign naming scheme and a shared sheet.
+
+                        Read it here: https://example.com/blog/utm-links #marketing #analytics
+                      hashtags:
+                      - '#marketing'
+                      - '#analytics'
+                      characters: 264
+                      limit: 3000
+                    source:
+                      title: Five UTM rules for clean campaign data
+                      final_url: https://example.com/blog/utm-links
+                    warnings: []
+                    credits_spent: 2
+                example-2:
+                  value:
+                    posts:
+                    - platform: instagram
+                      text: |-
+                        We moved our newsletter from Friday to Tuesday morning 📬
+
+                        Six weeks later: open rates up from 31% to 44%, and twice the replies.
+
+                        What day do you send yours?
+                      hashtags: []
+                      characters: 158
+                      limit: 2200
+                    warnings: []
+                    credits_spent: 1
+              schema:
+                $ref: '#/components/schemas/FreeToolGenerateSocialPostsFromBlogResponse'
+          description: The tool output.
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: "No API token, or an invalid one. The body has `register_url`\
+            \ to create a free account."
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: "`workspace` is not a workspace you belong to, or your account\
+            \ has no workspace, or a scoped API key lacks the `ai` ability or is bound\
+            \ to another workspace (`code: insufficient_scope`)."
+        "413":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: The request body is larger than 128 KB.
+        "422":
+          $ref: '#/components/responses/ValidationError'
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: "The workspace has no AI credits left this billing cycle (`code:\
+            \ ai_credits_exhausted`, `upgrade_url`), or the per-minute limit was reached.\
+            \ Rate limit reached. Without a token: 30 calls per minute and 500 per\
+            \ UTC day per IP address (IPv6 per /64). With a token: 300 per minute\
+            \ per user; the Free plan also has 1,000 calls per UTC day, paid plans\
+            \ have no daily cap."
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            Retry-After:
+              description: Seconds until the limit resets.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+        "502":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: The AI provider failed or timed out. No credit was spent.
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: AI tools are switched off right now.
+      summary: "Turn a blog post (URL or text) into one social post per network with\
+        \ AI (needs a token, spends AI credits)"
+      tags:
+      - Free Tools
+      x-free-tool: true
 components:
   headers:
     IdempotentReplayed:
@@ -16725,6 +16893,157 @@ components:
         total:
           description: Number of hooks returned.
           type: integer
+    FreeToolGenerateSocialPostsFromBlogRequest:
+      example:
+        cta: "no"
+        workspace: workspace
+        tone: casual
+        hashtags: "no"
+        length: short
+        text: text
+        url: https://openapi-generator.tech
+        platforms:
+        - facebook
+        - facebook
+        - facebook
+        - facebook
+      properties:
+        url:
+          description: Public http(s) address of the blog post. Give `url` or `text`.
+          format: uri
+          maxLength: 2048
+          type: string
+        text:
+          description: "The blog post itself, instead of `url`."
+          maxLength: 20000
+          minLength: 1
+          type: string
+        platforms:
+          description: "Networks to write for, at most 4 per call (one AI credit each)."
+          items:
+            enum:
+            - facebook
+            - instagram
+            - x
+            - linkedin
+            - pinterest
+            - youtube
+            - tiktok
+            - mastodon
+            type: string
+          maxItems: 4
+          minItems: 1
+          type: array
+          uniqueItems: true
+        tone:
+          default: casual
+          enum:
+          - casual
+          - professional
+          - humorous
+          - formal
+          - friendly
+          - conversational
+          - informative
+          - inspirational
+          - playful
+          - authoritative
+          - empathetic
+          - persuasive
+          - sarcastic
+          - trendy
+          - neutral
+          - excited
+          - calm
+          - bold
+          - energetic
+          - encouraging
+          type: string
+        length:
+          default: short
+          enum:
+          - short
+          - medium
+          - long
+          type: string
+        hashtags:
+          default: "no"
+          description: How many hashtags to include.
+          enum:
+          - "no"
+          - few
+          - some
+          - many
+          type: string
+        cta:
+          default: "no"
+          description: Call to action to end with.
+          enum:
+          - "no"
+          - question
+          - link
+          - subscribe
+          - follow
+          - share
+          - learn more
+          - signup
+          - buy
+          - download
+          type: string
+        workspace:
+          description: "UUID of the workspace whose AI credits pay for the call. Default:\
+            \ your active workspace (a scoped API key: its own workspace)."
+          maxLength: 64
+          type: string
+      required:
+      - platforms
+    FreeToolGenerateSocialPostsFromBlogResponse:
+      example:
+        credits_spent: 1
+        warnings:
+        - code: code
+          message: message
+          platforms:
+          - platforms
+          - platforms
+        - code: code
+          message: message
+          platforms:
+          - platforms
+          - platforms
+        source:
+          final_url: https://openapi-generator.tech
+          title: title
+        posts:
+        - characters: 0
+          hashtags:
+          - hashtags
+          - hashtags
+          limit: 6
+          text: text
+          platform: facebook
+        - characters: 0
+          hashtags:
+          - hashtags
+          - hashtags
+          limit: 6
+          text: text
+          platform: facebook
+      properties:
+        posts:
+          description: "One post per platform that came back, in the order asked."
+          items:
+            $ref: '#/components/schemas/FreeToolGenerateSocialPostsFromBlogResponse_posts_inner'
+          type: array
+        source:
+          $ref: '#/components/schemas/FreeToolGenerateSocialPostsFromBlogResponse_source'
+        warnings:
+          items:
+            $ref: '#/components/schemas/FreeToolGenerateSocialPostsFromBlogResponse_warnings_inner'
+          type: array
+        credits_spent:
+          description: "AI credits this call took from the workspace: one per post."
+          type: integer
     listMyWorkspaces_200_response:
       example:
         data:
@@ -20984,6 +21303,73 @@ components:
             - x
             - threads
             - facebook
+            type: string
+          type: array
+    FreeToolGenerateSocialPostsFromBlogResponse_posts_inner:
+      example:
+        characters: 0
+        hashtags:
+        - hashtags
+        - hashtags
+        limit: 6
+        text: text
+        platform: facebook
+      properties:
+        platform:
+          enum:
+          - facebook
+          - instagram
+          - x
+          - linkedin
+          - pinterest
+          - youtube
+          - tiktok
+          - mastodon
+          type: string
+        text:
+          description: "The post, cut at a sentence end when the model ran over the\
+            \ limit."
+          type: string
+        hashtags:
+          description: "Hashtags in the text, with #."
+          items:
+            type: string
+          type: array
+        characters:
+          description: "Length as the network counts it (X weighs links as 23, YouTube\
+            \ counts bytes)."
+          type: integer
+        limit:
+          description: The network's text limit.
+          type: integer
+    FreeToolGenerateSocialPostsFromBlogResponse_source:
+      description: The fetched page (only with `url`).
+      example:
+        final_url: https://openapi-generator.tech
+        title: title
+      properties:
+        title:
+          type: string
+        final_url:
+          description: Address after redirects.
+          format: uri
+          type: string
+    FreeToolGenerateSocialPostsFromBlogResponse_warnings_inner:
+      example:
+        code: code
+        message: message
+        platforms:
+        - platforms
+        - platforms
+      properties:
+        code:
+          description: "platforms_skipped: no reply within the time budget or the\
+            \ provider failed for them (not charged)."
+          type: string
+        message:
+          type: string
+        platforms:
+          items:
             type: string
           type: array
   securitySchemes:
