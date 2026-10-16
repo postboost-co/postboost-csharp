@@ -48,7 +48,7 @@ info:
     name: Commercial
     url: https://postboost.co/pages/terms
   title: PostBoost API
-  version: 1.32.0
+  version: 1.33.0
 servers:
 - description: Production
   url: https://postboost.co/app/api
@@ -7264,6 +7264,143 @@ paths:
               style: simple
       security: []
       summary: Calculate the crop box that fits an image to a social media size
+      tags:
+      - Free Tools
+      x-free-tool: true
+  /tools/aspect-ratio-calculator:
+    post:
+      description: "Calculate an aspect ratio, or the missing side of an image at\
+        \ a given ratio. The same logic as the free web tool at https://postboost.co/tools/aspect-ratio-calculator.\
+        \ No account needed: call it without a token, or with any API token."
+      operationId: calculateAspectRatio
+      requestBody:
+        content:
+          application/json:
+            examples:
+              example-1:
+                value:
+                  width: 1080
+                  height: 1350
+              example-2:
+                value:
+                  ratio: 1.91:1
+                  width: 1200
+            schema:
+              $ref: '#/components/schemas/FreeToolCalculateAspectRatioRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                example-1:
+                  value:
+                    ratio: 4:5
+                    decimal: 0.8
+                    width: 1080
+                    height: 1350
+                    rounding: null
+                    orientation: portrait
+                    matches:
+                    - network: instagram
+                      format: feed-portrait
+                      width: 1080
+                      height: 1350
+                      ratio: 4:5
+                      exact: true
+                    - network: facebook
+                      format: feed-image
+                      width: 1080
+                      height: 1350
+                      ratio: 4:5
+                      exact: true
+                    - network: linkedin
+                      format: single-image-post-vertical
+                      width: 720
+                      height: 900
+                      ratio: 4:5
+                      exact: true
+                    - network: threads
+                      format: post
+                      width: 1080
+                      height: 1350
+                      ratio: 4:5
+                      exact: true
+                example-2:
+                  value:
+                    ratio: 1.91:1
+                    decimal: 1.91
+                    width: 1200
+                    height: 628
+                    rounding:
+                      side: height
+                      exact: 628.27
+                      rounded: 628
+                    orientation: landscape
+                    matches:
+                    - network: linkedin
+                      format: single-image-post-landscape
+                      width: 1200
+                      height: 628
+                      ratio: 300:157
+                      exact: false
+              schema:
+                $ref: '#/components/schemas/FreeToolCalculateAspectRatioResponse'
+          description: The tool output.
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "413":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: The request body is larger than 128 KB.
+        "422":
+          $ref: '#/components/responses/ValidationError'
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: "Rate limit reached. Without a token: 30 calls per minute and\
+            \ 500 per UTC day per IP address (IPv6 per /64). With a token: 300 per\
+            \ minute per user; the Free plan also has 1,000 calls per UTC day, paid\
+            \ plans have no daily cap."
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            Retry-After:
+              description: Seconds until the limit resets.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+      security: []
+      summary: "Calculate an aspect ratio, or the missing side of an image at a given\
+        \ ratio"
       tags:
       - Free Tools
       x-free-tool: true
@@ -14817,6 +14954,76 @@ components:
           description: "True when the source is enlarged (scale above 1), which can\
             \ look soft."
           type: boolean
+    FreeToolCalculateAspectRatioRequest:
+      example:
+        width: 1602
+        height: 12055
+        ratio: ratio
+      properties:
+        width:
+          description: Width in pixels.
+          maximum: 20000
+          minimum: 1
+          type: integer
+        height:
+          description: Height in pixels.
+          maximum: 20000
+          minimum: 1
+          type: integer
+        ratio:
+          description: "Ratio as width:height, e.g. `16:9` or `1.91:1`. Give it with\
+            \ width or height to get the other side."
+          maxLength: 21
+          pattern: "^(\\d{1,5}(?:\\.\\d{1,4})?):(\\d{1,5}(?:\\.\\d{1,4})?)$"
+          type: string
+    FreeToolCalculateAspectRatioResponse:
+      example:
+        orientation: landscape
+        width: 6
+        rounding:
+          side: width
+          exact: 5.962133916683182
+          rounded: 5
+        decimal: 0.8008281904610115
+        matches:
+        - format: format
+          width: 2
+          exact: true
+          network: network
+          height: 7
+          ratio: ratio
+        - format: format
+          width: 2
+          exact: true
+          network: network
+          height: 7
+          ratio: ratio
+        ratio: ratio
+        height: 1
+      properties:
+        ratio:
+          description: "Simplified ratio, e.g. `4:5`. Decimal ratios stay as given."
+          type: string
+        decimal:
+          description: "Width divided by height, 4 decimals."
+          type: number
+        width:
+          type: integer
+        height:
+          type: integer
+        rounding:
+          $ref: '#/components/schemas/FreeToolCalculateAspectRatioResponse_rounding'
+        orientation:
+          enum:
+          - landscape
+          - portrait
+          - square
+          type: string
+        matches:
+          description: "Social media image presets with the same ratio, else the nearest."
+          items:
+            $ref: '#/components/schemas/FreeToolCalculateAspectRatioResponse_matches_inner'
+          type: array
     FreeToolGetBestTimesToPostResponse:
       example:
         sources:
@@ -18864,6 +19071,47 @@ components:
           type: integer
         height:
           type: integer
+    FreeToolCalculateAspectRatioResponse_rounding:
+      description: "Set when the calculated side is not a whole number: which side,\
+        \ its exact value (2 decimals) and the rounded pixels returned."
+      example:
+        side: width
+        exact: 5.962133916683182
+        rounded: 5
+      properties:
+        side:
+          enum:
+          - width
+          - height
+          type: string
+        exact:
+          type: number
+        rounded:
+          type: integer
+    FreeToolCalculateAspectRatioResponse_matches_inner:
+      example:
+        format: format
+        width: 2
+        exact: true
+        network: network
+        height: 7
+        ratio: ratio
+      properties:
+        network:
+          description: Network key from getImageSizes (`network_key`).
+          type: string
+        format:
+          description: Format key from getImageSizes (`format_key`).
+          type: string
+        width:
+          type: integer
+        height:
+          type: integer
+        ratio:
+          type: string
+        exact:
+          description: False when no preset has the same ratio and these are the nearest.
+          type: boolean
     FreeToolGetBestTimesToPostResponse_networks_inner:
       example:
         columns:
