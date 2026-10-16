@@ -48,7 +48,7 @@ info:
     name: Commercial
     url: https://postboost.co/pages/terms
   title: PostBoost API
-  version: 1.35.0
+  version: 1.36.0
 servers:
 - description: Production
   url: https://postboost.co/app/api
@@ -7105,6 +7105,198 @@ paths:
               style: simple
       security: []
       summary: "Generate a QR code (SVG) for a link or text, with optional UTM tags"
+      tags:
+      - Free Tools
+      x-free-tool: true
+  /tools/link-preview-checker:
+    post:
+      description: "Check how a link previews on X, LinkedIn, Facebook and chat apps\
+        \ (Open Graph and Twitter card tags). The same logic as the free web tool\
+        \ at https://postboost.co/tools/link-preview-checker. No account needed: call\
+        \ it without a token, or with any API token."
+      operationId: checkLinkPreview
+      requestBody:
+        content:
+          application/json:
+            examples:
+              example-1:
+                value:
+                  url: https://example.com/features
+              example-2:
+                value:
+                  url: https://example.org/blog/hello
+            schema:
+              $ref: '#/components/schemas/FreeToolCheckLinkPreviewRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                example-1:
+                  value:
+                    final_url: https://example.com/features/
+                    status: 200
+                    redirects:
+                    - from: https://example.com/features
+                      status: 301
+                      to: https://example.com/features/
+                    content_type: text/html; charset=utf-8
+                    tags:
+                      og:title: Schedule posts everywhere
+                      og:description: One calendar for every network.
+                      og:image: https://example.com/og/features.png
+                      og:image:width: "1200"
+                      og:image:height: "630"
+                      og:url: https://example.com/features/
+                      og:type: website
+                      og:site_name: Example
+                      twitter:card: summary_large_image
+                      twitter:title: Schedule posts on X
+                      twitter:description: "Threads, Bluesky and more – café ✓"
+                      twitter:image: /og/x.png
+                      title: Schedule posts everywhere | Example
+                      description: "Plan, schedule and publish social posts from one\
+                        \ calendar."
+                      canonical: https://example.com/features/
+                      robots: "index, follow"
+                    image:
+                      width: 1200
+                      height: 630
+                      source: declared
+                    previews:
+                      x:
+                        title: Schedule posts on X
+                        description: "Threads, Bluesky and more – café ✓"
+                        image: https://example.com/og/x.png
+                        domain: example.com
+                      linkedin:
+                        title: Schedule posts everywhere
+                        description: One calendar for every network.
+                        image: https://example.com/og/features.png
+                        domain: example.com
+                      facebook:
+                        title: Schedule posts everywhere
+                        description: One calendar for every network.
+                        image: https://example.com/og/features.png
+                        domain: example.com
+                      chat:
+                        title: Schedule posts everywhere
+                        description: One calendar for every network.
+                        image: https://example.com/og/features.png
+                        domain: example.com
+                    warnings: []
+                example-2:
+                  value:
+                    final_url: https://example.org/blog/hello
+                    status: 200
+                    redirects: []
+                    content_type: text/html
+                    tags:
+                      og:title: null
+                      og:description: null
+                      og:image: null
+                      og:image:width: null
+                      og:image:height: null
+                      og:url: null
+                      og:type: null
+                      og:site_name: null
+                      twitter:card: null
+                      twitter:title: null
+                      twitter:description: null
+                      twitter:image: null
+                      title: Just a title
+                      description: null
+                      canonical: /a
+                      robots: null
+                    image: null
+                    previews:
+                      x:
+                        title: Just a title
+                        description: null
+                        image: null
+                        domain: example.org
+                      linkedin:
+                        title: Just a title
+                        description: null
+                        image: null
+                        domain: example.org
+                      facebook:
+                        title: Just a title
+                        description: null
+                        image: null
+                        domain: example.org
+                      chat:
+                        title: Just a title
+                        description: null
+                        image: null
+                        domain: example.org
+                    warnings:
+                    - "No og:image: most networks show a small or text-only card."
+                    - "The canonical URL differs from this URL, so networks may show\
+                      \ the canonical page instead."
+              schema:
+                $ref: '#/components/schemas/FreeToolCheckLinkPreviewResponse'
+          description: The tool output.
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "413":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: The request body is larger than 128 KB.
+        "422":
+          $ref: '#/components/responses/ValidationError'
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: "Rate limit reached. Without a token: 30 calls per minute and\
+            \ 20 per UTC day per IP address (IPv6 per /64). With a token: 300 per\
+            \ minute and 200 per UTC day per user."
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            Retry-After:
+              description: Seconds until the limit resets.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+        "504":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: "The page did not load in time, or the connection failed."
+      security: []
+      summary: "Check how a link previews on X, LinkedIn, Facebook and chat apps (Open\
+        \ Graph and Twitter card tags)"
       tags:
       - Free Tools
       x-free-tool: true
@@ -15027,6 +15219,86 @@ components:
           items:
             type: string
           type: array
+    FreeToolCheckLinkPreviewRequest:
+      example:
+        url: url
+      properties:
+        url:
+          description: The public http(s) page to check.
+          maxLength: 2000
+          minLength: 1
+          pattern: ^https?://
+          type: string
+      required:
+      - url
+    FreeToolCheckLinkPreviewResponse:
+      example:
+        image:
+          width: 1
+          source: declared
+          height: 5
+        final_url: final_url
+        content_type: content_type
+        redirects:
+        - from: from
+          to: to
+          status: 6
+        - from: from
+          to: to
+          status: 6
+        warnings:
+        - warnings
+        - warnings
+        previews:
+          key:
+            image: image
+            domain: domain
+            description: description
+            title: title
+        status: 0
+        tags:
+          og:image: og:image
+          og:image:width: og:image:width
+          og:type: og:type
+          twitter:card: twitter:card
+          twitter:title: twitter:title
+          og:site_name: og:site_name
+          og:title: og:title
+          og:image:height: og:image:height
+          description: description
+          canonical: canonical
+          title: title
+          og:description: og:description
+          twitter:image: twitter:image
+          twitter:description: twitter:description
+          robots: robots
+          og:url: og:url
+      properties:
+        final_url:
+          description: The URL after redirects.
+          type: string
+        status:
+          description: HTTP status of the final response.
+          type: integer
+        redirects:
+          items:
+            $ref: '#/components/schemas/FreeToolCheckLinkPreviewResponse_redirects_inner'
+          type: array
+        content_type:
+          nullable: true
+          type: string
+        tags:
+          $ref: '#/components/schemas/FreeToolCheckLinkPreviewResponse_tags'
+        image:
+          $ref: '#/components/schemas/FreeToolCheckLinkPreviewResponse_image'
+        previews:
+          additionalProperties:
+            $ref: '#/components/schemas/FreeToolCheckLinkPreviewResponse_previews_value'
+          description: The card each network would show.
+        warnings:
+          items:
+            type: string
+          type: array
     FreeToolCalculateEngagementRateRequest:
       example:
         shares: 0
@@ -19257,6 +19529,120 @@ components:
           type: string
         content:
           maxLength: 200
+          type: string
+    FreeToolCheckLinkPreviewResponse_redirects_inner:
+      example:
+        from: from
+        to: to
+        status: 6
+      properties:
+        from:
+          type: string
+        status:
+          type: integer
+        to:
+          type: string
+    FreeToolCheckLinkPreviewResponse_tags:
+      description: The preview tags found on the page; null when missing.
+      example:
+        og:image: og:image
+        og:image:width: og:image:width
+        og:type: og:type
+        twitter:card: twitter:card
+        twitter:title: twitter:title
+        og:site_name: og:site_name
+        og:title: og:title
+        og:image:height: og:image:height
+        description: description
+        canonical: canonical
+        title: title
+        og:description: og:description
+        twitter:image: twitter:image
+        twitter:description: twitter:description
+        robots: robots
+        og:url: og:url
+      properties:
+        og:title:
+          nullable: true
+          type: string
+        og:description:
+          nullable: true
+          type: string
+        og:image:
+          nullable: true
+          type: string
+        og:image:width:
+          nullable: true
+          type: string
+        og:image:height:
+          nullable: true
+          type: string
+        og:url:
+          nullable: true
+          type: string
+        og:type:
+          nullable: true
+          type: string
+        og:site_name:
+          nullable: true
+          type: string
+        twitter:card:
+          nullable: true
+          type: string
+        twitter:title:
+          nullable: true
+          type: string
+        twitter:description:
+          nullable: true
+          type: string
+        twitter:image:
+          nullable: true
+          type: string
+        title:
+          nullable: true
+          type: string
+        description:
+          nullable: true
+          type: string
+        canonical:
+          nullable: true
+          type: string
+        robots:
+          nullable: true
+          type: string
+    FreeToolCheckLinkPreviewResponse_image:
+      description: "og:image size, declared or read from the image header."
+      example:
+        width: 1
+        source: declared
+        height: 5
+      properties:
+        width:
+          type: integer
+        height:
+          type: integer
+        source:
+          enum:
+          - declared
+          - measured
+          type: string
+    FreeToolCheckLinkPreviewResponse_previews_value:
+      example:
+        image: image
+        domain: domain
+        description: description
+        title: title
+      properties:
+        title:
+          nullable: true
+          type: string
+        description:
+          nullable: true
+          type: string
+        image:
+          nullable: true
+          type: string
+        domain:
           type: string
     FreeToolGetImageSizesResponse_sizes_inner:
       example:
