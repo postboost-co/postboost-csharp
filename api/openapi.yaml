@@ -48,7 +48,7 @@ info:
     name: Commercial
     url: https://postboost.co/pages/terms
   title: PostBoost API
-  version: 1.49.0
+  version: 1.53.1
 servers:
 - description: Production
   url: https://postboost.co/app/api
@@ -7915,6 +7915,189 @@ paths:
       tags:
       - Free Tools
       x-free-tool: true
+  /tools/influencer-rate-calculator:
+    post:
+      description: "Estimate an influencer's rate for one sponsored deliverable. The\
+        \ same logic as the free web tool at https://postboost.co/tools/influencer-rate-calculator.\
+        \ No account needed: call it without a token, or with any API token."
+      operationId: calculateInfluencerRate
+      requestBody:
+        content:
+          application/json:
+            examples:
+              example-1:
+                value:
+                  network: instagram
+                  followers: 25000
+                  deliverable: reel
+                  usage_rights_months: 3
+              example-2:
+                value:
+                  network: youtube
+                  followers: 120000
+                  avg_views: 40000
+                  exclusivity: true
+            schema:
+              $ref: '#/components/schemas/FreeToolCalculateInfluencerRateRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                example-1:
+                  value:
+                    tier: micro
+                    tier_label: Micro (10K-100K)
+                    deliverable: reel
+                    guide_low: 788
+                    guide_high: 29250
+                    guide_source:
+                      title: "Shopify, Influencer Pricing 2026"
+                      url: https://shopify.com/blog/influencer-pricing
+                      date: 2026-06-22
+                    marketplace_median: 150
+                    marketplace_note: ""
+                    marketplace_source:
+                      title: "inBeat, Influencer marketing benchmark report (OpenSponsorship\
+                        \ data)"
+                      url: https://inbeat.agency/blog/influencer-marketing-benchmark-report
+                      date: 2026-10-09
+                    cpm_estimate: null
+                    multipliers:
+                    - name: deliverable
+                      description: "Reel: 180% of the post price"
+                      low_percent: 180
+                      high_percent: 180
+                      source:
+                        title: "Aspire, How much do Instagram influencers charge (about\
+                          \ 1,200 creators)"
+                        url: https://www.aspire.io/blog/how-much-do-instagram-influencers-charge-for-sponsored-posts
+                        date: 2026-06-02
+                    - name: usage_rights
+                      description: "Usage rights for 3 months: +75% to +225% of the\
+                        \ base"
+                      low_percent: 75
+                      high_percent: 225
+                      source:
+                        title: "impact.com, How much to charge for usage rights (undated)"
+                        url: https://impact.com/influencer/how-much-to-charge-for-usage-rights-influencer/
+                        date: 2026-10-16
+                    method: "Price guide: one vendor range per network and tier (Shopify\
+                      \ first, then Hootsuite); YouTube uses 1of10's $10-$50 per 1,000\
+                      \ expected views. Reel, carousel, dedicated video and Short\
+                      \ are percentages of the base price: Reel 180% (a static post\
+                      \ is about 55% of a Reel, the middle of Aspire's 50-60%); for\
+                      \ the other ranges we take the lower bound (carousel 125%, dedicated\
+                      \ 200%, Short 25%). Usage rights add impact.com's monthly fee\
+                      \ for the tier times the months; exclusivity adds 20-100% of\
+                      \ the base once. The marketplace median is OpenSponsorship's\
+                      \ measured median paid deliverable for the tier, all networks,\
+                      \ before adjustments."
+                    warnings: []
+                    currency: USD
+                    last_verified: 2026-10-16
+                example-2:
+                  value:
+                    tier: mid
+                    tier_label: Mid-tier (100K-500K)
+                    deliverable: integration
+                    guide_low: 480
+                    guide_high: 4000
+                    guide_source:
+                      title: "1of10, YouTube sponsorship rates"
+                      url: https://www.1of10.com/blog/youtube-sponsorship-rates/
+                      date: 2026-08-24
+                    marketplace_median: 417
+                    marketplace_note: ""
+                    marketplace_source:
+                      title: "inBeat, Influencer marketing benchmark report (OpenSponsorship\
+                        \ data)"
+                      url: https://inbeat.agency/blog/influencer-marketing-benchmark-report
+                      date: 2026-10-09
+                    cpm_estimate: null
+                    multipliers:
+                    - name: exclusivity
+                      description: "Exclusivity: +20% to +100% of the base, once"
+                      low_percent: 20
+                      high_percent: 100
+                      source:
+                        title: "impact.com, How much to charge for usage rights (undated)"
+                        url: https://impact.com/influencer/how-much-to-charge-for-usage-rights-influencer/
+                        date: 2026-10-16
+                    method: "Price guide: one vendor range per network and tier (Shopify\
+                      \ first, then Hootsuite); YouTube uses 1of10's $10-$50 per 1,000\
+                      \ expected views. Reel, carousel, dedicated video and Short\
+                      \ are percentages of the base price: Reel 180% (a static post\
+                      \ is about 55% of a Reel, the middle of Aspire's 50-60%); for\
+                      \ the other ranges we take the lower bound (carousel 125%, dedicated\
+                      \ 200%, Short 25%). Usage rights add impact.com's monthly fee\
+                      \ for the tier times the months; exclusivity adds 20-100% of\
+                      \ the base once. The marketplace median is OpenSponsorship's\
+                      \ measured median paid deliverable for the tier, all networks,\
+                      \ before adjustments."
+                    warnings: []
+                    currency: USD
+                    last_verified: 2026-10-16
+              schema:
+                $ref: '#/components/schemas/FreeToolCalculateInfluencerRateResponse'
+          description: The tool output.
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "413":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: The request body is larger than 128 KB.
+        "422":
+          $ref: '#/components/responses/ValidationError'
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: "Rate limit reached. Without a token: 30 calls per minute and\
+            \ 500 per UTC day per IP address (IPv6 per /64). With a token: 300 per\
+            \ minute per user; the Free plan also has 1,000 calls per UTC day, paid\
+            \ plans have no daily cap."
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            Retry-After:
+              description: Seconds until the limit resets.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+      security: []
+      summary: Estimate an influencer's rate for one sponsored deliverable
+      tags:
+      - Free Tools
+      x-free-tool: true
   /tools/social-media-image-sizes:
     get:
       description: "Get social media image sizes per network, each with its source.\
@@ -8565,6 +8748,334 @@ paths:
       tags:
       - Free Tools
       x-free-tool: true
+  /tools/instagram-carousel-splitter:
+    post:
+      description: "Split a wide image into seamless Instagram carousel slides. The\
+        \ same logic as the free web tool at https://postboost.co/tools/instagram-carousel-splitter.\
+        \ No account needed: call it without a token, or with any API token."
+      operationId: calculateCarouselSlices
+      requestBody:
+        content:
+          application/json:
+            examples:
+              example-1:
+                value:
+                  width: 3240
+                  height: 1350
+                  slides: 3
+                  ratio: 4:5
+              example-2:
+                value:
+                  width: 2000
+                  height: 1000
+                  slides: 3
+                  ratio: 1:1
+            schema:
+              $ref: '#/components/schemas/FreeToolCalculateCarouselSlicesRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                example-1:
+                  value:
+                    slides:
+                    - x: 0
+                      "y": 0
+                      width: 1080
+                      height: 1350
+                    - x: 1080
+                      "y": 0
+                      width: 1080
+                      height: 1350
+                    - x: 2160
+                      "y": 0
+                      width: 1080
+                      height: 1350
+                    output:
+                      width: 1080
+                      height: 1350
+                    scale: 1.0
+                    upscaled: false
+                    warnings: []
+                example-2:
+                  value:
+                    slides:
+                    - x: 1
+                      "y": 167
+                      width: 666
+                      height: 666
+                    - x: 667
+                      "y": 167
+                      width: 666
+                      height: 666
+                    - x: 1333
+                      "y": 167
+                      width: 666
+                      height: 666
+                    output:
+                      width: 1080
+                      height: 1080
+                    scale: 1.6216
+                    upscaled: true
+                    warnings:
+                    - "The source is smaller than 3 × 1080 px wide slides: each slide\
+                      \ is enlarged 1.6216×, which can look soft."
+                    - "The source does not match 3 1:1 slides: 2 px of width and 334\
+                      \ px of height are cropped away, centred."
+              schema:
+                $ref: '#/components/schemas/FreeToolCalculateCarouselSlicesResponse'
+          description: The tool output.
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "413":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: The request body is larger than 128 KB.
+        "422":
+          $ref: '#/components/responses/ValidationError'
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: "Rate limit reached. Without a token: 30 calls per minute and\
+            \ 500 per UTC day per IP address (IPv6 per /64). With a token: 300 per\
+            \ minute per user; the Free plan also has 1,000 calls per UTC day, paid\
+            \ plans have no daily cap."
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            Retry-After:
+              description: Seconds until the limit resets.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+      security: []
+      summary: Split a wide image into seamless Instagram carousel slides
+      tags:
+      - Free Tools
+      x-free-tool: true
+  /tools/safe-zone-checker:
+    post:
+      description: "Get the TikTok, Instagram Reels or YouTube Shorts safe zones for\
+        \ a vertical frame. The same logic as the free web tool at https://postboost.co/tools/safe-zone-checker.\
+        \ No account needed: call it without a token, or with any API token."
+      operationId: getSafeZones
+      requestBody:
+        content:
+          application/json:
+            examples:
+              example-1:
+                value:
+                  platform: tiktok
+              example-2:
+                value:
+                  platform: youtube_shorts
+                  width: 540
+                  height: 960
+            schema:
+              $ref: '#/components/schemas/FreeToolGetSafeZonesRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                example-1:
+                  value:
+                    platform: tiktok
+                    label: TikTok
+                    width: 1080
+                    height: 1920
+                    unsafe_areas:
+                    - name: top_bar
+                      label: "Top bar: tabs and search"
+                      x: 0
+                      "y": 0
+                      w: 1080
+                      h: 240
+                    - name: caption_area
+                      label: "Caption, sound and profile name"
+                      x: 0
+                      "y": 1260
+                      w: 1080
+                      h: 660
+                    - name: left_edge
+                      label: Left edge
+                      x: 0
+                      "y": 240
+                      w: 120
+                      h: 1020
+                    - name: right_edge
+                      label: Right edge
+                      x: 960
+                      "y": 240
+                      w: 120
+                      h: 600
+                    - name: action_rail
+                      label: "Action buttons: like, comment, share"
+                      x: 780
+                      "y": 840
+                      w: 300
+                      h: 420
+                    safe_area:
+                      x: 120
+                      "y": 240
+                      w: 660
+                      h: 1020
+                    source:
+                      label: "TikTok Ads Help: video ads specifications (In-Feed safe\
+                        \ zone file, standard LTR)"
+                      url: https://ads.tiktok.com/help/article/video-ads-specifications
+                      basis: "TikTok's In-Feed ad safe-zone file, labelled at 720×\
+                        1280 (top 160, bottom 440, sides 80, action column 200 wide\
+                        \ from 560 down) and scaled 1.5× to 1080×1920, as transcribed\
+                        \ by adkit.so (version 2026-09-10). TikTok publishes no sizes\
+                        \ for organic posts."
+                    last_verified: 2026-10-17
+                    caveat: "Approximate: platforms do not publish official overlay\
+                      \ sizes for organic posts, and the UI varies by device and app\
+                      \ version. The boxes come from each platform's guidance for\
+                      \ vertical video ads."
+                    warnings: []
+                example-2:
+                  value:
+                    platform: youtube_shorts
+                    label: YouTube Shorts
+                    width: 540
+                    height: 960
+                    unsafe_areas:
+                    - name: top_bar
+                      label: "Top bar: search and menu"
+                      x: 0
+                      "y": 0
+                      w: 540
+                      h: 144
+                    - name: caption_area
+                      label: "Title, channel and subscribe button"
+                      x: 0
+                      "y": 624
+                      w: 540
+                      h: 336
+                    - name: left_edge
+                      label: Left edge
+                      x: 0
+                      "y": 144
+                      w: 24
+                      h: 480
+                    - name: action_rail
+                      label: "Action buttons: like, comment, share"
+                      x: 444
+                      "y": 144
+                      w: 96
+                      h: 480
+                    safe_area:
+                      x: 24
+                      "y": 144
+                      w: 420
+                      h: 480
+                    source:
+                      label: "Google Ads Help: video ad safe zones (vertical 1080×\
+                        1920 image)"
+                      url: https://support.google.com/google-ads/answer/13547298
+                      basis: "Pixel values printed on Google's 1080×1920 safe-zone\
+                        \ image for vertical video ads on YouTube, which run in Shorts:\
+                        \ top 288, bottom 672, left 48, right 192, as transcribed\
+                        \ by socialync.io (2026-10-11)."
+                    last_verified: 2026-10-17
+                    caveat: "Approximate: platforms do not publish official overlay\
+                      \ sizes for organic posts, and the UI varies by device and app\
+                      \ version. The boxes come from each platform's guidance for\
+                      \ vertical video ads."
+                    warnings: []
+              schema:
+                $ref: '#/components/schemas/FreeToolGetSafeZonesResponse'
+          description: The tool output.
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "413":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: The request body is larger than 128 KB.
+        "422":
+          $ref: '#/components/responses/ValidationError'
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: "Rate limit reached. Without a token: 30 calls per minute and\
+            \ 500 per UTC day per IP address (IPv6 per /64). With a token: 300 per\
+            \ minute per user; the Free plan also has 1,000 calls per UTC day, paid\
+            \ plans have no daily cap."
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            Retry-After:
+              description: Seconds until the limit resets.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+      security: []
+      summary: "Get the TikTok, Instagram Reels or YouTube Shorts safe zones for a\
+        \ vertical frame"
+      tags:
+      - Free Tools
+      x-free-tool: true
   /tools/x-api-cost-calculator:
     post:
       description: "Calculate the monthly X API cost. The same logic as the free web\
@@ -9208,6 +9719,291 @@ paths:
               style: simple
       security: []
       summary: Plan a social media content calendar and get it as CSV and ICS
+      tags:
+      - Free Tools
+      x-free-tool: true
+  /tools/posting-frequency-planner:
+    post:
+      description: "Plan how often to post on each network. The same logic as the\
+        \ free web tool at https://postboost.co/tools/posting-frequency-planner. No\
+        \ account needed: call it without a token, or with any API token."
+      operationId: planPostingFrequency
+      requestBody:
+        content:
+          application/json:
+            examples:
+              example-1:
+                value:
+                  networks:
+                  - instagram
+                  - linkedin
+                  - tiktok
+                  posts_per_week_capacity: 12
+              example-2:
+                value:
+                  networks:
+                  - x
+                  - youtube
+                  - pinterest
+                  posts_per_week_capacity: 20
+            schema:
+              $ref: '#/components/schemas/FreeToolPlanPostingFrequencyRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                example-1:
+                  value:
+                    posts_per_week_capacity: 12
+                    sum_of_minimums: 7
+                    networks:
+                    - network: instagram
+                      label: Instagram (feed)
+                      recommended_per_week:
+                        min: 3
+                        max: 5
+                      recommended_label: 3-5 per week
+                      allocated_per_week: 4
+                      fit: within
+                      source_type: measured
+                      sources:
+                      - title: "Buffer, How Often Should You Post on Instagram in\
+                          \ 2026? (2.1M posts)"
+                        url: https://buffer.com/resources/how-often-to-post-on-instagram/
+                        date: 2025-08-13
+                    - network: linkedin
+                      label: LinkedIn
+                      recommended_per_week:
+                        min: 2
+                        max: 5
+                      recommended_label: 2-5 per week
+                      allocated_per_week: 4
+                      fit: within
+                      source_type: measured
+                      sources:
+                      - title: "Buffer, How Often Should You Post on LinkedIn in 2026?\
+                          \ (2M+ posts)"
+                        url: https://buffer.com/resources/how-often-to-post-on-linkedin/
+                        date: 2025-08-28
+                    - network: tiktok
+                      label: TikTok
+                      recommended_per_week:
+                        min: 2
+                        max: 5
+                      recommended_label: 2-5 per week
+                      allocated_per_week: 4
+                      fit: within
+                      source_type: measured
+                      sources:
+                      - title: "Buffer, How Often Should You Post on TikTok in 2026?\
+                          \ (11.4M posts)"
+                        url: https://buffer.com/resources/how-often-should-you-post-on-tiktok/
+                        date: 2025-10-08
+                    slots:
+                    - weekday: Monday
+                      network: instagram
+                      label: Instagram (feed)
+                    - weekday: Monday
+                      network: linkedin
+                      label: LinkedIn
+                    - weekday: Monday
+                      network: tiktok
+                      label: TikTok
+                    - weekday: Tuesday
+                      network: instagram
+                      label: Instagram (feed)
+                    - weekday: Tuesday
+                      network: linkedin
+                      label: LinkedIn
+                    - weekday: Tuesday
+                      network: tiktok
+                      label: TikTok
+                    - weekday: Thursday
+                      network: instagram
+                      label: Instagram (feed)
+                    - weekday: Thursday
+                      network: linkedin
+                      label: LinkedIn
+                    - weekday: Thursday
+                      network: tiktok
+                      label: TikTok
+                    - weekday: Saturday
+                      network: instagram
+                      label: Instagram (feed)
+                    - weekday: Saturday
+                      network: linkedin
+                      label: LinkedIn
+                    - weekday: Saturday
+                      network: tiktok
+                      label: TikTok
+                    warnings: []
+                    last_verified: 2026-10-16
+                example-2:
+                  value:
+                    posts_per_week_capacity: 20
+                    sum_of_minimums: 16
+                    networks:
+                    - network: x
+                      label: X
+                      recommended_per_week:
+                        min: 14
+                        max: 21
+                      recommended_label: 14-21 per week
+                      allocated_per_week: 18
+                      fit: within
+                      source_type: vendor
+                      sources:
+                      - title: "Hootsuite, How often to post on social media"
+                        url: https://blog.hootsuite.com/how-often-to-post-on-social-media/
+                        date: 2025-04-18
+                    - network: youtube
+                      label: YouTube (long-form)
+                      recommended_per_week:
+                        min: 1
+                        max: 1
+                      recommended_label: 1 per week
+                      allocated_per_week: 1
+                      fit: within
+                      source_type: vendor
+                      sources:
+                      - title: "Buffer, How Often to Post on Social Media in 2026"
+                        url: https://buffer.com/resources/social-media-frequency-guide/
+                        date: 2026-01-13
+                    - network: pinterest
+                      label: Pinterest
+                      recommended_per_week:
+                        min: 1
+                        max: null
+                      recommended_label: 1+ per week
+                      allocated_per_week: 1
+                      fit: within
+                      source_type: platform
+                      sources:
+                      - title: "Pinterest Business, Beginner Pinterest content guide"
+                        url: https://business.pinterest.com/en-in/blog/beginner-pinterest-content-guide/
+                        date: 2022-10-21
+                    slots:
+                    - weekday: Monday
+                      network: x
+                      label: X
+                    - weekday: Monday
+                      network: x
+                      label: X
+                    - weekday: Monday
+                      network: x
+                      label: X
+                    - weekday: Monday
+                      network: youtube
+                      label: YouTube (long-form)
+                    - weekday: Monday
+                      network: pinterest
+                      label: Pinterest
+                    - weekday: Tuesday
+                      network: x
+                      label: X
+                    - weekday: Tuesday
+                      network: x
+                      label: X
+                    - weekday: Tuesday
+                      network: x
+                      label: X
+                    - weekday: Wednesday
+                      network: x
+                      label: X
+                    - weekday: Wednesday
+                      network: x
+                      label: X
+                    - weekday: Thursday
+                      network: x
+                      label: X
+                    - weekday: Thursday
+                      network: x
+                      label: X
+                    - weekday: Thursday
+                      network: x
+                      label: X
+                    - weekday: Friday
+                      network: x
+                      label: X
+                    - weekday: Friday
+                      network: x
+                      label: X
+                    - weekday: Saturday
+                      network: x
+                      label: X
+                    - weekday: Saturday
+                      network: x
+                      label: X
+                    - weekday: Saturday
+                      network: x
+                      label: X
+                    - weekday: Sunday
+                      network: x
+                      label: X
+                    - weekday: Sunday
+                      network: x
+                      label: X
+                    warnings:
+                    - "X: 18 posts a week needs at least 2 posts a day."
+                    last_verified: 2026-10-16
+              schema:
+                $ref: '#/components/schemas/FreeToolPlanPostingFrequencyResponse'
+          description: The tool output.
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "413":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: The request body is larger than 128 KB.
+        "422":
+          $ref: '#/components/responses/ValidationError'
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: "Rate limit reached. Without a token: 30 calls per minute and\
+            \ 500 per UTC day per IP address (IPv6 per /64). With a token: 300 per\
+            \ minute per user; the Free plan also has 1,000 calls per UTC day, paid\
+            \ plans have no daily cap."
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            Retry-After:
+              description: Seconds until the limit resets.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+      security: []
+      summary: Plan how often to post on each network
       tags:
       - Free Tools
       x-free-tool: true
@@ -17498,6 +18294,170 @@ components:
           type: array
         formula:
           type: string
+    FreeToolCalculateInfluencerRateRequest:
+      example:
+        usage_rights_months: 14
+        followers: 80082819
+        cpm_usd: 147
+        exclusivity: false
+        avg_views: 602745618
+        deliverable: post
+        network: instagram
+      properties:
+        network:
+          description: "LinkedIn is not offered: no primary source for its rates."
+          enum:
+          - instagram
+          - tiktok
+          - youtube
+          - x
+          - facebook
+          type: string
+        followers:
+          description: Followers (subscribers on YouTube). Sets the tier.
+          maximum: 1000000000
+          minimum: 1
+          type: integer
+        deliverable:
+          description: "Instagram: post (default), reel, carousel. TikTok: video.\
+            \ X and Facebook: post. YouTube: integration (default), dedicated, short."
+          enum:
+          - post
+          - reel
+          - carousel
+          - video
+          - integration
+          - dedicated
+          - short
+          type: string
+        avg_views:
+          description: "Expected views of the deliverable. Required on YouTube, which\
+            \ is priced per 1,000 views; with cpm_usd it gives your own CPM estimate\
+            \ on any network."
+          maximum: 1000000000
+          minimum: 1
+          type: integer
+        cpm_usd:
+          description: "Your own price per 1,000 views, in whole USD, for the CPM\
+            \ estimate."
+          maximum: 1000
+          minimum: 1
+          type: integer
+        usage_rights_months:
+          default: 0
+          description: Months the brand may reuse the content.
+          maximum: 24
+          minimum: 0
+          type: integer
+        exclusivity:
+          default: false
+          description: The creator agrees not to work with competitors for the campaign.
+          type: boolean
+      required:
+      - followers
+      - network
+    FreeToolCalculateInfluencerRateResponse:
+      example:
+        method: method
+        tier_label: tier_label
+        marketplace_note: marketplace_note
+        guide_high: 6
+        warnings:
+        - warnings
+        - warnings
+        deliverable: post
+        last_verified: 2000-01-23
+        guide_source:
+          date: 2000-01-23
+          title: title
+          url: https://openapi-generator.tech
+        guide_low: 0
+        tier: under-nano
+        marketplace_source:
+          date: 2000-01-23
+          title: title
+          url: https://openapi-generator.tech
+        marketplace_median: 1
+        multipliers:
+        - low_percent: 5
+          high_percent: 2
+          name: deliverable
+          description: description
+          source:
+            date: 2000-01-23
+            title: title
+            url: https://openapi-generator.tech
+        - low_percent: 5
+          high_percent: 2
+          name: deliverable
+          description: description
+          source:
+            date: 2000-01-23
+            title: title
+            url: https://openapi-generator.tech
+        currency: USD
+        cpm_estimate: 5
+      properties:
+        tier:
+          enum:
+          - under-nano
+          - nano
+          - micro
+          - mid
+          - macro
+          - mega
+          type: string
+        tier_label:
+          type: string
+        deliverable:
+          enum:
+          - post
+          - reel
+          - carousel
+          - video
+          - integration
+          - dedicated
+          - short
+          type: string
+        guide_low:
+          description: "USD, low end of the vendor price-guide range after the adjustments."
+          type: integer
+        guide_high:
+          description: "USD, high end; null when the guide is open-ended (e.g. 10,000+)."
+          nullable: true
+          type: integer
+        guide_source:
+          $ref: '#/components/schemas/FreeToolCalculateInfluencerRateResponse_guide_source'
+        marketplace_median:
+          description: "USD, the measured median paid deliverable for this tier, all\
+            \ networks, before adjustments."
+          type: integer
+        marketplace_note:
+          type: string
+        marketplace_source:
+          $ref: '#/components/schemas/FreeToolCalculateInfluencerRateResponse_guide_source'
+        cpm_estimate:
+          description: "USD, avg_views / 1,000 × cpm_usd (half up); null without both."
+          nullable: true
+          type: integer
+        multipliers:
+          description: "Every adjustment applied, as a percent of the base price."
+          items:
+            $ref: '#/components/schemas/FreeToolCalculateInfluencerRateResponse_multipliers_inner'
+          type: array
+        method:
+          type: string
+        warnings:
+          items:
+            type: string
+          type: array
+        currency:
+          enum:
+          - USD
+          type: string
+        last_verified:
+          format: date
+          type: string
     FreeToolGetImageSizesResponse:
       example:
         sizes:
@@ -17814,6 +18774,179 @@ components:
           items:
             $ref: '#/components/schemas/FreeToolCalculateAspectRatioResponse_matches_inner'
           type: array
+    FreeToolCalculateCarouselSlicesRequest:
+      example:
+        slides: 3
+        width: 8009
+        height: 60274
+        ratio: 4:5
+      properties:
+        width:
+          description: Source image width in pixels.
+          maximum: 100000
+          minimum: 1
+          type: integer
+        height:
+          description: Source image height in pixels.
+          maximum: 100000
+          minimum: 1
+          type: integer
+        slides:
+          description: "Number of carousel slides, 2 to 10 (the most a carousel published\
+            \ through the Instagram API can hold)."
+          maximum: 10
+          minimum: 2
+          type: integer
+        ratio:
+          default: 4:5
+          description: "Shape of each slide: `1:1` (1080 × 1080) or `4:5` (1080 ×\
+            \ 1350)."
+          enum:
+          - 1:1
+          - 4:5
+          type: string
+      required:
+      - height
+      - slides
+      - width
+    FreeToolCalculateCarouselSlicesResponse:
+      example:
+        output:
+          width: 5
+          height: 2
+        slides:
+        - x: 0
+          width: 1
+          "y": 6
+          height: 5
+        - x: 0
+          width: 1
+          "y": 6
+          height: 5
+        upscaled: true
+        warnings:
+        - warnings
+        - warnings
+        scale: 7.061401241503109
+      properties:
+        slides:
+          description: "The part of the source image each slide shows, left to right,\
+            \ in source pixels."
+          items:
+            $ref: '#/components/schemas/FreeToolCalculateCarouselSlicesResponse_slides_inner'
+          type: array
+        output:
+          $ref: '#/components/schemas/FreeToolCalculateCarouselSlicesResponse_output'
+        scale:
+          description: "Output pixels per source pixel, 4 decimals."
+          type: number
+        upscaled:
+          description: "True when the source is enlarged (scale above 1), which can\
+            \ look soft."
+          type: boolean
+        warnings:
+          description: Upscaling and how much of the source is cropped away.
+          items:
+            type: string
+          type: array
+    FreeToolGetSafeZonesRequest:
+      example:
+        width: 801
+        platform: tiktok
+        height: 6027
+      properties:
+        platform:
+          description: "The app the vertical video is posted to. Approximate: platforms\
+            \ do not publish official overlay sizes for organic posts, and the UI\
+            \ varies by device and app version. The boxes come from each platform's\
+            \ guidance for vertical video ads. Sources last verified 2026-10-17."
+          enum:
+          - tiktok
+          - instagram_reels
+          - youtube_shorts
+          type: string
+        width:
+          default: 1080
+          description: Frame width in pixels. The boxes are measured on 1080 × 1920
+            and scaled to the frame.
+          maximum: 10000
+          minimum: 1
+          type: integer
+        height:
+          default: 1920
+          description: Frame height in pixels.
+          maximum: 10000
+          minimum: 1
+          type: integer
+      required:
+      - platform
+    FreeToolGetSafeZonesResponse:
+      description: "Approximate: platforms do not publish official overlay sizes for\
+        \ organic posts, and the UI varies by device and app version. The boxes come\
+        \ from each platform's guidance for vertical video ads."
+      example:
+        safe_area:
+          w: 3
+          x: 7
+          h: 2
+          "y": 9
+        warnings:
+        - warnings
+        - warnings
+        width: 0
+        unsafe_areas:
+        - w: 5
+          name: top_bar
+          x: 1
+          h: 2
+          "y": 5
+          label: label
+        - w: 5
+          name: top_bar
+          x: 1
+          h: 2
+          "y": 5
+          label: label
+        label: label
+        source:
+          label: label
+          basis: basis
+          url: url
+        caveat: caveat
+        platform: platform
+        last_verified: last_verified
+        height: 6
+      properties:
+        platform:
+          type: string
+        label:
+          description: Platform name.
+          type: string
+        width:
+          type: integer
+        height:
+          type: integer
+        unsafe_areas:
+          description: "Areas the app's UI usually covers, in frame pixels from the\
+            \ top-left corner. Edges are scaled from 1080 × 1920 and rounded to the\
+            \ nearest pixel (halves up), so neighbouring boxes stay edge to edge."
+          items:
+            $ref: '#/components/schemas/FreeToolGetSafeZonesResponse_unsafe_areas_inner'
+          type: array
+        safe_area:
+          $ref: '#/components/schemas/FreeToolGetSafeZonesResponse_safe_area'
+        source:
+          $ref: '#/components/schemas/FreeToolGetSafeZonesResponse_source'
+        last_verified:
+          description: Date the sources were last checked (YYYY-MM-DD).
+          type: string
+        caveat:
+          type: string
+        warnings:
+          description: "Set when the frame is not 9:16, so the boxes are stretched."
+          items:
+            type: string
+          type: array
     FreeToolCalculateXApiCostRequest:
       example:
         link_share: 60
@@ -18049,6 +19182,115 @@ components:
         ics:
           description: "The calendar as an iCalendar file: one 15-minute event per\
             \ post, in floating local time."
+          type: string
+    FreeToolPlanPostingFrequencyRequest:
+      example:
+        posts_per_week_capacity: 16
+        networks:
+        - instagram
+        - instagram
+        - instagram
+        - instagram
+        - instagram
+      properties:
+        networks:
+          description: "The networks you post on. Bluesky and Mastodon are not offered:\
+            \ no published frequency we could verify."
+          items:
+            enum:
+            - instagram
+            - facebook
+            - linkedin
+            - x
+            - tiktok
+            - youtube
+            - pinterest
+            - threads
+            - google_business_profile
+            type: string
+          maxItems: 9
+          minItems: 1
+          type: array
+        posts_per_week_capacity:
+          description: "How many posts your team can make in a week, across all networks."
+          maximum: 200
+          minimum: 1
+          type: integer
+      required:
+      - networks
+      - posts_per_week_capacity
+    FreeToolPlanPostingFrequencyResponse:
+      example:
+        slots:
+        - weekday: Monday
+          label: label
+          network: instagram
+        - weekday: Monday
+          label: label
+          network: instagram
+        warnings:
+        - warnings
+        - warnings
+        posts_per_week_capacity: 0
+        networks:
+        - fit: below
+          recommended_per_week:
+            min: 1
+            max: 5
+          allocated_per_week: 5
+          sources:
+          - date: 2000-01-23
+            title: title
+            url: https://openapi-generator.tech
+          - date: 2000-01-23
+            title: title
+            url: https://openapi-generator.tech
+          recommended_label: recommended_label
+          source_type: measured
+          label: label
+          network: instagram
+        - fit: below
+          recommended_per_week:
+            min: 1
+            max: 5
+          allocated_per_week: 5
+          sources:
+          - date: 2000-01-23
+            title: title
+            url: https://openapi-generator.tech
+          - date: 2000-01-23
+            title: title
+            url: https://openapi-generator.tech
+          recommended_label: recommended_label
+          source_type: measured
+          label: label
+          network: instagram
+        sum_of_minimums: 6
+        last_verified: 2000-01-23
+      properties:
+        posts_per_week_capacity:
+          type: integer
+        sum_of_minimums:
+          description: The recommended minimums of the chosen networks added up.
+          type: integer
+        networks:
+          description: "One row per chosen network, in a fixed network order."
+          items:
+            $ref: '#/components/schemas/FreeToolPlanPostingFrequencyResponse_networks_inner'
+          type: array
+        slots:
+          description: "The weekly grid: each network's posts spread evenly from Monday,\
+            \ sorted by day."
+          items:
+            $ref: '#/components/schemas/FreeToolPlanPostingFrequencyResponse_slots_inner'
+          type: array
+        warnings:
+          items:
+            type: string
+          type: array
+        last_verified:
+          description: When the ranges were last checked against their sources.
+          format: date
           type: string
     FreeToolGenerateHashtagsRequest:
       example:
@@ -22445,6 +23687,45 @@ components:
           type: number
         share_percent:
           type: number
+    FreeToolCalculateInfluencerRateResponse_guide_source:
+      example:
+        date: 2000-01-23
+        title: title
+        url: https://openapi-generator.tech
+      properties:
+        title:
+          type: string
+        url:
+          format: uri
+          type: string
+        date:
+          format: date
+          type: string
+    FreeToolCalculateInfluencerRateResponse_multipliers_inner:
+      example:
+        low_percent: 5
+        high_percent: 2
+        name: deliverable
+        description: description
+        source:
+          date: 2000-01-23
+          title: title
+          url: https://openapi-generator.tech
+      properties:
+        name:
+          enum:
+          - deliverable
+          - usage_rights
+          - exclusivity
+          type: string
+        description:
+          type: string
+        low_percent:
+          type: integer
+        high_percent:
+          type: integer
+        source:
+          $ref: '#/components/schemas/FreeToolCalculateInfluencerRateResponse_guide_source'
     FreeToolGetImageSizesResponse_sizes_inner:
       example:
         size: size
@@ -22723,6 +24004,89 @@ components:
         exact:
           description: False when no preset has the same ratio and these are the nearest.
           type: boolean
+    FreeToolCalculateCarouselSlicesResponse_slides_inner:
+      example:
+        x: 0
+        width: 1
+        "y": 6
+        height: 5
+      properties:
+        x:
+          type: integer
+        "y":
+          type: integer
+        width:
+          type: integer
+        height:
+          type: integer
+    FreeToolCalculateCarouselSlicesResponse_output:
+      description: Size of each finished slide in pixels.
+      example:
+        width: 5
+        height: 2
+      properties:
+        width:
+          type: integer
+        height:
+          type: integer
+    FreeToolGetSafeZonesResponse_unsafe_areas_inner:
+      example:
+        w: 5
+        name: top_bar
+        x: 1
+        h: 2
+        "y": 5
+        label: label
+      properties:
+        name:
+          enum:
+          - top_bar
+          - caption_area
+          - left_edge
+          - right_edge
+          - action_rail
+          type: string
+        label:
+          type: string
+        x:
+          type: integer
+        "y":
+          type: integer
+        w:
+          type: integer
+        h:
+          type: integer
+    FreeToolGetSafeZonesResponse_safe_area:
+      description: "A box clear of every unsafe area: keep text, faces and logos inside\
+        \ it."
+      example:
+        w: 3
+        x: 7
+        h: 2
+        "y": 9
+      properties:
+        x:
+          type: integer
+        "y":
+          type: integer
+        w:
+          type: integer
+        h:
+          type: integer
+    FreeToolGetSafeZonesResponse_source:
+      description: Where the numbers come from.
+      example:
+        label: label
+        basis: basis
+        url: url
+      properties:
+        label:
+          type: string
+        url:
+          type: string
+        basis:
+          description: How the numbers were derived from the source.
+          type: string
     FreeToolCalculateXApiCostResponse_line_items_inner:
       example:
         cost_usd: 1.4658129805029452
@@ -22933,6 +24297,124 @@ components:
           type: string
         pillar:
           description: Empty when no pillars were given.
+          type: string
+    FreeToolPlanPostingFrequencyResponse_networks_inner_recommended_per_week:
+      example:
+        min: 1
+        max: 5
+      properties:
+        min:
+          type: integer
+        max:
+          description: null for an open-ended range such as 1+.
+          nullable: true
+          type: integer
+    FreeToolPlanPostingFrequencyResponse_networks_inner_sources_inner:
+      example:
+        date: 2000-01-23
+        title: title
+        url: https://openapi-generator.tech
+      properties:
+        title:
+          type: string
+        url:
+          format: uri
+          type: string
+        date:
+          description: Publication date of the source.
+          format: date
+          type: string
+    FreeToolPlanPostingFrequencyResponse_networks_inner:
+      example:
+        fit: below
+        recommended_per_week:
+          min: 1
+          max: 5
+        allocated_per_week: 5
+        sources:
+        - date: 2000-01-23
+          title: title
+          url: https://openapi-generator.tech
+        - date: 2000-01-23
+          title: title
+          url: https://openapi-generator.tech
+        recommended_label: recommended_label
+        source_type: measured
+        label: label
+        network: instagram
+      properties:
+        network:
+          enum:
+          - instagram
+          - facebook
+          - linkedin
+          - x
+          - tiktok
+          - youtube
+          - pinterest
+          - threads
+          - google_business_profile
+          type: string
+        label:
+          type: string
+        recommended_per_week:
+          $ref: '#/components/schemas/FreeToolPlanPostingFrequencyResponse_networks_inner_recommended_per_week'
+        recommended_label:
+          description: "The range as text, e.g. \"3-5 per week\" or \"1+ per week\"\
+            ."
+          type: string
+        allocated_per_week:
+          description: "Your posts for this network: capacity split in proportion\
+            \ to the range midpoints (the minimum for an open-ended range)."
+          type: integer
+        fit:
+          description: Where the allocation sits against the recommended range.
+          enum:
+          - below
+          - within
+          - above
+          type: string
+        source_type:
+          description: measured = a study of real posts; vendor = a software vendor's
+            guidance; platform = the network's own guidance.
+          enum:
+          - measured
+          - vendor
+          - platform
+          type: string
+        sources:
+          items:
+            $ref: '#/components/schemas/FreeToolPlanPostingFrequencyResponse_networks_inner_sources_inner'
+          type: array
+    FreeToolPlanPostingFrequencyResponse_slots_inner:
+      example:
+        weekday: Monday
+        label: label
+        network: instagram
+      properties:
+        weekday:
+          enum:
+          - Monday
+          - Tuesday
+          - Wednesday
+          - Thursday
+          - Friday
+          - Saturday
+          - Sunday
+          type: string
+        network:
+          enum:
+          - instagram
+          - facebook
+          - linkedin
+          - x
+          - tiktok
+          - youtube
+          - pinterest
+          - threads
+          - google_business_profile
+          type: string
+        label:
           type: string
     FreeToolGenerateHooksResponse_hooks_inner:
       example:

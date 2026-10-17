@@ -6,8 +6,10 @@ All URIs are relative to *https://postboost.co/app/api*
 |--------|--------------|-------------|
 | [**BuildUtmUrl**](FreeToolsApi.md#buildutmurl) | **POST** /tools/utm-builder | Build a UTM-tagged campaign URL |
 | [**CalculateAspectRatio**](FreeToolsApi.md#calculateaspectratio) | **POST** /tools/aspect-ratio-calculator | Calculate an aspect ratio, or the missing side of an image at a given ratio |
+| [**CalculateCarouselSlices**](FreeToolsApi.md#calculatecarouselslices) | **POST** /tools/instagram-carousel-splitter | Split a wide image into seamless Instagram carousel slides |
 | [**CalculateCrop**](FreeToolsApi.md#calculatecrop) | **POST** /tools/social-media-image-sizes/crop | Calculate the crop box that fits an image to a social media size |
 | [**CalculateEngagementRate**](FreeToolsApi.md#calculateengagementrate) | **POST** /tools/engagement-rate-calculator | Calculate an engagement rate |
+| [**CalculateInfluencerRate**](FreeToolsApi.md#calculateinfluencerrate) | **POST** /tools/influencer-rate-calculator | Estimate an influencer&#39;s rate for one sponsored deliverable |
 | [**CalculateSocialRoi**](FreeToolsApi.md#calculatesocialroi) | **POST** /tools/social-media-roi-calculator | Calculate social media ROI |
 | [**CalculateXApiCost**](FreeToolsApi.md#calculatexapicost) | **POST** /tools/x-api-cost-calculator | Calculate the monthly X API cost |
 | [**CheckLinkPreview**](FreeToolsApi.md#checklinkpreview) | **POST** /tools/link-preview-checker | Check how a link previews on X, LinkedIn, Facebook and chat apps (Open Graph and Twitter card tags) |
@@ -27,9 +29,11 @@ All URIs are relative to *https://postboost.co/app/api*
 | [**GetBestTimesToPost**](FreeToolsApi.md#getbesttimestopost) | **GET** /tools/best-time-to-post | Get the best times to post per network from published studies, with sources |
 | [**GetHookTemplates**](FreeToolsApi.md#gethooktemplates) | **GET** /tools/hook-generator/library | Get free hook templates for social media posts, filtered by style and network |
 | [**GetImageSizes**](FreeToolsApi.md#getimagesizes) | **GET** /tools/social-media-image-sizes | Get social media image sizes per network, each with its source |
+| [**GetSafeZones**](FreeToolsApi.md#getsafezones) | **POST** /tools/safe-zone-checker | Get the TikTok, Instagram Reels or YouTube Shorts safe zones for a vertical frame |
 | [**GetVideoSpecs**](FreeToolsApi.md#getvideospecs) | **GET** /tools/social-media-video-specs | Get social media video ratios, resolutions, lengths and file size limits per network, with sources |
 | [**ListFreeTools**](FreeToolsApi.md#listfreetools) | **GET** /tools | List the free tools |
 | [**PlanContentCalendar**](FreeToolsApi.md#plancontentcalendar) | **POST** /tools/social-media-content-calendar-generator | Plan a social media content calendar and get it as CSV and ICS |
+| [**PlanPostingFrequency**](FreeToolsApi.md#planpostingfrequency) | **POST** /tools/posting-frequency-planner | Plan how often to post on each network |
 | [**PreviewPost**](FreeToolsApi.md#previewpost) | **POST** /tools/social-media-post-preview | Preview where a post folds and when its image is cropped on Instagram, X, LinkedIn and Facebook |
 | [**SearchEmoji**](FreeToolsApi.md#searchemoji) | **POST** /tools/social-media-emoji-picker | Search emoji by name or keyword, to copy and paste into a post |
 | [**SplitThread**](FreeToolsApi.md#splitthread) | **POST** /tools/x-thread-maker | Split long text into a thread |
@@ -224,6 +228,101 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
+<a id="calculatecarouselslices"></a>
+# **CalculateCarouselSlices**
+> FreeToolCalculateCarouselSlicesResponse CalculateCarouselSlices (FreeToolCalculateCarouselSlicesRequest freeToolCalculateCarouselSlicesRequest)
+
+Split a wide image into seamless Instagram carousel slides
+
+Split a wide image into seamless Instagram carousel slides. The same logic as the free web tool at https://postboost.co/tools/instagram-carousel-splitter. No account needed: call it without a token, or with any API token.
+
+### Example
+```csharp
+using System.Collections.Generic;
+using System.Diagnostics;
+using PostBoost.Client.Api;
+using PostBoost.Client.Client;
+using PostBoost.Client.Model;
+
+namespace Example
+{
+    public class CalculateCarouselSlicesExample
+    {
+        public static void Main()
+        {
+            Configuration config = new Configuration();
+            config.BasePath = "https://postboost.co/app/api";
+            var apiInstance = new FreeToolsApi(config);
+            var freeToolCalculateCarouselSlicesRequest = new FreeToolCalculateCarouselSlicesRequest(); // FreeToolCalculateCarouselSlicesRequest | 
+
+            try
+            {
+                // Split a wide image into seamless Instagram carousel slides
+                FreeToolCalculateCarouselSlicesResponse result = apiInstance.CalculateCarouselSlices(freeToolCalculateCarouselSlicesRequest);
+                Debug.WriteLine(result);
+            }
+            catch (ApiException  e)
+            {
+                Debug.Print("Exception when calling FreeToolsApi.CalculateCarouselSlices: " + e.Message);
+                Debug.Print("Status Code: " + e.ErrorCode);
+                Debug.Print(e.StackTrace);
+            }
+        }
+    }
+}
+```
+
+#### Using the CalculateCarouselSlicesWithHttpInfo variant
+This returns an ApiResponse object which contains the response data, status code and headers.
+
+```csharp
+try
+{
+    // Split a wide image into seamless Instagram carousel slides
+    ApiResponse<FreeToolCalculateCarouselSlicesResponse> response = apiInstance.CalculateCarouselSlicesWithHttpInfo(freeToolCalculateCarouselSlicesRequest);
+    Debug.Write("Status Code: " + response.StatusCode);
+    Debug.Write("Response Headers: " + response.Headers);
+    Debug.Write("Response Body: " + response.Data);
+}
+catch (ApiException e)
+{
+    Debug.Print("Exception when calling FreeToolsApi.CalculateCarouselSlicesWithHttpInfo: " + e.Message);
+    Debug.Print("Status Code: " + e.ErrorCode);
+    Debug.Print(e.StackTrace);
+}
+```
+
+### Parameters
+
+| Name | Type | Description | Notes |
+|------|------|-------------|-------|
+| **freeToolCalculateCarouselSlicesRequest** | [**FreeToolCalculateCarouselSlicesRequest**](FreeToolCalculateCarouselSlicesRequest.md) |  |  |
+
+### Return type
+
+[**FreeToolCalculateCarouselSlicesResponse**](FreeToolCalculateCarouselSlicesResponse.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | The tool output. |  * X-RateLimit-Limit - Calls allowed in the limit window closest to running out. <br>  * X-RateLimit-Remaining - Calls left in that window. <br>  |
+| **401** |  |  -  |
+| **413** | The request body is larger than 128 KB. |  -  |
+| **422** |  |  -  |
+| **429** | Rate limit reached. Without a token: 30 calls per minute and 500 per UTC day per IP address (IPv6 per /64). With a token: 300 per minute per user; the Free plan also has 1,000 calls per UTC day, paid plans have no daily cap. |  * X-RateLimit-Limit - Calls allowed in the limit window closest to running out. <br>  * X-RateLimit-Remaining - Calls left in that window. <br>  * Retry-After - Seconds until the limit resets. <br>  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
 <a id="calculatecrop"></a>
 # **CalculateCrop**
 > FreeToolCalculateCropResponse CalculateCrop (FreeToolCalculateCropRequest freeToolCalculateCropRequest)
@@ -392,6 +491,101 @@ catch (ApiException e)
 ### Return type
 
 [**FreeToolCalculateEngagementRateResponse**](FreeToolCalculateEngagementRateResponse.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | The tool output. |  * X-RateLimit-Limit - Calls allowed in the limit window closest to running out. <br>  * X-RateLimit-Remaining - Calls left in that window. <br>  |
+| **401** |  |  -  |
+| **413** | The request body is larger than 128 KB. |  -  |
+| **422** |  |  -  |
+| **429** | Rate limit reached. Without a token: 30 calls per minute and 500 per UTC day per IP address (IPv6 per /64). With a token: 300 per minute per user; the Free plan also has 1,000 calls per UTC day, paid plans have no daily cap. |  * X-RateLimit-Limit - Calls allowed in the limit window closest to running out. <br>  * X-RateLimit-Remaining - Calls left in that window. <br>  * Retry-After - Seconds until the limit resets. <br>  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+<a id="calculateinfluencerrate"></a>
+# **CalculateInfluencerRate**
+> FreeToolCalculateInfluencerRateResponse CalculateInfluencerRate (FreeToolCalculateInfluencerRateRequest freeToolCalculateInfluencerRateRequest)
+
+Estimate an influencer's rate for one sponsored deliverable
+
+Estimate an influencer's rate for one sponsored deliverable. The same logic as the free web tool at https://postboost.co/tools/influencer-rate-calculator. No account needed: call it without a token, or with any API token.
+
+### Example
+```csharp
+using System.Collections.Generic;
+using System.Diagnostics;
+using PostBoost.Client.Api;
+using PostBoost.Client.Client;
+using PostBoost.Client.Model;
+
+namespace Example
+{
+    public class CalculateInfluencerRateExample
+    {
+        public static void Main()
+        {
+            Configuration config = new Configuration();
+            config.BasePath = "https://postboost.co/app/api";
+            var apiInstance = new FreeToolsApi(config);
+            var freeToolCalculateInfluencerRateRequest = new FreeToolCalculateInfluencerRateRequest(); // FreeToolCalculateInfluencerRateRequest | 
+
+            try
+            {
+                // Estimate an influencer's rate for one sponsored deliverable
+                FreeToolCalculateInfluencerRateResponse result = apiInstance.CalculateInfluencerRate(freeToolCalculateInfluencerRateRequest);
+                Debug.WriteLine(result);
+            }
+            catch (ApiException  e)
+            {
+                Debug.Print("Exception when calling FreeToolsApi.CalculateInfluencerRate: " + e.Message);
+                Debug.Print("Status Code: " + e.ErrorCode);
+                Debug.Print(e.StackTrace);
+            }
+        }
+    }
+}
+```
+
+#### Using the CalculateInfluencerRateWithHttpInfo variant
+This returns an ApiResponse object which contains the response data, status code and headers.
+
+```csharp
+try
+{
+    // Estimate an influencer's rate for one sponsored deliverable
+    ApiResponse<FreeToolCalculateInfluencerRateResponse> response = apiInstance.CalculateInfluencerRateWithHttpInfo(freeToolCalculateInfluencerRateRequest);
+    Debug.Write("Status Code: " + response.StatusCode);
+    Debug.Write("Response Headers: " + response.Headers);
+    Debug.Write("Response Body: " + response.Data);
+}
+catch (ApiException e)
+{
+    Debug.Print("Exception when calling FreeToolsApi.CalculateInfluencerRateWithHttpInfo: " + e.Message);
+    Debug.Print("Status Code: " + e.ErrorCode);
+    Debug.Print(e.StackTrace);
+}
+```
+
+### Parameters
+
+| Name | Type | Description | Notes |
+|------|------|-------------|-------|
+| **freeToolCalculateInfluencerRateRequest** | [**FreeToolCalculateInfluencerRateRequest**](FreeToolCalculateInfluencerRateRequest.md) |  |  |
+
+### Return type
+
+[**FreeToolCalculateInfluencerRateResponse**](FreeToolCalculateInfluencerRateResponse.md)
 
 ### Authorization
 
@@ -2247,6 +2441,101 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
+<a id="getsafezones"></a>
+# **GetSafeZones**
+> FreeToolGetSafeZonesResponse GetSafeZones (FreeToolGetSafeZonesRequest freeToolGetSafeZonesRequest)
+
+Get the TikTok, Instagram Reels or YouTube Shorts safe zones for a vertical frame
+
+Get the TikTok, Instagram Reels or YouTube Shorts safe zones for a vertical frame. The same logic as the free web tool at https://postboost.co/tools/safe-zone-checker. No account needed: call it without a token, or with any API token.
+
+### Example
+```csharp
+using System.Collections.Generic;
+using System.Diagnostics;
+using PostBoost.Client.Api;
+using PostBoost.Client.Client;
+using PostBoost.Client.Model;
+
+namespace Example
+{
+    public class GetSafeZonesExample
+    {
+        public static void Main()
+        {
+            Configuration config = new Configuration();
+            config.BasePath = "https://postboost.co/app/api";
+            var apiInstance = new FreeToolsApi(config);
+            var freeToolGetSafeZonesRequest = new FreeToolGetSafeZonesRequest(); // FreeToolGetSafeZonesRequest | 
+
+            try
+            {
+                // Get the TikTok, Instagram Reels or YouTube Shorts safe zones for a vertical frame
+                FreeToolGetSafeZonesResponse result = apiInstance.GetSafeZones(freeToolGetSafeZonesRequest);
+                Debug.WriteLine(result);
+            }
+            catch (ApiException  e)
+            {
+                Debug.Print("Exception when calling FreeToolsApi.GetSafeZones: " + e.Message);
+                Debug.Print("Status Code: " + e.ErrorCode);
+                Debug.Print(e.StackTrace);
+            }
+        }
+    }
+}
+```
+
+#### Using the GetSafeZonesWithHttpInfo variant
+This returns an ApiResponse object which contains the response data, status code and headers.
+
+```csharp
+try
+{
+    // Get the TikTok, Instagram Reels or YouTube Shorts safe zones for a vertical frame
+    ApiResponse<FreeToolGetSafeZonesResponse> response = apiInstance.GetSafeZonesWithHttpInfo(freeToolGetSafeZonesRequest);
+    Debug.Write("Status Code: " + response.StatusCode);
+    Debug.Write("Response Headers: " + response.Headers);
+    Debug.Write("Response Body: " + response.Data);
+}
+catch (ApiException e)
+{
+    Debug.Print("Exception when calling FreeToolsApi.GetSafeZonesWithHttpInfo: " + e.Message);
+    Debug.Print("Status Code: " + e.ErrorCode);
+    Debug.Print(e.StackTrace);
+}
+```
+
+### Parameters
+
+| Name | Type | Description | Notes |
+|------|------|-------------|-------|
+| **freeToolGetSafeZonesRequest** | [**FreeToolGetSafeZonesRequest**](FreeToolGetSafeZonesRequest.md) |  |  |
+
+### Return type
+
+[**FreeToolGetSafeZonesResponse**](FreeToolGetSafeZonesResponse.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | The tool output. |  * X-RateLimit-Limit - Calls allowed in the limit window closest to running out. <br>  * X-RateLimit-Remaining - Calls left in that window. <br>  |
+| **401** |  |  -  |
+| **413** | The request body is larger than 128 KB. |  -  |
+| **422** |  |  -  |
+| **429** | Rate limit reached. Without a token: 30 calls per minute and 500 per UTC day per IP address (IPv6 per /64). With a token: 300 per minute per user; the Free plan also has 1,000 calls per UTC day, paid plans have no daily cap. |  * X-RateLimit-Limit - Calls allowed in the limit window closest to running out. <br>  * X-RateLimit-Remaining - Calls left in that window. <br>  * Retry-After - Seconds until the limit resets. <br>  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
 <a id="getvideospecs"></a>
 # **GetVideoSpecs**
 > FreeToolGetVideoSpecsResponse GetVideoSpecs (string? network = null)
@@ -2502,6 +2791,101 @@ catch (ApiException e)
 ### Return type
 
 [**FreeToolPlanContentCalendarResponse**](FreeToolPlanContentCalendarResponse.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | The tool output. |  * X-RateLimit-Limit - Calls allowed in the limit window closest to running out. <br>  * X-RateLimit-Remaining - Calls left in that window. <br>  |
+| **401** |  |  -  |
+| **413** | The request body is larger than 128 KB. |  -  |
+| **422** |  |  -  |
+| **429** | Rate limit reached. Without a token: 30 calls per minute and 500 per UTC day per IP address (IPv6 per /64). With a token: 300 per minute per user; the Free plan also has 1,000 calls per UTC day, paid plans have no daily cap. |  * X-RateLimit-Limit - Calls allowed in the limit window closest to running out. <br>  * X-RateLimit-Remaining - Calls left in that window. <br>  * Retry-After - Seconds until the limit resets. <br>  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+<a id="planpostingfrequency"></a>
+# **PlanPostingFrequency**
+> FreeToolPlanPostingFrequencyResponse PlanPostingFrequency (FreeToolPlanPostingFrequencyRequest freeToolPlanPostingFrequencyRequest)
+
+Plan how often to post on each network
+
+Plan how often to post on each network. The same logic as the free web tool at https://postboost.co/tools/posting-frequency-planner. No account needed: call it without a token, or with any API token.
+
+### Example
+```csharp
+using System.Collections.Generic;
+using System.Diagnostics;
+using PostBoost.Client.Api;
+using PostBoost.Client.Client;
+using PostBoost.Client.Model;
+
+namespace Example
+{
+    public class PlanPostingFrequencyExample
+    {
+        public static void Main()
+        {
+            Configuration config = new Configuration();
+            config.BasePath = "https://postboost.co/app/api";
+            var apiInstance = new FreeToolsApi(config);
+            var freeToolPlanPostingFrequencyRequest = new FreeToolPlanPostingFrequencyRequest(); // FreeToolPlanPostingFrequencyRequest | 
+
+            try
+            {
+                // Plan how often to post on each network
+                FreeToolPlanPostingFrequencyResponse result = apiInstance.PlanPostingFrequency(freeToolPlanPostingFrequencyRequest);
+                Debug.WriteLine(result);
+            }
+            catch (ApiException  e)
+            {
+                Debug.Print("Exception when calling FreeToolsApi.PlanPostingFrequency: " + e.Message);
+                Debug.Print("Status Code: " + e.ErrorCode);
+                Debug.Print(e.StackTrace);
+            }
+        }
+    }
+}
+```
+
+#### Using the PlanPostingFrequencyWithHttpInfo variant
+This returns an ApiResponse object which contains the response data, status code and headers.
+
+```csharp
+try
+{
+    // Plan how often to post on each network
+    ApiResponse<FreeToolPlanPostingFrequencyResponse> response = apiInstance.PlanPostingFrequencyWithHttpInfo(freeToolPlanPostingFrequencyRequest);
+    Debug.Write("Status Code: " + response.StatusCode);
+    Debug.Write("Response Headers: " + response.Headers);
+    Debug.Write("Response Body: " + response.Data);
+}
+catch (ApiException e)
+{
+    Debug.Print("Exception when calling FreeToolsApi.PlanPostingFrequencyWithHttpInfo: " + e.Message);
+    Debug.Print("Status Code: " + e.ErrorCode);
+    Debug.Print(e.StackTrace);
+}
+```
+
+### Parameters
+
+| Name | Type | Description | Notes |
+|------|------|-------------|-------|
+| **freeToolPlanPostingFrequencyRequest** | [**FreeToolPlanPostingFrequencyRequest**](FreeToolPlanPostingFrequencyRequest.md) |  |  |
+
+### Return type
+
+[**FreeToolPlanPostingFrequencyResponse**](FreeToolPlanPostingFrequencyResponse.md)
 
 ### Authorization
 

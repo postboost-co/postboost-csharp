@@ -12,7 +12,7 @@
     <Description>A library generated from a OpenAPI doc</Description>
     <Copyright>No Copyright</Copyright>
     <RootNamespace>PostBoost.Client</RootNamespace>
-    <Version>1.49.0</Version>
+    <Version>1.53.1</Version>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\PostBoost.Client.xml</DocumentationFile>
     <RepositoryUrl>https://github.com/postboost-co/postboost-csharp.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
