@@ -2445,7 +2445,7 @@ catch (ApiException e)
 
 Validate post (dry run)
 
-Runs everything create-post checks without creating anything: request validation, network requirements (text length, media count and type, links) for every given account, whether or not the post is scheduled, and the guardrails (duplicate content, daily caps, account health). Always answers `200`; read `valid`. Any workspace member, including viewers, may call it. Recommended agent loop: account health, validate, then create. 
+Runs everything create-post checks without creating anything: request validation, network requirements (text length, media count and type, links) for every given account, whether or not the post is scheduled, and the guardrails (duplicate content, daily caps, account health). Always answers `200`; read `valid`. `warnings` lists what create-post would return as warnings: what the network will reject or ignore at publish (for example a Threads post over 500 characters as Threads counts them). `valid` stays true for them; fix them before scheduling. Any workspace member, including viewers, may call it. Recommended agent loop: account health, validate, then create. 
 
 ### Example
 ```csharp

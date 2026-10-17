@@ -48,7 +48,7 @@ info:
     name: Commercial
     url: https://postboost.co/pages/terms
   title: PostBoost API
-  version: 1.53.1
+  version: 1.56.0
 servers:
 - description: Production
   url: https://postboost.co/app/api
@@ -2637,8 +2637,11 @@ paths:
         Runs everything create-post checks without creating anything: request validation,
         network requirements (text length, media count and type, links) for every given account,
         whether or not the post is scheduled, and the guardrails (duplicate content, daily caps,
-        account health). Always answers `200`; read `valid`. Any workspace member, including
-        viewers, may call it. Recommended agent loop: account health, validate, then create.
+        account health). Always answers `200`; read `valid`. `warnings` lists what create-post
+        would return as warnings: what the network will reject or ignore at publish (for example
+        a Threads post over 500 characters as Threads counts them). `valid` stays true for them;
+        fix them before scheduling. Any workspace member, including viewers, may call it.
+        Recommended agent loop: account health, validate, then create.
       operationId: validatePost
       parameters:
       - $ref: '#/components/parameters/workspaceUuid'
@@ -9722,6 +9725,289 @@ paths:
       tags:
       - Free Tools
       x-free-tool: true
+  /tools/social-media-holiday-calendar:
+    get:
+      description: "List public holidays, awareness days and social media days by\
+        \ date, country, type and topic, with sources. The same logic as the free\
+        \ web tool at https://postboost.co/tools/social-media-holiday-calendar. No\
+        \ account needed: call it without a token, or with any API token."
+      operationId: listAwarenessDays
+      parameters:
+      - explode: true
+        in: query
+        name: from
+        required: false
+        schema:
+          description: First date (YYYY-MM-DD); entries that end on or after it. Omit
+            it for the whole range.
+          pattern: "^\\d{4}-\\d{2}-\\d{2}$"
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: to
+        required: false
+        schema:
+          description: Last date (YYYY-MM-DD); entries that start on or before it.
+          pattern: "^\\d{4}-\\d{2}-\\d{2}$"
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: country
+        required: false
+        schema:
+          description: "Country code: that country's entries plus the worldwide (`global`)\
+            \ ones."
+          enum:
+          - US
+          - GB
+          - CA
+          - AU
+          - IN
+          - DE
+          - FR
+          - TR
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: type
+        required: false
+        schema:
+          description: Entry type.
+          enum:
+          - public-holiday
+          - awareness-day
+          - awareness-week
+          - awareness-month
+          - social-media-day
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: topic
+        required: false
+        schema:
+          description: Topic.
+          enum:
+          - business
+          - health
+          - environment
+          - food
+          - tech
+          - culture
+          - social-media
+          - family
+          - sport
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                example-1:
+                  value:
+                    covers:
+                      from: 2026-11-01
+                      to: 2027-12-31
+                    total: 8
+                    entries:
+                    - name: GivingTuesday
+                      type: awareness-day
+                      date: 2026-12-01
+                      end: null
+                      countries:
+                      - global
+                      topics:
+                      - business
+                      source: https://www.givingtuesday.org/
+                      note: null
+                      idea: "Share one practical tip or story that ties the day's\
+                        \ theme to your work, with the organiser's hashtag if it has\
+                        \ one."
+                    - name: World AIDS Day
+                      type: awareness-day
+                      date: 2026-12-01
+                      end: null
+                      countries:
+                      - global
+                      topics:
+                      - health
+                      source: https://www.un.org/en/observances/world-aids-day
+                      note: null
+                      idea: "Share one practical tip or story that ties the day's\
+                        \ theme to your work, with the organiser's hashtag if it has\
+                        \ one."
+                    - name: International Day of Persons with Disabilities
+                      type: awareness-day
+                      date: 2026-12-03
+                      end: null
+                      countries:
+                      - global
+                      topics:
+                      - culture
+                      - health
+                      source: https://www.un.org/en/observances/day-of-persons-with-disabilities
+                      note: null
+                      idea: "Share one practical tip or story that ties the day's\
+                        \ theme to your work, with the organiser's hashtag if it has\
+                        \ one."
+                    - name: International Volunteer Day
+                      type: awareness-day
+                      date: 2026-12-05
+                      end: null
+                      countries:
+                      - global
+                      topics:
+                      - culture
+                      source: https://www.un.org/en/observances/volunteer-day
+                      note: null
+                      idea: "Share one practical tip or story that ties the day's\
+                        \ theme to your work, with the organiser's hashtag if it has\
+                        \ one."
+                    - name: Computer Science Education Week
+                      type: awareness-week
+                      date: 2026-12-07
+                      end: 2026-12-13
+                      countries:
+                      - US
+                      topics:
+                      - tech
+                      source: https://www.csedweek.org/
+                      note: null
+                      idea: "Plan a short series: one post on the first day, one midweek\
+                        \ and a recap at the end."
+                    - name: Human Rights Day
+                      type: awareness-day
+                      date: 2026-12-10
+                      end: null
+                      countries:
+                      - global
+                      topics:
+                      - culture
+                      source: https://www.un.org/en/observances/human-rights-day
+                      note: null
+                      idea: "Share one practical tip or story that ties the day's\
+                        \ theme to your work, with the organiser's hashtag if it has\
+                        \ one."
+                    - name: World Meditation Day
+                      type: awareness-day
+                      date: 2026-12-21
+                      end: null
+                      countries:
+                      - global
+                      topics:
+                      - health
+                      source: https://www.un.org/en/observances/meditation-day
+                      note: null
+                      idea: "Share one practical tip or story that ties the day's\
+                        \ theme to your work, with the organiser's hashtag if it has\
+                        \ one."
+                    - name: Christmas Day
+                      type: public-holiday
+                      date: 2026-12-25
+                      end: null
+                      countries:
+                      - US
+                      topics:
+                      - family
+                      source: https://www.opm.gov/policy-data-oversight/pay-leave/federal-holidays/
+                      note: null
+                      idea: "Post your opening hours or a short greeting, and schedule\
+                        \ it the day before so it is live in the morning."
+                    last_verified: 2026-10-17
+                    sources: []
+                example-2:
+                  value:
+                    covers:
+                      from: 2026-11-01
+                      to: 2027-12-31
+                    total: 2
+                    entries:
+                    - name: Earth Day
+                      type: awareness-day
+                      date: 2027-04-22
+                      end: null
+                      countries:
+                      - global
+                      topics:
+                      - environment
+                      source: https://www.earthday.org/earth-day-2027/
+                      note: null
+                      idea: "Share one practical tip or story that ties the day's\
+                        \ theme to your work, with the organiser's hashtag if it has\
+                        \ one."
+                    - name: National Arbor Day (US)
+                      type: awareness-day
+                      date: 2027-04-30
+                      end: null
+                      countries:
+                      - US
+                      topics:
+                      - environment
+                      source: https://www.arborday.org/celebrate/globe
+                      note: null
+                      idea: "Share one practical tip or story that ties the day's\
+                        \ theme to your work, with the organiser's hashtag if it has\
+                        \ one."
+                    last_verified: 2026-10-17
+                    sources: []
+              schema:
+                $ref: '#/components/schemas/FreeToolListAwarenessDaysResponse'
+          description: The tool output.
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "422":
+          $ref: '#/components/responses/ValidationError'
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: "Rate limit reached. Without a token: 30 calls per minute and\
+            \ 500 per UTC day per IP address (IPv6 per /64). With a token: 300 per\
+            \ minute per user; the Free plan also has 1,000 calls per UTC day, paid\
+            \ plans have no daily cap."
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            Retry-After:
+              description: Seconds until the limit resets.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+      security: []
+      summary: "List public holidays, awareness days and social media days by date,\
+        \ country, type and topic, with sources"
+      tags:
+      - Free Tools
+      x-free-tool: true
   /tools/posting-frequency-planner:
     post:
       description: "Plan how often to post on each network. The same logic as the\
@@ -10004,6 +10290,322 @@ paths:
               style: simple
       security: []
       summary: Plan how often to post on each network
+      tags:
+      - Free Tools
+      x-free-tool: true
+  /tools/social-media-audit-template:
+    post:
+      description: "Score a social media audit checklist and get the top fixes. The\
+        \ same logic as the free web tool at https://postboost.co/tools/social-media-audit-template.\
+        \ No account needed: call it without a token, or with any API token."
+      operationId: scoreSocialAudit
+      requestBody:
+        content:
+          application/json:
+            examples:
+              example-1:
+                value:
+                  target_posts_per_week: 4
+                  instagram:
+                    profile: "yes"
+                    bio: "yes"
+                    link_tracking: "no"
+                    frequency: partly
+                    replies: "yes"
+                    native_formats: "yes"
+                    pinned: "no"
+                    engagement_rate: partly
+                  linkedin:
+                    profile: "yes"
+                    bio: partly
+                    link_tracking: "no"
+                    frequency: "yes"
+                    replies: partly
+                    native_formats: "no"
+                    pinned: "yes"
+                    engagement_rate: "no"
+              example-2:
+                value:
+                  x:
+                    profile: "yes"
+                    bio: "yes"
+                    link_tracking: "yes"
+                    frequency: "yes"
+                    replies: "yes"
+                    native_formats: "yes"
+                    pinned: "yes"
+                    engagement_rate: "yes"
+            schema:
+              $ref: '#/components/schemas/FreeToolScoreSocialAuditRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                example-1:
+                  value:
+                    score: 56
+                    networks:
+                    - network: instagram
+                      label: Instagram
+                      score: 63
+                      points: 10
+                      max_points: 16
+                      items:
+                      - key: profile
+                        question: "Profile photo, name and cover image match your\
+                          \ brand"
+                        answer: "yes"
+                        points: 2
+                      - key: bio
+                        question: "Your bio says who you help and how, and has a link"
+                        answer: "yes"
+                        points: 2
+                      - key: link_tracking
+                        question: The bio link carries UTM tags
+                        answer: "no"
+                        points: 0
+                      - key: frequency
+                        question: "You publish at least 4 posts a week, your own target"
+                        answer: partly
+                        points: 1
+                      - key: replies
+                        question: You reply to comments and messages within 24 hours
+                        answer: "yes"
+                        points: 2
+                      - key: native_formats
+                        question: "You use the formats the network is built for, such\
+                          \ as short video, carousels or documents"
+                        answer: "yes"
+                        points: 2
+                      - key: pinned
+                        question: Your pinned or featured post is current
+                        answer: "no"
+                        points: 0
+                      - key: engagement_rate
+                        question: You check your engagement rate every month
+                        answer: partly
+                        points: 1
+                    - network: linkedin
+                      label: LinkedIn
+                      score: 50
+                      points: 8
+                      max_points: 16
+                      items:
+                      - key: profile
+                        question: "Profile photo, name and cover image match your\
+                          \ brand"
+                        answer: "yes"
+                        points: 2
+                      - key: bio
+                        question: "Your bio says who you help and how, and has a link"
+                        answer: partly
+                        points: 1
+                      - key: link_tracking
+                        question: The bio link carries UTM tags
+                        answer: "no"
+                        points: 0
+                      - key: frequency
+                        question: "You publish at least 4 posts a week, your own target"
+                        answer: "yes"
+                        points: 2
+                      - key: replies
+                        question: You reply to comments and messages within 24 hours
+                        answer: partly
+                        points: 1
+                      - key: native_formats
+                        question: "You use the formats the network is built for, such\
+                          \ as short video, carousels or documents"
+                        answer: "no"
+                        points: 0
+                      - key: pinned
+                        question: Your pinned or featured post is current
+                        answer: "yes"
+                        points: 2
+                      - key: engagement_rate
+                        question: You check your engagement rate every month
+                        answer: "no"
+                        points: 0
+                    top_fixes:
+                    - key: link_tracking
+                      question: The bio link carries UTM tags
+                      tip: "Add UTM tags to the bio link, so your analytics show how\
+                        \ many visitors this network sends."
+                      networks:
+                      - Instagram
+                      - LinkedIn
+                    - key: engagement_rate
+                      question: You check your engagement rate every month
+                      tip: Work out your engagement rate once a month and compare
+                        it with your own last month.
+                      networks:
+                      - Instagram
+                      - LinkedIn
+                    - key: native_formats
+                      question: "You use the formats the network is built for, such\
+                        \ as short video, carousels or documents"
+                      tip: "Turn a recent post that did well into a format this network\
+                        \ offers, such as a short video or a carousel."
+                      networks:
+                      - LinkedIn
+                    report_markdown: |
+                      # Social media audit
+
+                      Overall score: 56/100
+
+                      - Instagram: 63/100
+                      - LinkedIn: 50/100
+
+                      ## Top fixes
+
+                      1. The bio link carries UTM tags (Instagram, LinkedIn): Add UTM tags to the bio link, so your analytics show how many visitors this network sends.
+                      2. You check your engagement rate every month (Instagram, LinkedIn): Work out your engagement rate once a month and compare it with your own last month.
+                      3. You use the formats the network is built for, such as short video, carousels or documents (LinkedIn): Turn a recent post that did well into a format this network offers, such as a short video or a carousel.
+
+                      ## Instagram: 63/100
+
+                      - Yes: Profile photo, name and cover image match your brand
+                      - Yes: Your bio says who you help and how, and has a link
+                      - No: The bio link carries UTM tags
+                      - Partly: You publish at least 4 posts a week, your own target
+                      - Yes: You reply to comments and messages within 24 hours
+                      - Yes: You use the formats the network is built for, such as short video, carousels or documents
+                      - No: Your pinned or featured post is current
+                      - Partly: You check your engagement rate every month
+
+                      ## LinkedIn: 50/100
+
+                      - Yes: Profile photo, name and cover image match your brand
+                      - Partly: Your bio says who you help and how, and has a link
+                      - No: The bio link carries UTM tags
+                      - Yes: You publish at least 4 posts a week, your own target
+                      - Partly: You reply to comments and messages within 24 hours
+                      - No: You use the formats the network is built for, such as short video, carousels or documents
+                      - Yes: Your pinned or featured post is current
+                      - No: You check your engagement rate every month
+                example-2:
+                  value:
+                    score: 100
+                    networks:
+                    - network: x
+                      label: X
+                      score: 100
+                      points: 16
+                      max_points: 16
+                      items:
+                      - key: profile
+                        question: "Profile photo, name and cover image match your\
+                          \ brand"
+                        answer: "yes"
+                        points: 2
+                      - key: bio
+                        question: "Your bio says who you help and how, and has a link"
+                        answer: "yes"
+                        points: 2
+                      - key: link_tracking
+                        question: The bio link carries UTM tags
+                        answer: "yes"
+                        points: 2
+                      - key: frequency
+                        question: "You publish at least 3 posts a week, your own target"
+                        answer: "yes"
+                        points: 2
+                      - key: replies
+                        question: You reply to comments and messages within 24 hours
+                        answer: "yes"
+                        points: 2
+                      - key: native_formats
+                        question: "You use the formats the network is built for, such\
+                          \ as short video, carousels or documents"
+                        answer: "yes"
+                        points: 2
+                      - key: pinned
+                        question: Your pinned or featured post is current
+                        answer: "yes"
+                        points: 2
+                      - key: engagement_rate
+                        question: You check your engagement rate every month
+                        answer: "yes"
+                        points: 2
+                    top_fixes: []
+                    report_markdown: |
+                      # Social media audit
+
+                      Overall score: 100/100
+
+                      - X: 100/100
+
+                      ## Top fixes
+
+                      None: every answer is yes.
+
+                      ## X: 100/100
+
+                      - Yes: Profile photo, name and cover image match your brand
+                      - Yes: Your bio says who you help and how, and has a link
+                      - Yes: The bio link carries UTM tags
+                      - Yes: You publish at least 3 posts a week, your own target
+                      - Yes: You reply to comments and messages within 24 hours
+                      - Yes: You use the formats the network is built for, such as short video, carousels or documents
+                      - Yes: Your pinned or featured post is current
+                      - Yes: You check your engagement rate every month
+              schema:
+                $ref: '#/components/schemas/FreeToolScoreSocialAuditResponse'
+          description: The tool output.
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "413":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: The request body is larger than 128 KB.
+        "422":
+          $ref: '#/components/responses/ValidationError'
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: "Rate limit reached. Without a token: 30 calls per minute and\
+            \ 500 per UTC day per IP address (IPv6 per /64). With a token: 300 per\
+            \ minute per user; the Free plan also has 1,000 calls per UTC day, paid\
+            \ plans have no daily cap."
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            Retry-After:
+              description: Seconds until the limit resets.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+      security: []
+      summary: Score a social media audit checklist and get the top fixes
       tags:
       - Free Tools
       x-free-tool: true
@@ -11144,8 +11746,8 @@ components:
       - message
     PostWarning:
       description: |
-        A non-blocking warning on a successful create or update: the post was saved, but
-        something will not behave as you may expect. Log the `code`.
+        A non-blocking warning on a successful create or update (the post was saved) or in a
+        dry run (`validatePost`): something will not behave as you may expect. Log the `code`.
         - `ai_media_without_disclosure`: the post uses media from the AI image endpoints but
           `ai_generated` is `false`, so no network AI label is applied.
         - `meta_first_comment_unavailable`: a Facebook Page or Instagram first comment cannot
@@ -11287,6 +11889,13 @@ components:
     PreflightResult:
       example:
         valid: true
+        warnings:
+        - code: ai_media_without_disclosure
+          account_id: 6
+          message: message
+        - code: ai_media_without_disclosure
+          account_id: 6
+          message: message
         accounts:
         - daily_cap:
             limit: 5
@@ -11356,7 +11965,8 @@ components:
           - errors
       properties:
         valid:
-          description: True when create-post with the same body would succeed.
+          description: True when create-post with the same body would succeed. Warnings
+            do not change it.
           type: boolean
         errors:
           additionalProperties:
@@ -11369,6 +11979,12 @@ components:
             \ the first of them."
           items:
             $ref: '#/components/schemas/GuardrailError'
+          type: array
+        warnings:
+          description: The warnings create-post would return for the same body (same
+            codes and messages); empty when there are none.
+          items:
+            $ref: '#/components/schemas/PostWarning'
           type: array
         publish_at:
           description: UTC time the post would publish at; null for a draft.
@@ -11385,6 +12001,7 @@ components:
       - issues
       - publish_at
       - valid
+      - warnings
     ApiActivityOutcome:
       enum:
       - created
@@ -19183,6 +19800,65 @@ components:
           description: "The calendar as an iCalendar file: one 15-minute event per\
             \ post, in floating local time."
           type: string
+    FreeToolListAwarenessDaysResponse:
+      example:
+        total: 0
+        entries:
+        - date: 2000-01-23
+          note: note
+          topics:
+          - topics
+          - topics
+          idea: idea
+          name: name
+          end: 2000-01-23
+          countries:
+          - countries
+          - countries
+          source: https://openapi-generator.tech
+          type: public-holiday
+        - date: 2000-01-23
+          note: note
+          topics:
+          - topics
+          - topics
+          idea: idea
+          name: name
+          end: 2000-01-23
+          countries:
+          - countries
+          - countries
+          source: https://openapi-generator.tech
+          type: public-holiday
+        sources:
+        - label: label
+          url: https://openapi-generator.tech
+        - label: label
+          url: https://openapi-generator.tech
+        last_verified: 2000-01-23
+        covers:
+          from: 2000-01-23
+          to: 2000-01-23
+      properties:
+        covers:
+          $ref: '#/components/schemas/FreeToolListAwarenessDaysResponse_covers'
+        total:
+          description: Number of entries returned.
+          type: integer
+        entries:
+          items:
+            $ref: '#/components/schemas/FreeToolListAwarenessDaysResponse_entries_inner'
+          type: array
+        last_verified:
+          description: When the data was last checked against its sources.
+          format: date
+          nullable: true
+          type: string
+        sources:
+          description: Sources of the whole dataset (rows may name their own).
+          items:
+            $ref: '#/components/schemas/FreeToolGetImageSizesResponse_sources_inner'
+          type: array
     FreeToolPlanPostingFrequencyRequest:
       example:
         posts_per_week_capacity: 16
@@ -19292,6 +19968,196 @@ components:
           description: When the ranges were last checked against their sources.
           format: date
           type: string
+    FreeToolScoreSocialAuditRequest:
+      example:
+        youtube:
+          native_formats: "no"
+          pinned: "no"
+          replies: "no"
+          link_tracking: "no"
+          profile: "no"
+          bio: "no"
+          engagement_rate: "no"
+          frequency: "no"
+        tiktok:
+          native_formats: "no"
+          pinned: "no"
+          replies: "no"
+          link_tracking: "no"
+          profile: "no"
+          bio: "no"
+          engagement_rate: "no"
+          frequency: "no"
+        facebook:
+          native_formats: "no"
+          pinned: "no"
+          replies: "no"
+          link_tracking: "no"
+          profile: "no"
+          bio: "no"
+          engagement_rate: "no"
+          frequency: "no"
+        x:
+          native_formats: "no"
+          pinned: "no"
+          replies: "no"
+          link_tracking: "no"
+          profile: "no"
+          bio: "no"
+          engagement_rate: "no"
+          frequency: "no"
+        target_posts_per_week: 4
+        threads:
+          native_formats: "no"
+          pinned: "no"
+          replies: "no"
+          link_tracking: "no"
+          profile: "no"
+          bio: "no"
+          engagement_rate: "no"
+          frequency: "no"
+        bluesky:
+          native_formats: "no"
+          pinned: "no"
+          replies: "no"
+          link_tracking: "no"
+          profile: "no"
+          bio: "no"
+          engagement_rate: "no"
+          frequency: "no"
+        mastodon:
+          native_formats: "no"
+          pinned: "no"
+          replies: "no"
+          link_tracking: "no"
+          profile: "no"
+          bio: "no"
+          engagement_rate: "no"
+          frequency: "no"
+        pinterest:
+          native_formats: "no"
+          pinned: "no"
+          replies: "no"
+          link_tracking: "no"
+          profile: "no"
+          bio: "no"
+          engagement_rate: "no"
+          frequency: "no"
+        instagram:
+          native_formats: "no"
+          pinned: "no"
+          replies: "no"
+          link_tracking: "no"
+          profile: "no"
+          bio: "no"
+          engagement_rate: "no"
+          frequency: "no"
+        linkedin:
+          native_formats: "no"
+          pinned: "no"
+          replies: "no"
+          link_tracking: "no"
+          profile: "no"
+          bio: "no"
+          engagement_rate: "no"
+          frequency: "no"
+      properties:
+        target_posts_per_week:
+          default: 3
+          description: "Your own posting target per network and week, used in the\
+            \ frequency question."
+          maximum: 50
+          minimum: 1
+          type: integer
+        instagram:
+          $ref: '#/components/schemas/FreeToolScoreSocialAuditRequest_instagram'
+        facebook:
+          $ref: '#/components/schemas/FreeToolScoreSocialAuditRequest_instagram'
+        linkedin:
+          $ref: '#/components/schemas/FreeToolScoreSocialAuditRequest_instagram'
+        x:
+          $ref: '#/components/schemas/FreeToolScoreSocialAuditRequest_instagram'
+        tiktok:
+          $ref: '#/components/schemas/FreeToolScoreSocialAuditRequest_instagram'
+        youtube:
+          $ref: '#/components/schemas/FreeToolScoreSocialAuditRequest_instagram'
+        pinterest:
+          $ref: '#/components/schemas/FreeToolScoreSocialAuditRequest_instagram'
+        threads:
+          $ref: '#/components/schemas/FreeToolScoreSocialAuditRequest_instagram'
+        bluesky:
+          $ref: '#/components/schemas/FreeToolScoreSocialAuditRequest_instagram'
+        mastodon:
+          $ref: '#/components/schemas/FreeToolScoreSocialAuditRequest_instagram'
+    FreeToolScoreSocialAuditResponse:
+      example:
+        top_fixes:
+        - question: question
+          tip: tip
+          networks:
+          - networks
+          - networks
+          key: profile
+        - question: question
+          tip: tip
+          networks:
+          - networks
+          - networks
+          key: profile
+        score: 8
+        report_markdown: report_markdown
+        networks:
+        - score: 60
+          max_points: 5
+          label: label
+          items:
+          - question: question
+            answer: "yes"
+            key: profile
+            points: 5
+          - question: question
+            answer: "yes"
+            key: profile
+            points: 5
+          network: instagram
+          points: 1
+        - score: 60
+          max_points: 5
+          label: label
+          items:
+          - question: question
+            answer: "yes"
+            key: profile
+            points: 5
+          - question: question
+            answer: "yes"
+            key: profile
+            points: 5
+          network: instagram
+          points: 1
+      properties:
+        score:
+          description: "Overall score: all points over the maximum, as 0-100 rounded\
+            \ half up."
+          maximum: 100
+          minimum: 0
+          type: integer
+        networks:
+          description: "One row per audited network, in a fixed network order."
+          items:
+            $ref: '#/components/schemas/FreeToolScoreSocialAuditResponse_networks_inner'
+          type: array
+        top_fixes:
+          description: "Up to 3 questions with the fewest points over all audited\
+            \ networks (ties: checklist order); only questions answered below yes\
+            \ somewhere."
+          items:
+            $ref: '#/components/schemas/FreeToolScoreSocialAuditResponse_top_fixes_inner'
+          type: array
+        report_markdown:
+          description: "The scorecard as a Markdown report: overall score, top fixes\
+            \ and every answer per network."
+          type: string
     FreeToolGenerateHashtagsRequest:
       example:
         workspace: workspace
@@ -19347,7 +20213,7 @@ components:
         cached: true
       properties:
         hashtags:
-          description: "5 to 10 hashtags, best first."
+          description: "5 to 10 hashtags (3 to 6 with network tiktok), best first."
           items:
             type: string
           type: array
@@ -19426,7 +20292,7 @@ components:
       properties:
         captions:
           description: "Three different captions, each within the network's text limit\
-            \ (at most 2,200 characters)."
+            \ (at most 2,200 characters). TikTok captions open with a short hook line."
           items:
             type: string
           type: array
@@ -24298,6 +25164,77 @@ components:
         pillar:
           description: Empty when no pillars were given.
           type: string
+    FreeToolListAwarenessDaysResponse_covers:
+      description: The date range the data covers.
+      example:
+        from: 2000-01-23
+        to: 2000-01-23
+      properties:
+        from:
+          format: date
+          type: string
+        to:
+          format: date
+          type: string
+    FreeToolListAwarenessDaysResponse_entries_inner:
+      example:
+        date: 2000-01-23
+        note: note
+        topics:
+        - topics
+        - topics
+        idea: idea
+        name: name
+        end: 2000-01-23
+        countries:
+        - countries
+        - countries
+        source: https://openapi-generator.tech
+        type: public-holiday
+      properties:
+        name:
+          description: Name of the holiday or observance.
+          type: string
+        type:
+          description: Entry type.
+          enum:
+          - public-holiday
+          - awareness-day
+          - awareness-week
+          - awareness-month
+          - social-media-day
+          type: string
+        date:
+          description: "The day, or the first day of a week or month."
+          format: date
+          type: string
+        end:
+          description: Last day of a week or month (inclusive); null for a single
+            day.
+          format: date
+          nullable: true
+          type: string
+        countries:
+          description: "Country codes, or `global`."
+          items:
+            type: string
+          type: array
+        topics:
+          description: Topics.
+          items:
+            type: string
+          type: array
+        source:
+          description: Official or organiser page the date comes from.
+          format: uri
+          type: string
+        note:
+          description: Regional scope or a day off that differs from the date.
+          nullable: true
+          type: string
+        idea:
+          description: A one-line post idea.
+          type: string
     FreeToolPlanPostingFrequencyResponse_networks_inner_recommended_per_week:
       example:
         min: 1
@@ -24416,6 +25353,186 @@ components:
           type: string
         label:
           type: string
+    FreeToolScoreSocialAuditRequest_instagram:
+      description: "Your answers for this network: yes, partly or no per question\
+        \ (a missing answer counts as no). Leave the network out to skip it."
+      example:
+        native_formats: "no"
+        pinned: "no"
+        replies: "no"
+        link_tracking: "no"
+        profile: "no"
+        bio: "no"
+        engagement_rate: "no"
+        frequency: "no"
+      properties:
+        profile:
+          default: "no"
+          description: "Profile photo, name and cover image match your brand."
+          enum:
+          - "yes"
+          - partly
+          - "no"
+          type: string
+        bio:
+          default: "no"
+          description: "Your bio says who you help and how, and has a link."
+          enum:
+          - "yes"
+          - partly
+          - "no"
+          type: string
+        link_tracking:
+          default: "no"
+          description: The bio link carries UTM tags.
+          enum:
+          - "yes"
+          - partly
+          - "no"
+          type: string
+        frequency:
+          default: "no"
+          description: "You publish at least N posts a week, your own target."
+          enum:
+          - "yes"
+          - partly
+          - "no"
+          type: string
+        replies:
+          default: "no"
+          description: You reply to comments and messages within 24 hours.
+          enum:
+          - "yes"
+          - partly
+          - "no"
+          type: string
+        native_formats:
+          default: "no"
+          description: "You use the formats the network is built for, such as short\
+            \ video, carousels or documents."
+          enum:
+          - "yes"
+          - partly
+          - "no"
+          type: string
+        pinned:
+          default: "no"
+          description: Your pinned or featured post is current.
+          enum:
+          - "yes"
+          - partly
+          - "no"
+          type: string
+        engagement_rate:
+          default: "no"
+          description: You check your engagement rate every month.
+          enum:
+          - "yes"
+          - partly
+          - "no"
+          type: string
+    FreeToolScoreSocialAuditResponse_networks_inner_items_inner:
+      example:
+        question: question
+        answer: "yes"
+        key: profile
+        points: 5
+      properties:
+        key:
+          enum:
+          - profile
+          - bio
+          - link_tracking
+          - frequency
+          - replies
+          - native_formats
+          - pinned
+          - engagement_rate
+          type: string
+        question:
+          type: string
+        answer:
+          enum:
+          - "yes"
+          - partly
+          - "no"
+          type: string
+        points:
+          description: "yes 2, partly 1, no 0."
+          type: integer
+    FreeToolScoreSocialAuditResponse_networks_inner:
+      example:
+        score: 60
+        max_points: 5
+        label: label
+        items:
+        - question: question
+          answer: "yes"
+          key: profile
+          points: 5
+        - question: question
+          answer: "yes"
+          key: profile
+          points: 5
+        network: instagram
+        points: 1
+      properties:
+        network:
+          enum:
+          - instagram
+          - facebook
+          - linkedin
+          - x
+          - tiktok
+          - youtube
+          - pinterest
+          - threads
+          - bluesky
+          - mastodon
+          type: string
+        label:
+          type: string
+        score:
+          maximum: 100
+          minimum: 0
+          type: integer
+        points:
+          type: integer
+        max_points:
+          type: integer
+        items:
+          items:
+            $ref: '#/components/schemas/FreeToolScoreSocialAuditResponse_networks_inner_items_inner'
+          type: array
+    FreeToolScoreSocialAuditResponse_top_fixes_inner:
+      example:
+        question: question
+        tip: tip
+        networks:
+        - networks
+        - networks
+        key: profile
+      properties:
+        key:
+          enum:
+          - profile
+          - bio
+          - link_tracking
+          - frequency
+          - replies
+          - native_formats
+          - pinned
+          - engagement_rate
+          type: string
+        question:
+          type: string
+        tip:
+          type: string
+        networks:
+          description: The networks where the answer is partly or no.
+          items:
+            type: string
+          type: array
     FreeToolGenerateHooksResponse_hooks_inner:
       example:
         text: text
