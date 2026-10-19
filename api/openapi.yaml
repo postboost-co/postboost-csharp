@@ -48,7 +48,7 @@ info:
     name: Commercial
     url: https://postboost.co/pages/terms
   title: PostBoost API
-  version: 1.57.2
+  version: 1.57.4
 servers:
 - description: Production
   url: https://postboost.co/app/api
@@ -8972,12 +8972,12 @@ paths:
                       label: "TikTok Ads Help: video ads specifications (In-Feed safe\
                         \ zone file, standard LTR)"
                       url: https://ads.tiktok.com/help/article/video-ads-specifications
-                      basis: "TikTok's In-Feed ad safe-zone file, labelled at 720×\
-                        1280 (top 160, bottom 440, sides 80, action column 200 wide\
-                        \ from 560 down) and scaled 1.5× to 1080×1920, as transcribed\
-                        \ by adkit.so (version 2026-09-10). TikTok publishes no sizes\
-                        \ for organic posts."
-                    last_verified: 2026-10-17
+                      basis: "Measured from TikTok's In-Feed safe-zone template (In-Feed/Feed.png,\
+                        \ 2880×5120, 4× 720×1280) on 2026-10-19: top 160, bottom 440,\
+                        \ side margins 80, and a 120 px action rail next to the right\
+                        \ margin from 560 down (200 px from the edge), scaled 1.5×\
+                        \ to 1080×1920. TikTok publishes no sizes for organic posts."
+                    last_verified: 2026-10-19
                     caveat: "Approximate: platforms do not publish official overlay\
                       \ sizes for organic posts, and the UI varies by device and app\
                       \ version. The boxes come from each platform's guidance for\
@@ -9027,7 +9027,7 @@ paths:
                         \ image for vertical video ads on YouTube, which run in Shorts:\
                         \ top 288, bottom 672, left 48, right 192, as transcribed\
                         \ by socialync.io (2026-10-11)."
-                    last_verified: 2026-10-17
+                    last_verified: 2026-10-19
                     caveat: "Approximate: platforms do not publish official overlay\
                       \ sizes for organic posts, and the UI varies by device and app\
                       \ version. The boxes come from each platform's guidance for\
@@ -22068,7 +22068,7 @@ components:
           description: "The app the vertical video is posted to. Approximate: platforms\
             \ do not publish official overlay sizes for organic posts, and the UI\
             \ varies by device and app version. The boxes come from each platform's\
-            \ guidance for vertical video ads. Sources last verified 2026-10-17."
+            \ guidance for vertical video ads. Sources last verified 2026-10-19."
           enum:
           - tiktok
           - instagram_reels
