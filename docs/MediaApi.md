@@ -623,7 +623,7 @@ catch (ApiException e)
 
 Get remote upload status
 
-Poll the status of an in-progress remote media download.
+Poll a background download started by `initiateRemoteUpload` until `status` is `completed` or `failed`. `status` moves from `pending` to `downloading` and `processing`, and ends as `completed` (with `media`) or `failed` (with `error`). The final result is returned once: after a `completed` or `failed` response the download id is forgotten and later polls return `404`, as do ids older than one hour. 
 
 ### Example
 ```csharp
@@ -712,6 +712,7 @@ catch (ApiException e)
 | **200** | Download status |  -  |
 | **401** |  |  -  |
 | **403** |  |  -  |
+| **404** | Unknown download id, one from another workspace, one older than an hour, or one whose final result was already returned |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
@@ -818,11 +819,11 @@ catch (ApiException e)
 
 <a id="initiateremoteupload"></a>
 # **InitiateRemoteUpload**
-> InitiateRemoteUpload201Response InitiateRemoteUpload (Guid workspaceUuid, InitiateRemoteUploadRequest initiateRemoteUploadRequest, string? idempotencyKey = null)
+> InitiateRemoteUpload200Response InitiateRemoteUpload (Guid workspaceUuid, InitiateRemoteUploadRequest initiateRemoteUploadRequest, string? idempotencyKey = null)
 
 Initiate remote upload
 
-Download a file from a remote URL into the media library. For small files the media object is returned immediately. For large files a `download_id` is returned — poll the status endpoint. 
+Download a file from a remote URL into the media library. A file under 10 MB (or one whose server does not send its size) is downloaded during the request: the response has `status: completed` and the `media` object, or `status: failed` and an `error`. A larger file downloads in the background: the response has `status: pending` and a `download_id`; poll `getRemoteUploadStatus` with it until `status` is `completed` or `failed`. 
 
 ### Example
 ```csharp
@@ -851,7 +852,7 @@ namespace Example
             try
             {
                 // Initiate remote upload
-                InitiateRemoteUpload201Response result = apiInstance.InitiateRemoteUpload(workspaceUuid, initiateRemoteUploadRequest, idempotencyKey);
+                InitiateRemoteUpload200Response result = apiInstance.InitiateRemoteUpload(workspaceUuid, initiateRemoteUploadRequest, idempotencyKey);
                 Debug.WriteLine(result);
             }
             catch (ApiException  e)
@@ -872,7 +873,7 @@ This returns an ApiResponse object which contains the response data, status code
 try
 {
     // Initiate remote upload
-    ApiResponse<InitiateRemoteUpload201Response> response = apiInstance.InitiateRemoteUploadWithHttpInfo(workspaceUuid, initiateRemoteUploadRequest, idempotencyKey);
+    ApiResponse<InitiateRemoteUpload200Response> response = apiInstance.InitiateRemoteUploadWithHttpInfo(workspaceUuid, initiateRemoteUploadRequest, idempotencyKey);
     Debug.Write("Status Code: " + response.StatusCode);
     Debug.Write("Response Headers: " + response.Headers);
     Debug.Write("Response Body: " + response.Data);
@@ -895,7 +896,7 @@ catch (ApiException e)
 
 ### Return type
 
-[**InitiateRemoteUpload201Response**](InitiateRemoteUpload201Response.md)
+[**InitiateRemoteUpload200Response**](InitiateRemoteUpload200Response.md)
 
 ### Authorization
 
@@ -910,7 +911,7 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **201** | Media object or download job |  -  |
+| **200** | The imported media, the download failure, or a background download to poll |  -  |
 | **401** |  |  -  |
 | **403** |  |  -  |
 | **422** |  |  -  |

@@ -48,7 +48,7 @@ info:
     name: Commercial
     url: https://postboost.co/pages/terms
   title: PostBoost API
-  version: 1.56.0
+  version: 1.57.1
 servers:
 - description: Production
   url: https://postboost.co/app/api
@@ -648,8 +648,10 @@ paths:
     post:
       description: |
         Download a file from a remote URL into the media library.
-        For small files the media object is returned immediately.
-        For large files a `download_id` is returned — poll the status endpoint.
+        A file under 10 MB (or one whose server does not send its size) is downloaded during the request:
+        the response has `status: completed` and the `media` object, or `status: failed` and an `error`.
+        A larger file downloads in the background: the response has `status: pending` and a `download_id`;
+        poll `getRemoteUploadStatus` with it until `status` is `completed` or `failed`.
       operationId: initiateRemoteUpload
       parameters:
       - $ref: '#/components/parameters/workspaceUuid'
@@ -661,12 +663,13 @@ paths:
               $ref: '#/components/schemas/initiateRemoteUpload_request'
         required: true
       responses:
-        "201":
+        "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/initiateRemoteUpload_201_response'
-          description: Media object or download job
+                $ref: '#/components/schemas/initiateRemoteUpload_200_response'
+          description: "The imported media, the download failure, or a background\
+            \ download to poll"
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -777,7 +780,11 @@ paths:
       - Media
   /{workspaceUuid}/media/remote/{downloadId}/status:
     get:
-      description: Poll the status of an in-progress remote media download.
+      description: |
+        Poll a background download started by `initiateRemoteUpload` until `status` is `completed` or `failed`.
+        `status` moves from `pending` to `downloading` and `processing`, and ends as `completed` (with `media`)
+        or `failed` (with `error`). The final result is returned once: after a `completed` or `failed` response the download id is
+        forgotten and later polls return `404`, as do ids older than one hour.
       operationId: getRemoteUploadStatus
       parameters:
       - $ref: '#/components/parameters/workspaceUuid'
@@ -799,6 +806,13 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         "403":
           $ref: '#/components/responses/WorkspaceForbidden'
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getRemoteUploadStatus_404_response'
+          description: "Unknown download id, one from another workspace, one older\
+            \ than an hour, or one whose final result was already returned"
       summary: Get remote upload status
       tags:
       - Media
@@ -10609,6 +10623,510 @@ paths:
       tags:
       - Free Tools
       x-free-tool: true
+  /tools/social-media-tool-picker:
+    post:
+      description: "Match your needs against social media management tools and see\
+        \ what each one misses. The same logic as the free web tool at https://postboost.co/tools/social-media-tool-picker.\
+        \ No account needed: call it without a token, or with any API token."
+      operationId: pickSocialMediaTool
+      requestBody:
+        content:
+          application/json:
+            examples:
+              example-1:
+                value:
+                  needs:
+                  - rest_openapi
+                  - mcp
+                  - webhooks
+                  - free_tier
+              example-2:
+                value:
+                  needs:
+                  - zapier
+              example-3:
+                value:
+                  use_case: team_scheduling
+            schema:
+              $ref: '#/components/schemas/FreeToolPickSocialMediaToolRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                example-1:
+                  value:
+                    needs:
+                    - rest_openapi
+                    - mcp
+                    - webhooks
+                    - free_tier
+                    results:
+                    - slug: postboost
+                      name: PostBoost
+                      score: 4
+                      matched:
+                      - rest_openapi
+                      - mcp
+                      - webhooks
+                      - free_tier
+                      missing: []
+                      unknown: []
+                      compare_url: null
+                      checked_at: 2026-10-11
+                      pick_if: null
+                      postboost_if: null
+                    - slug: zernio
+                      name: Zernio
+                      score: 4
+                      matched:
+                      - rest_openapi
+                      - mcp
+                      - webhooks
+                      - free_tier
+                      missing: []
+                      unknown: []
+                      compare_url: /compare/zernio
+                      checked_at: 2026-10-11
+                      pick_if: "You need ad networks or messaging channels, idempotency\
+                        \ keys, or account counts that swing up and down."
+                      postboost_if: "You want flat monthly pricing, a team dashboard\
+                        \ with approvals, and SSO without an enterprise contract."
+                    - slug: ayrshare
+                      name: Ayrshare
+                      score: 2
+                      matched:
+                      - mcp
+                      - webhooks
+                      missing:
+                      - rest_openapi
+                      - free_tier
+                      unknown: []
+                      compare_url: /compare/ayrshare
+                      checked_at: 2026-10-11
+                      pick_if: "You build a SaaS that posts on behalf of many end\
+                        \ users and need Snapchat, WhatsApp or Telegram today."
+                      postboost_if: "You want the API from $0 instead of $149, more\
+                        \ SDKs, an OpenAPI spec and a full team dashboard."
+                    - slug: blotato
+                      name: Blotato
+                      score: 2
+                      matched:
+                      - rest_openapi
+                      - mcp
+                      missing:
+                      - free_tier
+                      unknown:
+                      - webhooks
+                      compare_url: /compare/blotato
+                      checked_at: 2026-10-11
+                      pick_if: You want AI video and viral-content tooling plus ready-made
+                        n8n templates.
+                      postboost_if: "You want to test the API and MCP for free, use\
+                        \ an SDK, or need more channels (including Telegram, Discord\
+                        \ and Slack) and team approvals."
+                    - slug: buffer
+                      name: Buffer
+                      score: 2
+                      matched:
+                      - mcp
+                      - free_tier
+                      missing:
+                      - rest_openapi
+                      unknown:
+                      - webhooks
+                      compare_url: /compare/buffer
+                      checked_at: 2026-10-11
+                      pick_if: "You want the simplest scheduler, a community inbox\
+                        \ on every plan, or Substack."
+                      postboost_if: "You want a REST API with an OpenAPI spec, SDKs\
+                        \ in nine languages, webhooks, and no monthly request caps."
+                    - slug: postiz
+                      name: Postiz
+                      score: 2
+                      matched:
+                      - mcp
+                      - webhooks
+                      missing:
+                      - free_tier
+                      unknown:
+                      - rest_openapi
+                      compare_url: /compare/postiz
+                      checked_at: 2026-10-11
+                      pick_if: "You want to self-host open source, or need channels\
+                        \ such as Telegram, Discord or Slack."
+                      postboost_if: "You want 10 accounts at $29 instead of 5, SDKs\
+                        \ in nine languages, and approvals, 2FA and SSO on the $29–\
+                        49 plans."
+                    - slug: upload-post
+                      name: Upload-Post
+                      score: 2
+                      matched:
+                      - mcp
+                      - free_tier
+                      missing: []
+                      unknown:
+                      - rest_openapi
+                      - webhooks
+                      compare_url: /compare/upload-post
+                      checked_at: 2026-10-11
+                      pick_if: "You post to blogs, Discord or Telegram as well as\
+                        \ social networks, or need a Zapier app."
+                      postboost_if: "You want unlimited scheduled posts on paid plans,\
+                        \ webhooks, an OpenAPI spec and a team dashboard."
+                    - slug: publer
+                      name: Publer
+                      score: 1
+                      matched:
+                      - mcp
+                      missing: []
+                      unknown:
+                      - rest_openapi
+                      - webhooks
+                      - free_tier
+                      compare_url: /compare/publer
+                      checked_at: 2026-10-16
+                      pick_if: You already run your calendar in Publer and your team
+                        is on the Business plan.
+                      postboost_if: "You want the REST API, webhooks and an MCP server\
+                        \ on every plan, including Free, with no per-call fees."
+                    - slug: socialbee
+                      name: SocialBee
+                      score: 0
+                      matched: []
+                      missing:
+                      - rest_openapi
+                      - mcp
+                      - free_tier
+                      unknown:
+                      - webhooks
+                      compare_url: /compare/socialbee
+                      checked_at: 2026-10-14
+                      pick_if: "You plan by content categories and connect other apps\
+                        \ only through Zapier, Make or Pabbly."
+                      postboost_if: "You want 10 / 30 accounts at $29 / $49 instead\
+                        \ of 5 / 10, plus a REST API, webhooks and MCP on every plan."
+                    checked_at: 2026-10-11
+                    checked_label: October 2026
+                example-2:
+                  value:
+                    needs:
+                    - zapier
+                    results:
+                    - slug: buffer
+                      name: Buffer
+                      score: 1
+                      matched:
+                      - zapier
+                      missing: []
+                      unknown: []
+                      compare_url: /compare/buffer
+                      checked_at: 2026-10-11
+                      pick_if: "You want the simplest scheduler, a community inbox\
+                        \ on every plan, or Substack."
+                      postboost_if: "You want a REST API with an OpenAPI spec, SDKs\
+                        \ in nine languages, webhooks, and no monthly request caps."
+                    - slug: socialbee
+                      name: SocialBee
+                      score: 1
+                      matched:
+                      - zapier
+                      missing: []
+                      unknown: []
+                      compare_url: /compare/socialbee
+                      checked_at: 2026-10-14
+                      pick_if: "You plan by content categories and connect other apps\
+                        \ only through Zapier, Make or Pabbly."
+                      postboost_if: "You want 10 / 30 accounts at $29 / $49 instead\
+                        \ of 5 / 10, plus a REST API, webhooks and MCP on every plan."
+                    - slug: upload-post
+                      name: Upload-Post
+                      score: 1
+                      matched:
+                      - zapier
+                      missing: []
+                      unknown: []
+                      compare_url: /compare/upload-post
+                      checked_at: 2026-10-11
+                      pick_if: "You post to blogs, Discord or Telegram as well as\
+                        \ social networks, or need a Zapier app."
+                      postboost_if: "You want unlimited scheduled posts on paid plans,\
+                        \ webhooks, an OpenAPI spec and a team dashboard."
+                    - slug: ayrshare
+                      name: Ayrshare
+                      score: 0
+                      matched: []
+                      missing:
+                      - zapier
+                      unknown: []
+                      compare_url: /compare/ayrshare
+                      checked_at: 2026-10-11
+                      pick_if: "You build a SaaS that posts on behalf of many end\
+                        \ users and need Snapchat, WhatsApp or Telegram today."
+                      postboost_if: "You want the API from $0 instead of $149, more\
+                        \ SDKs, an OpenAPI spec and a full team dashboard."
+                    - slug: blotato
+                      name: Blotato
+                      score: 0
+                      matched: []
+                      missing:
+                      - zapier
+                      unknown: []
+                      compare_url: /compare/blotato
+                      checked_at: 2026-10-11
+                      pick_if: You want AI video and viral-content tooling plus ready-made
+                        n8n templates.
+                      postboost_if: "You want to test the API and MCP for free, use\
+                        \ an SDK, or need more channels (including Telegram, Discord\
+                        \ and Slack) and team approvals."
+                    - slug: postboost
+                      name: PostBoost
+                      score: 0
+                      matched: []
+                      missing:
+                      - zapier
+                      unknown: []
+                      compare_url: null
+                      checked_at: 2026-10-11
+                      pick_if: null
+                      postboost_if: null
+                    - slug: postiz
+                      name: Postiz
+                      score: 0
+                      matched: []
+                      missing:
+                      - zapier
+                      unknown: []
+                      compare_url: /compare/postiz
+                      checked_at: 2026-10-11
+                      pick_if: "You want to self-host open source, or need channels\
+                        \ such as Telegram, Discord or Slack."
+                      postboost_if: "You want 10 accounts at $29 instead of 5, SDKs\
+                        \ in nine languages, and approvals, 2FA and SSO on the $29–\
+                        49 plans."
+                    - slug: publer
+                      name: Publer
+                      score: 0
+                      matched: []
+                      missing: []
+                      unknown:
+                      - zapier
+                      compare_url: /compare/publer
+                      checked_at: 2026-10-16
+                      pick_if: You already run your calendar in Publer and your team
+                        is on the Business plan.
+                      postboost_if: "You want the REST API, webhooks and an MCP server\
+                        \ on every plan, including Free, with no per-call fees."
+                    - slug: zernio
+                      name: Zernio
+                      score: 0
+                      matched: []
+                      missing: []
+                      unknown:
+                      - zapier
+                      compare_url: /compare/zernio
+                      checked_at: 2026-10-11
+                      pick_if: "You need ad networks or messaging channels, idempotency\
+                        \ keys, or account counts that swing up and down."
+                      postboost_if: "You want flat monthly pricing, a team dashboard\
+                        \ with approvals, and SSO without an enterprise contract."
+                    checked_at: 2026-10-11
+                    checked_label: October 2026
+                example-3:
+                  value:
+                    needs:
+                    - team_dashboard
+                    - free_tier
+                    results:
+                    - slug: buffer
+                      name: Buffer
+                      score: 2
+                      matched:
+                      - team_dashboard
+                      - free_tier
+                      missing: []
+                      unknown: []
+                      compare_url: /compare/buffer
+                      checked_at: 2026-10-11
+                      pick_if: "You want the simplest scheduler, a community inbox\
+                        \ on every plan, or Substack."
+                      postboost_if: "You want a REST API with an OpenAPI spec, SDKs\
+                        \ in nine languages, webhooks, and no monthly request caps."
+                    - slug: postboost
+                      name: PostBoost
+                      score: 2
+                      matched:
+                      - team_dashboard
+                      - free_tier
+                      missing: []
+                      unknown: []
+                      compare_url: null
+                      checked_at: 2026-10-11
+                      pick_if: null
+                      postboost_if: null
+                    - slug: postiz
+                      name: Postiz
+                      score: 1
+                      matched:
+                      - team_dashboard
+                      missing:
+                      - free_tier
+                      unknown: []
+                      compare_url: /compare/postiz
+                      checked_at: 2026-10-11
+                      pick_if: "You want to self-host open source, or need channels\
+                        \ such as Telegram, Discord or Slack."
+                      postboost_if: "You want 10 accounts at $29 instead of 5, SDKs\
+                        \ in nine languages, and approvals, 2FA and SSO on the $29–\
+                        49 plans."
+                    - slug: publer
+                      name: Publer
+                      score: 1
+                      matched:
+                      - team_dashboard
+                      missing: []
+                      unknown:
+                      - free_tier
+                      compare_url: /compare/publer
+                      checked_at: 2026-10-16
+                      pick_if: You already run your calendar in Publer and your team
+                        is on the Business plan.
+                      postboost_if: "You want the REST API, webhooks and an MCP server\
+                        \ on every plan, including Free, with no per-call fees."
+                    - slug: socialbee
+                      name: SocialBee
+                      score: 1
+                      matched:
+                      - team_dashboard
+                      missing:
+                      - free_tier
+                      unknown: []
+                      compare_url: /compare/socialbee
+                      checked_at: 2026-10-14
+                      pick_if: "You plan by content categories and connect other apps\
+                        \ only through Zapier, Make or Pabbly."
+                      postboost_if: "You want 10 / 30 accounts at $29 / $49 instead\
+                        \ of 5 / 10, plus a REST API, webhooks and MCP on every plan."
+                    - slug: upload-post
+                      name: Upload-Post
+                      score: 1
+                      matched:
+                      - free_tier
+                      missing:
+                      - team_dashboard
+                      unknown: []
+                      compare_url: /compare/upload-post
+                      checked_at: 2026-10-11
+                      pick_if: "You post to blogs, Discord or Telegram as well as\
+                        \ social networks, or need a Zapier app."
+                      postboost_if: "You want unlimited scheduled posts on paid plans,\
+                        \ webhooks, an OpenAPI spec and a team dashboard."
+                    - slug: zernio
+                      name: Zernio
+                      score: 1
+                      matched:
+                      - free_tier
+                      missing:
+                      - team_dashboard
+                      unknown: []
+                      compare_url: /compare/zernio
+                      checked_at: 2026-10-11
+                      pick_if: "You need ad networks or messaging channels, idempotency\
+                        \ keys, or account counts that swing up and down."
+                      postboost_if: "You want flat monthly pricing, a team dashboard\
+                        \ with approvals, and SSO without an enterprise contract."
+                    - slug: ayrshare
+                      name: Ayrshare
+                      score: 0
+                      matched: []
+                      missing:
+                      - team_dashboard
+                      - free_tier
+                      unknown: []
+                      compare_url: /compare/ayrshare
+                      checked_at: 2026-10-11
+                      pick_if: "You build a SaaS that posts on behalf of many end\
+                        \ users and need Snapchat, WhatsApp or Telegram today."
+                      postboost_if: "You want the API from $0 instead of $149, more\
+                        \ SDKs, an OpenAPI spec and a full team dashboard."
+                    - slug: blotato
+                      name: Blotato
+                      score: 0
+                      matched: []
+                      missing:
+                      - free_tier
+                      unknown:
+                      - team_dashboard
+                      compare_url: /compare/blotato
+                      checked_at: 2026-10-11
+                      pick_if: You want AI video and viral-content tooling plus ready-made
+                        n8n templates.
+                      postboost_if: "You want to test the API and MCP for free, use\
+                        \ an SDK, or need more channels (including Telegram, Discord\
+                        \ and Slack) and team approvals."
+                    checked_at: 2026-10-11
+                    checked_label: October 2026
+              schema:
+                $ref: '#/components/schemas/FreeToolPickSocialMediaToolResponse'
+          description: The tool output.
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "413":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: The request body is larger than 128 KB.
+        "422":
+          $ref: '#/components/responses/ValidationError'
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: "Rate limit reached. Without a token: 30 calls per minute and\
+            \ 500 per UTC day per IP address (IPv6 per /64). With a token: 300 per\
+            \ minute per user; the Free plan also has 1,000 calls per UTC day, paid\
+            \ plans have no daily cap."
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            Retry-After:
+              description: Seconds until the limit resets.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+      security: []
+      summary: Match your needs against social media management tools and see what
+        each one misses
+      tags:
+      - Free Tools
+      x-free-tool: true
   /tools/instagram-hashtag-generator:
     post:
       description: "Generate hashtags for a post topic with AI (needs a token, spends\
@@ -10771,6 +11289,14 @@ paths:
                   tone: professional
                   length: short
                   emoji: false
+              example-3:
+                value:
+                  text: What we learned from moving our team to a four-day week
+                  network: linkedin
+                  tone: professional
+                  length: short
+                  emoji: false
+                  format: post
             schema:
               $ref: '#/components/schemas/FreeToolGenerateCaptionRequest'
         required: true
@@ -10799,6 +11325,35 @@ paths:
                     - "New free tool: build consistent UTM links without a spreadsheet."
                     - Clean campaign data starts with clean links. Try our new free
                       UTM builder.
+                    credits_spent: 1
+                    cached: false
+                example-3:
+                  value:
+                    captions:
+                    - |-
+                      We moved our team to a four-day week. The hardest part was not the extra day off.
+
+                      It was deciding what we would stop doing. Fewer meetings, shorter updates, clearer owners.
+
+                      The work that mattered still got done. The rest was never that important, and nobody missed it.
+
+                      If your team had one day less next week, what would you cut first?
+                    - |-
+                      A four-day week sounds like a perk. For us it turned out to be a planning tool.
+
+                      With one day less, every meeting had to earn its place, every project needed a clear owner and every update had to fit in a few lines.
+
+                      We are still learning what works, but the habits it forced on us are worth keeping. We would not go back.
+                    - |-
+                      Three things a four-day week taught our team:
+
+                      1. Write it down instead of calling a meeting.
+                      2. Give every task one owner.
+                      3. Protect focus time like a deadline.
+
+                      None of these need a shorter week. The shorter week just made us start, because there was no time left to waste.
+
+                      Which one would help your team most? #futureofwork #productivity
                     credits_spent: 1
                     cached: false
               schema:
@@ -11443,6 +11998,2040 @@ paths:
           description: AI tools are switched off right now.
       summary: "Turn a blog post (URL or text) into one social post per network with\
         \ AI (needs a token, spends AI credits)"
+      tags:
+      - Free Tools
+      x-free-tool: true
+  /tools/social-media-manager-pricing-calculator:
+    post:
+      description: "Estimate social media manager pricing. The same logic as the free\
+        \ web tool at https://postboost.co/tools/social-media-manager-pricing-calculator.\
+        \ No account needed: call it without a token, or with any API token."
+      operationId: calculateSmmPricing
+      requestBody:
+        content:
+          application/json:
+            examples:
+              example-1:
+                value:
+                  networks: 3
+                  posts_per_week: 5
+                  content_type: copy_design
+                  community_hours_per_week: 4
+                  hourly_rate: 50
+              example-2:
+                value:
+                  networks: 2
+                  posts_per_week: 3
+                  content_type: copy_design_video
+                  community_hours_per_week: 2.5
+                  reporting_hours_per_month: 4
+                  ad_hours_per_month: 6
+                  hourly_rate: 80
+                  currency: EUR
+                  pricing_model: per_post
+            schema:
+              $ref: '#/components/schemas/FreeToolCalculateSmmPricingRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                example-1:
+                  value:
+                    currency: USD
+                    pricing_model: retainer
+                    posts_per_month: 65
+                    hours_per_month: 82.3
+                    hourly_rate: 50
+                    monthly_retainer: 4117
+                    per_post: 63.34
+                    range:
+                      low: 3294
+                      high: 4940
+                    line_items:
+                    - key: content
+                      label: Content creation and scheduling
+                      hours_per_month: 65
+                      amount: 3250
+                    - key: community
+                      label: Community management
+                      hours_per_month: 17.3
+                      amount: 866.67
+                    assumptions:
+                    - 60 minutes per post (copy + design)
+                    - A month is 52 ÷ 12 = 4.33 weeks
+                    - "Range: retainer −20% to +20%"
+                example-2:
+                  value:
+                    currency: EUR
+                    pricing_model: per_post
+                    posts_per_month: 26
+                    hours_per_month: 72.8
+                    hourly_rate: 80
+                    monthly_retainer: 5827
+                    per_post: 224.12
+                    range:
+                      low: 4662
+                      high: 6992
+                    line_items:
+                    - key: content
+                      label: Content creation and scheduling
+                      hours_per_month: 52
+                      amount: 4160
+                    - key: community
+                      label: Community management
+                      hours_per_month: 10.8
+                      amount: 866.67
+                    - key: reporting
+                      label: Reporting
+                      hours_per_month: 4
+                      amount: 320
+                    - key: ads
+                      label: Ad management
+                      hours_per_month: 6
+                      amount: 480
+                    assumptions:
+                    - 120 minutes per post (copy + design + video)
+                    - A month is 52 ÷ 12 = 4.33 weeks
+                    - "Range: retainer −20% to +20%"
+              schema:
+                $ref: '#/components/schemas/FreeToolCalculateSmmPricingResponse'
+          description: The tool output.
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "413":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: The request body is larger than 128 KB.
+        "422":
+          $ref: '#/components/responses/ValidationError'
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: "Rate limit reached. Without a token: 30 calls per minute and\
+            \ 500 per UTC day per IP address (IPv6 per /64). With a token: 300 per\
+            \ minute per user; the Free plan also has 1,000 calls per UTC day, paid\
+            \ plans have no daily cap."
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            Retry-After:
+              description: Seconds until the limit resets.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+      security: []
+      summary: Estimate social media manager pricing
+      tags:
+      - Free Tools
+      x-free-tool: true
+  /tools/webhook-signature-verifier:
+    post:
+      description: "Verify an HMAC webhook signature. The same logic as the free web\
+        \ tool at https://postboost.co/tools/webhook-signature-verifier. No account\
+        \ needed: call it without a token, or with any API token."
+      operationId: verifyWebhookSignature
+      requestBody:
+        content:
+          application/json:
+            examples:
+              example-1:
+                value:
+                  body: "{\"event\":\"post.published\",\"data\":{\"uuid\":\"0b8f1c2e-6c1d-4f7a-9a51-3d1e2f4a5b6c\"\
+                    }}"
+                  secret: whsec_test
+                  signature: a27f6d074108ea6b5df903d3ad4520113a47aa3710cb26c24fab7e36457d915a
+              example-2:
+                value:
+                  body: |
+                    {"event":"post.published","data":{"uuid":"0b8f1c2e-6c1d-4f7a-9a51-3d1e2f4a5b6c"}}
+                  secret: whsec_test
+                  signature: a27f6d074108ea6b5df903d3ad4520113a47aa3710cb26c24fab7e36457d915a
+              example-3:
+                value:
+                  body: "{\"event\":\"post.published\",\"data\":{\"uuid\":\"0b8f1c2e-6c1d-4f7a-9a51-3d1e2f4a5b6c\"\
+                    }}"
+                  secret: whsec_test
+                  signature: sha256=a27f6d074108ea6b5df903d3ad4520113a47aa3710cb26c24fab7e36457d915a
+                  prefix: sha256=
+            schema:
+              $ref: '#/components/schemas/FreeToolVerifyWebhookSignatureRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                example-1:
+                  value:
+                    valid: true
+                    expected: a27f6d074108ea6b5df903d3ad4520113a47aa3710cb26c24fab7e36457d915a
+                    hints: []
+                example-2:
+                  value:
+                    valid: false
+                    expected: db9aba747a46b43863c8e5d76ffc3ea32bb0c1cf8a00f0d7abee77ae420b76ba
+                    hints:
+                    - "Valid without the trailing newline: sign the raw bytes you\
+                      \ received, not a copy your editor or framework added a newline\
+                      \ to."
+                example-3:
+                  value:
+                    valid: true
+                    expected: sha256=a27f6d074108ea6b5df903d3ad4520113a47aa3710cb26c24fab7e36457d915a
+                    hints: []
+              schema:
+                $ref: '#/components/schemas/FreeToolVerifyWebhookSignatureResponse'
+          description: The tool output.
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "413":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: The request body is larger than 128 KB.
+        "422":
+          $ref: '#/components/responses/ValidationError'
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: "Rate limit reached. Without a token: 30 calls per minute and\
+            \ 500 per UTC day per IP address (IPv6 per /64). With a token: 300 per\
+            \ minute per user; the Free plan also has 1,000 calls per UTC day, paid\
+            \ plans have no daily cap."
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            Retry-After:
+              description: Seconds until the limit resets.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+      security: []
+      summary: Verify an HMAC webhook signature
+      tags:
+      - Free Tools
+      x-free-tool: true
+  /tools/instagram-bio-generator:
+    post:
+      description: "Write five profile bios with AI (needs a token, spends AI credits).\
+        \ The same logic as the free web tool at https://postboost.co/tools/instagram-bio-generator.\
+        \ Needs an API token (a scoped key needs the `ai` ability and pays with its\
+        \ own workspace). A new generation spends 1 AI credit of the workspace you\
+        \ name (or your active workspace); a repeated identical request is answered\
+        \ from the cache for free."
+      operationId: generateBio
+      requestBody:
+        content:
+          application/json:
+            examples:
+              example-1:
+                value:
+                  text: Wedding photographer for small weddings in Lisbon
+                  tone: friendly
+              example-2:
+                value:
+                  text: Online shop for refillable cleaning products
+                  tone: professional
+                  emoji: false
+                  cta: false
+            schema:
+              $ref: '#/components/schemas/FreeToolGenerateBioRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                example-1:
+                  value:
+                    bios:
+                    - |-
+                      Wedding photographer in Lisbon 📸
+                      Small weddings, big feelings. Dates for next year: link in bio.
+                    - "Capturing small Lisbon weddings, one honest moment at a time\
+                      \ 💛 Check dates via the link below."
+                    - |-
+                      Lisbon wedding photographer for couples who keep it small.
+                      See my availability in the link.
+                    - "Small weddings, natural photos, Lisbon light ☀️ Say hi through\
+                      \ the link in bio."
+                    - |-
+                      Your small Lisbon wedding, photographed with care 📷
+                      Tap the link to check my dates.
+                    credits_spent: 1
+                    cached: false
+                example-2:
+                  value:
+                    bios:
+                    - |-
+                      Refillable cleaning products for every room.
+                      Order once, refill for years.
+                    - "Cleaning products in refillable bottles, delivered to your\
+                      \ door."
+                    - |-
+                      Less plastic under the sink.
+                      Refillable cleaning products, shipped in recyclable packs.
+                    - "Refillable cleaners for kitchens, bathrooms and floors."
+                    - |-
+                      Clean home, fewer bottles.
+                      Refillable cleaning products made to last.
+                    credits_spent: 1
+                    cached: false
+              schema:
+                $ref: '#/components/schemas/FreeToolGenerateBioResponse'
+          description: The tool output.
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: "No API token, or an invalid one. The body has `register_url`\
+            \ to create a free account."
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: "`workspace` is not a workspace you belong to, or your account\
+            \ has no workspace, or a scoped API key lacks the `ai` ability or is bound\
+            \ to another workspace (`code: insufficient_scope`)."
+        "413":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: The request body is larger than 128 KB.
+        "422":
+          $ref: '#/components/responses/ValidationError'
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: "The workspace has no AI credits left this billing cycle (`code:\
+            \ ai_credits_exhausted`, `upgrade_url`), or the per-minute limit was reached.\
+            \ Rate limit reached. Without a token: 30 calls per minute and 500 per\
+            \ UTC day per IP address (IPv6 per /64). With a token: 300 per minute\
+            \ per user; the Free plan also has 1,000 calls per UTC day, paid plans\
+            \ have no daily cap."
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            Retry-After:
+              description: Seconds until the limit resets.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+        "502":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: The AI provider failed or timed out. No credit was spent.
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: AI tools are switched off right now.
+      summary: "Write five profile bios with AI (needs a token, spends AI credits)"
+      tags:
+      - Free Tools
+      x-free-tool: true
+  /tools/youtube-title-generator:
+    post:
+      description: "Write five YouTube video titles with AI (needs a token, spends\
+        \ AI credits). The same logic as the free web tool at https://postboost.co/tools/youtube-title-generator.\
+        \ Needs an API token (a scoped key needs the `ai` ability and pays with its\
+        \ own workspace). A new generation spends 1 AI credit of the workspace you\
+        \ name (or your active workspace); a repeated identical request is answered\
+        \ from the cache for free."
+      operationId: generateYoutubeTitles
+      requestBody:
+        content:
+          application/json:
+            examples:
+              example-1:
+                value:
+                  text: Baking sourdough bread at home for beginners
+                  style: how-to
+              example-2:
+                value:
+                  text: Common mistakes when repotting a monstera
+                  style: listicle
+            schema:
+              $ref: '#/components/schemas/FreeToolGenerateYoutubeTitlesRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                example-1:
+                  value:
+                    titles:
+                    - How to Bake Sourdough Bread at Home (Beginner Friendly)
+                    - "How to Make Your First Sourdough Loaf, Step by Step"
+                    - How to Bake Sourdough at Home Without Special Tools
+                    - "Sourdough for Beginners: How to Bake Your First Loaf"
+                    - "How to Bake Sourdough Bread: A Simple Guide for Beginners"
+                    credits_spent: 1
+                    cached: false
+                example-2:
+                  value:
+                    titles:
+                    - 7 Monstera Repotting Mistakes (and How to Avoid Them)
+                    - 5 Things to Check Before You Repot a Monstera
+                    - Repotting a Monstera? 6 Mistakes That Stress the Plant
+                    - 8 Monstera Repotting Tips for Healthy New Growth
+                    - 5 Monstera Repotting Mistakes Beginners Make
+                    credits_spent: 1
+                    cached: false
+              schema:
+                $ref: '#/components/schemas/FreeToolGenerateYoutubeTitlesResponse'
+          description: The tool output.
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: "No API token, or an invalid one. The body has `register_url`\
+            \ to create a free account."
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: "`workspace` is not a workspace you belong to, or your account\
+            \ has no workspace, or a scoped API key lacks the `ai` ability or is bound\
+            \ to another workspace (`code: insufficient_scope`)."
+        "413":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: The request body is larger than 128 KB.
+        "422":
+          $ref: '#/components/responses/ValidationError'
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: "The workspace has no AI credits left this billing cycle (`code:\
+            \ ai_credits_exhausted`, `upgrade_url`), or the per-minute limit was reached.\
+            \ Rate limit reached. Without a token: 30 calls per minute and 500 per\
+            \ UTC day per IP address (IPv6 per /64). With a token: 300 per minute\
+            \ per user; the Free plan also has 1,000 calls per UTC day, paid plans\
+            \ have no daily cap."
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            Retry-After:
+              description: Seconds until the limit resets.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+        "502":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: The AI provider failed or timed out. No credit was spent.
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: AI tools are switched off right now.
+      summary: "Write five YouTube video titles with AI (needs a token, spends AI\
+        \ credits)"
+      tags:
+      - Free Tools
+      x-free-tool: true
+  /tools/linkedin-headline-generator:
+    post:
+      description: "Write five LinkedIn profile headlines with AI (needs a token,\
+        \ spends AI credits). The same logic as the free web tool at https://postboost.co/tools/linkedin-headline-generator.\
+        \ Needs an API token (a scoped key needs the `ai` ability and pays with its\
+        \ own workspace). A new generation spends 1 AI credit of the workspace you\
+        \ name (or your active workspace); a repeated identical request is answered\
+        \ from the cache for free."
+      operationId: generateLinkedInHeadline
+      requestBody:
+        content:
+          application/json:
+            examples:
+              example-1:
+                value:
+                  role: Customer success lead
+                  skills: "B2B SaaS onboarding, churn analysis, customer training"
+                  audience: SaaS founders
+              example-2:
+                value:
+                  role: Freelance UX writer
+                  skills: "Microcopy, onboarding flows and error messages for mobile\
+                    \ apps"
+                  tone: friendly
+            schema:
+              $ref: '#/components/schemas/FreeToolGenerateLinkedInHeadlineRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                example-1:
+                  value:
+                    headlines:
+                    - Customer Success Lead | Helping SaaS founders turn new sign-ups
+                      into long-term customers
+                    - "Customer Success Lead for B2B SaaS | Onboarding, churn analysis\
+                      \ and customer training"
+                    - I help SaaS founders keep the customers they win | Customer
+                      Success Lead
+                    - "Customer Success Lead | Onboarding that sticks, churn you can\
+                      \ explain"
+                    - "B2B SaaS Customer Success | Onboarding, training and churn\
+                      \ analysis for growing teams"
+                    credits_spent: 1
+                    cached: false
+                example-2:
+                  value:
+                    headlines:
+                    - "Freelance UX Writer | Microcopy, onboarding and error messages\
+                      \ for mobile apps"
+                    - UX Writer for mobile apps | Words that make onboarding feel
+                      easy
+                    - Freelance UX Writer | I write the small words that help people
+                      finish what they started
+                    - "UX Writing for mobile apps | Onboarding flows, microcopy and\
+                      \ friendly error messages"
+                    - "Freelance UX Writer making mobile apps clearer, one screen\
+                      \ at a time"
+                    credits_spent: 1
+                    cached: false
+              schema:
+                $ref: '#/components/schemas/FreeToolGenerateLinkedInHeadlineResponse'
+          description: The tool output.
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: "No API token, or an invalid one. The body has `register_url`\
+            \ to create a free account."
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: "`workspace` is not a workspace you belong to, or your account\
+            \ has no workspace, or a scoped API key lacks the `ai` ability or is bound\
+            \ to another workspace (`code: insufficient_scope`)."
+        "413":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: The request body is larger than 128 KB.
+        "422":
+          $ref: '#/components/responses/ValidationError'
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: "The workspace has no AI credits left this billing cycle (`code:\
+            \ ai_credits_exhausted`, `upgrade_url`), or the per-minute limit was reached.\
+            \ Rate limit reached. Without a token: 30 calls per minute and 500 per\
+            \ UTC day per IP address (IPv6 per /64). With a token: 300 per minute\
+            \ per user; the Free plan also has 1,000 calls per UTC day, paid plans\
+            \ have no daily cap."
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            Retry-After:
+              description: Seconds until the limit resets.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+        "502":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: The AI provider failed or timed out. No credit was spent.
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: AI tools are switched off right now.
+      summary: "Write five LinkedIn profile headlines with AI (needs a token, spends\
+        \ AI credits)"
+      tags:
+      - Free Tools
+      x-free-tool: true
+  /tools/youtube-description-generator:
+    post:
+      description: "Write three YouTube video descriptions with AI (needs a token,\
+        \ spends AI credits). The same logic as the free web tool at https://postboost.co/tools/youtube-description-generator.\
+        \ Needs an API token (a scoped key needs the `ai` ability and pays with its\
+        \ own workspace). A new generation spends 1 AI credit of the workspace you\
+        \ name (or your active workspace); a repeated identical request is answered\
+        \ from the cache for free."
+      operationId: generateYoutubeDescription
+      requestBody:
+        content:
+          application/json:
+            examples:
+              example-1:
+                value:
+                  text: "A beginner sourdough bread recipe: feeding the starter, mixing,\
+                    \ shaping and baking in a Dutch oven."
+                  keywords: "sourdough bread, beginner"
+                  chapters: true
+                  chapter_lines:
+                  - 0:00 Intro
+                  - 1:30 Feeding the starter
+                  - 4:10 Shaping
+                  - 9:45 Baking
+                  cta: subscribe
+              example-2:
+                value:
+                  text: Five settings to change on a new Android phone for better
+                    battery life.
+                  cta: link
+            schema:
+              $ref: '#/components/schemas/FreeToolGenerateYoutubeDescriptionRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                example-1:
+                  value:
+                    descriptions:
+                    - |-
+                      Bake your first sourdough bread at home with this beginner recipe, from starter to crust.
+
+                      Chapters
+                      0:00 Intro
+                      1:30 Feeding the starter
+                      4:10 Shaping
+                      9:45 Baking
+
+                      We feed the starter, mix a simple dough, shape it and bake it in a Dutch oven. The full recipe is at [link].
+
+                      Subscribe for more bread recipes.
+                      #sourdough #baking
+                    - |-
+                      New to sourdough bread? This video takes you through one loaf, step by step.
+
+                      Chapters
+                      0:00 Intro
+                      1:30 Feeding the starter
+                      4:10 Shaping
+                      9:45 Baking
+
+                      You only need flour, water, salt and an active starter. Recipe and timings: [link].
+
+                      Subscribe so you don't miss the next bake.
+                      #sourdoughbread
+                    credits_spent: 1
+                    cached: false
+                example-2:
+                  value:
+                    descriptions:
+                    - |-
+                      Get more battery life from a new Android phone with five settings you can change in two minutes.
+
+                      We go through screen brightness, background apps, location, refresh rate and battery saver, and show where each one lives.
+
+                      The full checklist is at [link].
+                    - |-
+                      Your new Android phone does not have to need a charger by lunch. These five settings help most.
+
+                      Each one takes a few taps: brightness, background apps, location, refresh rate and battery saver.
+
+                      More phone tips: [link]
+                    credits_spent: 0
+                    cached: true
+              schema:
+                $ref: '#/components/schemas/FreeToolGenerateYoutubeDescriptionResponse'
+          description: The tool output.
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: "No API token, or an invalid one. The body has `register_url`\
+            \ to create a free account."
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: "`workspace` is not a workspace you belong to, or your account\
+            \ has no workspace, or a scoped API key lacks the `ai` ability or is bound\
+            \ to another workspace (`code: insufficient_scope`)."
+        "413":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: The request body is larger than 128 KB.
+        "422":
+          $ref: '#/components/responses/ValidationError'
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: "The workspace has no AI credits left this billing cycle (`code:\
+            \ ai_credits_exhausted`, `upgrade_url`), or the per-minute limit was reached.\
+            \ Rate limit reached. Without a token: 30 calls per minute and 500 per\
+            \ UTC day per IP address (IPv6 per /64). With a token: 300 per minute\
+            \ per user; the Free plan also has 1,000 calls per UTC day, paid plans\
+            \ have no daily cap."
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            Retry-After:
+              description: Seconds until the limit resets.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+        "502":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: The AI provider failed or timed out. No credit was spent.
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: AI tools are switched off right now.
+      summary: "Write three YouTube video descriptions with AI (needs a token, spends\
+        \ AI credits)"
+      tags:
+      - Free Tools
+      x-free-tool: true
+  /tools/social-media-username-generator:
+    post:
+      description: "Generate social media usernames. The same logic as the free web\
+        \ tool at https://postboost.co/tools/social-media-username-generator. No account\
+        \ needed: call it without a token, or with any API token."
+      operationId: generateUsernames
+      requestBody:
+        content:
+          application/json:
+            examples:
+              example-1:
+                value:
+                  name: Maya Green
+              example-2:
+                value:
+                  name: Café Olé Studio
+                  network: x
+                  style: business
+                  numbers: true
+                  seed: 7
+            schema:
+              $ref: '#/components/schemas/FreeToolGenerateUsernamesRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                example-1:
+                  value:
+                    network: instagram
+                    style: clean
+                    seed: 0
+                    usernames:
+                    - username: space_maya
+                      profile_url: https://www.instagram.com/space_maya
+                    - username: club.maya
+                      profile_url: https://www.instagram.com/club.maya
+                    - username: maya_club_life
+                      profile_url: https://www.instagram.com/maya_club_life
+                    - username: hey_maya_now
+                      profile_url: https://www.instagram.com/hey_maya_now
+                    - username: heymayagreen
+                      profile_url: https://www.instagram.com/heymayagreen
+                    - username: hey_maya
+                      profile_url: https://www.instagram.com/hey_maya
+                    - username: just_maya_green
+                      profile_url: https://www.instagram.com/just_maya_green
+                    - username: maya_green_view
+                      profile_url: https://www.instagram.com/maya_green_view
+                    - username: green.sunny
+                      profile_url: https://www.instagram.com/green.sunny
+                    - username: maya_world
+                      profile_url: https://www.instagram.com/maya_world
+                    - username: mayapagenow
+                      profile_url: https://www.instagram.com/mayapagenow
+                    - username: studio_green
+                      profile_url: https://www.instagram.com/studio_green
+                    - username: mg_fresh
+                      profile_url: https://www.instagram.com/mg_fresh
+                    - username: maya_green_days
+                      profile_url: https://www.instagram.com/maya_green_days
+                    - username: meet.maya.green
+                      profile_url: https://www.instagram.com/meet.maya.green
+                    - username: mayanotes
+                      profile_url: https://www.instagram.com/mayanotes
+                    - username: mayagreenhere
+                      profile_url: https://www.instagram.com/mayagreenhere
+                    - username: only.maya.green
+                      profile_url: https://www.instagram.com/only.maya.green
+                    - username: truemg
+                      profile_url: https://www.instagram.com/truemg
+                    - username: maya_green_sunny
+                      profile_url: https://www.instagram.com/maya_green_sunny
+                    - username: mayaonline
+                      profile_url: https://www.instagram.com/mayaonline
+                    - username: its.maya.world
+                      profile_url: https://www.instagram.com/its.maya.world
+                    - username: simplymayadays
+                      profile_url: https://www.instagram.com/simplymayadays
+                    - username: page_green
+                      profile_url: https://www.instagram.com/page_green
+                    - username: waymg
+                      profile_url: https://www.instagram.com/waymg
+                    - username: only_maya_green
+                      profile_url: https://www.instagram.com/only_maya_green
+                    - username: green_space
+                      profile_url: https://www.instagram.com/green_space
+                    - username: sunny.mg
+                      profile_url: https://www.instagram.com/sunny.mg
+                    - username: calm_green
+                      profile_url: https://www.instagram.com/calm_green
+                    - username: green.moments
+                      profile_url: https://www.instagram.com/green.moments
+                    rules:
+                      min_length: 1
+                      max_length: 30
+                      separators:
+                      - "."
+                      - _
+                example-2:
+                  value:
+                    network: x
+                    style: business
+                    seed: 7
+                    usernames:
+                    - username: cafe_studio
+                      profile_url: https://x.com/cafe_studio
+                    - username: contentcafe37
+                      profile_url: https://x.com/contentcafe37
+                    - username: join_cafe
+                      profile_url: https://x.com/join_cafe
+                    - username: connect_cafe
+                      profile_url: https://x.com/connect_cafe
+                    - username: cafe_labs_13
+                      profile_url: https://x.com/cafe_labs_13
+                    - username: with_cafe_66
+                      profile_url: https://x.com/with_cafe_66
+                    - username: content_cos_5
+                      profile_url: https://x.com/content_cos_5
+                    - username: hellocafe94
+                      profile_url: https://x.com/hellocafe94
+                    - username: cafeagency
+                      profile_url: https://x.com/cafeagency
+                    - username: studiosolutions
+                      profile_url: https://x.com/studiosolutions
+                    - username: studio_pro_88
+                      profile_url: https://x.com/studio_pro_88
+                    - username: cafecontent
+                      profile_url: https://x.com/cafecontent
+                    - username: getcafe
+                      profile_url: https://x.com/getcafe
+                    - username: hello_cafe_45
+                      profile_url: https://x.com/hello_cafe_45
+                    - username: solutionscos75
+                      profile_url: https://x.com/solutionscos75
+                    - username: joincafe58
+                      profile_url: https://x.com/joincafe58
+                    - username: gocafe53
+                      profile_url: https://x.com/gocafe53
+                    - username: insights_cos_11
+                      profile_url: https://x.com/insights_cos_11
+                    - username: cafe_hub_42
+                      profile_url: https://x.com/cafe_hub_42
+                    - username: cosconsulting72
+                      profile_url: https://x.com/cosconsulting72
+                    - username: meet_cafe_81
+                      profile_url: https://x.com/meet_cafe_81
+                    - username: cafegroup
+                      profile_url: https://x.com/cafegroup
+                    - username: collectivecafe
+                      profile_url: https://x.com/collectivecafe
+                    - username: connectcafe71
+                      profile_url: https://x.com/connectcafe71
+                    - username: cafe_21
+                      profile_url: https://x.com/cafe_21
+                    - username: hubstudio90
+                      profile_url: https://x.com/hubstudio90
+                    - username: consulting_cafe
+                      profile_url: https://x.com/consulting_cafe
+                    - username: content_cafe
+                      profile_url: https://x.com/content_cafe
+                    - username: cafeolestudio
+                      profile_url: https://x.com/cafeolestudio
+                    - username: cafe_consulting
+                      profile_url: https://x.com/cafe_consulting
+                    rules:
+                      min_length: 5
+                      max_length: 15
+                      separators:
+                      - _
+              schema:
+                $ref: '#/components/schemas/FreeToolGenerateUsernamesResponse'
+          description: The tool output.
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "413":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: The request body is larger than 128 KB.
+        "422":
+          $ref: '#/components/responses/ValidationError'
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: "Rate limit reached. Without a token: 30 calls per minute and\
+            \ 500 per UTC day per IP address (IPv6 per /64). With a token: 300 per\
+            \ minute per user; the Free plan also has 1,000 calls per UTC day, paid\
+            \ plans have no daily cap."
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            Retry-After:
+              description: Seconds until the limit resets.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+      security: []
+      summary: Generate social media usernames
+      tags:
+      - Free Tools
+      x-free-tool: true
+  /tools/social-media-glossary:
+    get:
+      description: "Look up social media terms: plain-language definitions by category,\
+        \ with sources and related terms. The same logic as the free web tool at https://postboost.co/tools/social-media-glossary.\
+        \ No account needed: call it without a token, or with any API token."
+      operationId: getGlossary
+      parameters:
+      - explode: true
+        in: query
+        name: q
+        required: false
+        schema:
+          description: Only terms whose name or definition contains this text (case-insensitive).
+            Omit it for every term.
+          maxLength: 100
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: category
+        required: false
+        schema:
+          description: Only terms of this category. Omit it for every category.
+          enum:
+          - metrics
+          - content
+          - ads
+          - platforms
+          - developer
+          - strategy
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                example-1:
+                  value:
+                    total: 3
+                    terms:
+                    - term: Engagement rate
+                      slug: engagement-rate
+                      category: metrics
+                      definition: "Engagements divided by an audience number, shown\
+                        \ as a percentage. The audience can be followers, reach or\
+                        \ impressions, and each choice gives a different figure, so\
+                        \ always say which one a report uses."
+                      networks: []
+                      related:
+                      - engagement
+                      - reach
+                      - impressions
+                      url: https://postboost.co/tools/social-media-glossary#engagement-rate
+                      learn_url: https://postboost.co/learn/engagement-rate-reach-vs-followers
+                      tool_url: https://postboost.co/tools/engagement-rate-calculator
+                      feature_url: https://postboost.co/features/analytics
+                      source: null
+                    - term: Engagement rate by reach
+                      slug: engagement-rate-by-reach
+                      category: metrics
+                      definition: Engagements on a post divided by the number of people
+                        who saw it. It judges how well a piece of content did with
+                        the people it actually reached.
+                      networks: []
+                      related:
+                      - engagement-rate
+                      - reach
+                      url: https://postboost.co/tools/social-media-glossary#engagement-rate-by-reach
+                      learn_url: https://postboost.co/learn/engagement-rate-reach-vs-followers
+                      tool_url: https://postboost.co/tools/engagement-rate-calculator
+                      feature_url: https://postboost.co/features/analytics
+                      source: null
+                    - term: Reach
+                      slug: reach
+                      category: metrics
+                      definition: The number of unique accounts that saw a post or
+                        profile at least once in a period. One person who sees the
+                        same post three times counts once.
+                      networks: []
+                      related:
+                      - impressions
+                      - views
+                      url: https://postboost.co/tools/social-media-glossary#reach
+                      learn_url: https://postboost.co/learn/engagement-rate-reach-vs-followers
+                      tool_url: https://postboost.co/tools/engagement-rate-calculator
+                      feature_url: https://postboost.co/features/analytics
+                      source: https://developers.facebook.com/docs/instagram-platform/reference/instagram-media/insights
+                    last_verified: 2026-10-17
+                example-2:
+                  value:
+                    total: 3
+                    terms:
+                    - term: CPC
+                      slug: cpc
+                      category: ads
+                      definition: "Cost per click: ad spend divided by the clicks\
+                        \ the ad got."
+                      networks: []
+                      related:
+                      - cpm
+                      - click-through-rate
+                      url: https://postboost.co/tools/social-media-glossary#cpc
+                      learn_url: null
+                      tool_url: https://postboost.co/tools/social-media-roi-calculator
+                      feature_url: null
+                      source: null
+                    - term: CPM
+                      slug: cpm
+                      category: ads
+                      definition: "Cost per mille: what an ad costs for every 1,000\
+                        \ impressions."
+                      networks: []
+                      related:
+                      - cpc
+                      - impressions
+                      url: https://postboost.co/tools/social-media-glossary#cpm
+                      learn_url: null
+                      tool_url: https://postboost.co/tools/social-media-roi-calculator
+                      feature_url: null
+                      source: null
+                    - term: ROAS
+                      slug: roas
+                      category: ads
+                      definition: "Return on ad spend: the revenue an ad campaign\
+                        \ brought in divided by what it cost. A ROAS of 3 means 3\
+                        \ dollars back for each dollar spent."
+                      networks: []
+                      related:
+                      - social-media-roi
+                      - cpc
+                      url: https://postboost.co/tools/social-media-glossary#roas
+                      learn_url: null
+                      tool_url: https://postboost.co/tools/social-media-roi-calculator
+                      feature_url: null
+                      source: null
+                    last_verified: 2026-10-17
+              schema:
+                $ref: '#/components/schemas/FreeToolGetGlossaryResponse'
+          description: The tool output.
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "422":
+          $ref: '#/components/responses/ValidationError'
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: "Rate limit reached. Without a token: 30 calls per minute and\
+            \ 500 per UTC day per IP address (IPv6 per /64). With a token: 300 per\
+            \ minute per user; the Free plan also has 1,000 calls per UTC day, paid\
+            \ plans have no daily cap."
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            Retry-After:
+              description: Seconds until the limit resets.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+      security: []
+      summary: "Look up social media terms: plain-language definitions by category,\
+        \ with sources and related terms"
+      tags:
+      - Free Tools
+      x-free-tool: true
+  /tools/alt-text-generator:
+    post:
+      description: "Write alt text for an image with AI (needs a token, spends AI\
+        \ credits). The same logic as the free web tool at https://postboost.co/tools/alt-text-generator.\
+        \ Needs an API token (a scoped key needs the `ai` ability and pays with its\
+        \ own workspace). A new generation spends 1 AI credit of the workspace you\
+        \ name (or your active workspace); a repeated identical request is answered\
+        \ from the cache for free."
+      operationId: generateAltText
+      requestBody:
+        content:
+          application/json:
+            examples:
+              example-1:
+                value:
+                  image_url: https://example.com/images/sourdough.jpg
+                  context: our bakery opens on Saturday
+                  length: short
+              example-2:
+                value:
+                  image_base64: iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==
+                  length: detailed
+            schema:
+              $ref: '#/components/schemas/FreeToolGenerateAltTextRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/generateAltText_request'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                example-1:
+                  value:
+                    alt_text: A golden sourdough loaf cooling on a wire rack in a
+                      bakery window
+                    short_alt_text: Sourdough loaf on a cooling rack
+                    credits_spent: 1
+                    cached: false
+                example-2:
+                  value:
+                    alt_text: "A single pale blue square on a plain background, with\
+                      \ no text or other detail"
+                    short_alt_text: A pale blue square
+                    credits_spent: 0
+                    cached: true
+              schema:
+                $ref: '#/components/schemas/FreeToolGenerateAltTextResponse'
+          description: The tool output.
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: "No API token, or an invalid one. The body has `register_url`\
+            \ to create a free account."
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: "`workspace` is not a workspace you belong to, or your account\
+            \ has no workspace, or a scoped API key lacks the `ai` ability or is bound\
+            \ to another workspace (`code: insufficient_scope`)."
+        "413":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: The request body is larger than 7 MB.
+        "422":
+          $ref: '#/components/responses/ValidationError'
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: "The workspace has no AI credits left this billing cycle (`code:\
+            \ ai_credits_exhausted`, `upgrade_url`), or the per-minute limit was reached.\
+            \ Rate limit reached. Without a token: 30 calls per minute and 500 per\
+            \ UTC day per IP address (IPv6 per /64). With a token: 300 per minute\
+            \ per user; the Free plan also has 1,000 calls per UTC day, paid plans\
+            \ have no daily cap."
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            Retry-After:
+              description: Seconds until the limit resets.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+        "502":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: The AI provider failed or timed out. No credit was spent.
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: AI tools are switched off right now.
+      summary: "Write alt text for an image with AI (needs a token, spends AI credits)"
+      tags:
+      - Free Tools
+      x-free-tool: true
+  /tools/social-media-report-generator:
+    post:
+      description: "Summarize social media post metrics into a report. The same logic\
+        \ as the free web tool at https://postboost.co/tools/social-media-report-generator.\
+        \ No account needed: call it without a token, or with any API token."
+      operationId: summarizeReport
+      requestBody:
+        content:
+          application/json:
+            examples:
+              example-1:
+                value:
+                  rows:
+                  - date: 2026-09-01
+                    network: linkedin
+                    text: "Launch post: our new planning board"
+                    views: 2400
+                    likes: 96
+                    comments: 12
+                    shares: 8
+                  - date: 2026-09-02
+                    network: instagram
+                    text: Behind the scenes of the shoot
+                    views: 1800
+                    likes: 120
+                    comments: 9
+                    shares: 3
+                  - date: 2026-09-08
+                    network: linkedin
+                    text: "Customer story: a bakery's bookings"
+                    views: 1500
+                    likes: 40
+                    comments: 4
+                    shares: 6
+              example-2:
+                value:
+                  rows:
+                  - date: 2026-09-03
+                    network: x
+                    text: "Thread: five scheduling tips"
+                    engagements: 42
+                  - date: 2026-09-10
+                    network: X
+                    text: Poll results are in
+                    engagements: 18
+            schema:
+              $ref: '#/components/schemas/FreeToolSummarizeReportRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                example-1:
+                  value:
+                    posts: 3
+                    date_range:
+                      from: 2026-09-01
+                      to: 2026-09-08
+                    views: 5700
+                    engagements: 298
+                    engagement_rate: 5.23
+                    engagements_from:
+                    - likes
+                    - comments
+                    - shares
+                    networks:
+                    - network: linkedin
+                      posts: 2
+                      views: 3900
+                      engagements: 166
+                      rate: 4.26
+                    - network: instagram
+                      posts: 1
+                      views: 1800
+                      engagements: 132
+                      rate: 7.33
+                    top_posts:
+                    - date: 2026-09-02
+                      network: instagram
+                      text: Behind the scenes of the shoot
+                      engagements: 132
+                    - date: 2026-09-01
+                      network: linkedin
+                      text: "Launch post: our new planning board"
+                      engagements: 116
+                    - date: 2026-09-08
+                      network: linkedin
+                      text: "Customer story: a bakery's bookings"
+                      engagements: 50
+                    weekdays:
+                    - day: Monday
+                      posts: 0
+                      engagements: 0
+                      average: null
+                    - day: Tuesday
+                      posts: 2
+                      engagements: 166
+                      average: 83.0
+                    - day: Wednesday
+                      posts: 1
+                      engagements: 132
+                      average: 132.0
+                    - day: Thursday
+                      posts: 0
+                      engagements: 0
+                      average: null
+                    - day: Friday
+                      posts: 0
+                      engagements: 0
+                      average: null
+                    - day: Saturday
+                      posts: 0
+                      engagements: 0
+                      average: null
+                    - day: Sunday
+                      posts: 0
+                      engagements: 0
+                      average: null
+                    best_weekday: Wednesday
+                example-2:
+                  value:
+                    posts: 2
+                    date_range:
+                      from: 2026-09-03
+                      to: 2026-09-10
+                    views: null
+                    engagements: 60
+                    engagement_rate: null
+                    engagements_from:
+                    - engagements
+                    networks:
+                    - network: x
+                      posts: 2
+                      views: null
+                      engagements: 60
+                      rate: null
+                    top_posts:
+                    - date: 2026-09-03
+                      network: x
+                      text: "Thread: five scheduling tips"
+                      engagements: 42
+                    - date: 2026-09-10
+                      network: x
+                      text: Poll results are in
+                      engagements: 18
+                    weekdays:
+                    - day: Monday
+                      posts: 0
+                      engagements: 0
+                      average: null
+                    - day: Tuesday
+                      posts: 0
+                      engagements: 0
+                      average: null
+                    - day: Wednesday
+                      posts: 0
+                      engagements: 0
+                      average: null
+                    - day: Thursday
+                      posts: 2
+                      engagements: 60
+                      average: 30.0
+                    - day: Friday
+                      posts: 0
+                      engagements: 0
+                      average: null
+                    - day: Saturday
+                      posts: 0
+                      engagements: 0
+                      average: null
+                    - day: Sunday
+                      posts: 0
+                      engagements: 0
+                      average: null
+                    best_weekday: Thursday
+              schema:
+                $ref: '#/components/schemas/FreeToolSummarizeReportResponse'
+          description: The tool output.
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "413":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: The request body is larger than 2 MB.
+        "422":
+          $ref: '#/components/responses/ValidationError'
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: "Rate limit reached. Without a token: 30 calls per minute and\
+            \ 500 per UTC day per IP address (IPv6 per /64). With a token: 300 per\
+            \ minute per user; the Free plan also has 1,000 calls per UTC day, paid\
+            \ plans have no daily cap."
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            Retry-After:
+              description: Seconds until the limit resets.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+      security: []
+      summary: Summarize social media post metrics into a report
+      tags:
+      - Free Tools
+      x-free-tool: true
+  /tools/hashtag-group-builder:
+    post:
+      description: "Clean, dedupe and split hashtags into groups that fit a network's\
+        \ hashtag cap. The same logic as the free web tool at https://postboost.co/tools/hashtag-group-builder.\
+        \ No account needed: call it without a token, or with any API token."
+      operationId: buildHashtagGroups
+      requestBody:
+        content:
+          application/json:
+            examples:
+              example-1:
+                value:
+                  text: "travel, #Travel  #travel_tips 2026 #photo!graphy"
+              example-2:
+                value:
+                  text: |-
+                    #Coffee
+                    #Latte
+                    #Espresso
+                  network: linkedin
+                  group_size: 2
+                  case: lower
+                  format: first_comment
+            schema:
+              $ref: '#/components/schemas/FreeToolBuildHashtagGroupsRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                example-1:
+                  value:
+                    hashtags:
+                    - '#travel'
+                    - '#travel_tips'
+                    - '#photo'
+                    removed:
+                    - input: '#Travel'
+                      reason: duplicate
+                    - input: "2026"
+                      reason: digits_only
+                    cap: 5
+                    group_size: 5
+                    groups:
+                    - tags:
+                      - '#travel'
+                      - '#travel_tips'
+                      - '#photo'
+                      text: "#travel #travel_tips #photo"
+                      characters: 27
+                    over_cap: false
+                example-2:
+                  value:
+                    hashtags:
+                    - '#coffee'
+                    - '#latte'
+                    - '#espresso'
+                    removed: []
+                    cap: null
+                    group_size: 2
+                    groups:
+                    - tags:
+                      - '#coffee'
+                      - '#latte'
+                      text: |-
+                        .
+                        .
+                        .
+                        .
+                        .
+                        #coffee #latte
+                      characters: 24
+                    - tags:
+                      - '#espresso'
+                      text: |-
+                        .
+                        .
+                        .
+                        .
+                        .
+                        #espresso
+                      characters: 19
+                    over_cap: false
+              schema:
+                $ref: '#/components/schemas/FreeToolBuildHashtagGroupsResponse'
+          description: The tool output.
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "413":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: The request body is larger than 128 KB.
+        "422":
+          $ref: '#/components/responses/ValidationError'
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: "Rate limit reached. Without a token: 30 calls per minute and\
+            \ 500 per UTC day per IP address (IPv6 per /64). With a token: 300 per\
+            \ minute per user; the Free plan also has 1,000 calls per UTC day, paid\
+            \ plans have no daily cap."
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            Retry-After:
+              description: Seconds until the limit resets.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+      security: []
+      summary: "Clean, dedupe and split hashtags into groups that fit a network's\
+        \ hashtag cap"
+      tags:
+      - Free Tools
+      x-free-tool: true
+  /tools/social-media-automation-recipes:
+    get:
+      description: "Find n8n, Zapier and Make recipes that automate social media posting\
+        \ through the PostBoost API. The same logic as the free web tool at https://postboost.co/tools/social-media-automation-recipes.\
+        \ No account needed: call it without a token, or with any API token."
+      operationId: findAutomationRecipes
+      parameters:
+      - explode: true
+        in: query
+        name: platform
+        required: false
+        schema:
+          description: Only the steps for this automation platform; `n8n` also returns
+            an importable workflow per recipe. Omit it for the steps of all three.
+          enum:
+          - n8n
+          - zapier
+          - make
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: trigger
+        required: false
+        schema:
+          description: Only recipes started by this trigger. Omit it for every trigger.
+          enum:
+          - rss
+          - spreadsheet
+          - file
+          - approval
+          - webhook
+          - schedule
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: q
+        required: false
+        schema:
+          description: Only recipes whose title or goal contains this text (case-insensitive).
+            Omit it for every recipe.
+          maxLength: 100
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                example-1:
+                  value:
+                    total: 2
+                    recipes:
+                    - slug: rss-to-queue
+                      title: RSS feed to the PostBoost queue
+                      trigger: rss
+                      goal: Each new blog post goes into the next free slot of your
+                        posting schedule with its title and link.
+                      native:
+                        feature: RSS auto-post
+                        text: "PostBoost can watch an RSS feed and turn new items\
+                          \ into drafts or queued posts by itself, with no automation\
+                          \ tool: add the feed on the Recycling & RSS page (RSS feeds\
+                          \ tab) or with the API."
+                        docs_url: https://postboost.co/docs/automations/
+                      api_operations:
+                      - operation_id: createPost
+                        docs_url: https://postboost.co/docs/api/create-post
+                      steps:
+                        zapier:
+                        - "Trigger: RSS by Zapier → New Item in Feed."
+                        - "Action: Webhooks by Zapier → Custom Request, method POST,\
+                          \ URL https://postboost.co/app/api/{workspaceUuid}/posts."
+                        - "Headers: Authorization: Bearer <your token>, Content-Type:\
+                          \ application/json."
+                        - "Data: accounts, versions (the item title and link as the\
+                          \ text) and \"queue\": true."
+                      n8n_workflow: null
+                    - slug: rss-ai-caption-drafts
+                      title: RSS feed to AI caption drafts
+                      trigger: rss
+                      goal: "Each new blog post becomes a draft with one AI-written\
+                        \ caption per account, ready for you to review. Uses PostBoost\
+                        \ AI credits, no third-party AI."
+                      native:
+                        feature: RSS auto-post
+                        text: "PostBoost can watch an RSS feed and turn new items\
+                          \ into drafts or queued posts by itself, with no automation\
+                          \ tool: add the feed on the Recycling & RSS page (RSS feeds\
+                          \ tab) or with the API."
+                        docs_url: https://postboost.co/docs/automations/
+                      api_operations:
+                      - operation_id: blogToSocial
+                        docs_url: https://postboost.co/docs/api/blog-to-social
+                      steps:
+                        zapier:
+                        - "Trigger: RSS by Zapier → New Item in Feed."
+                        - "Action: Webhooks by Zapier → Custom Request, method POST,\
+                          \ URL https://postboost.co/app/api/{workspaceUuid}/ai/blog-to-social."
+                        - "Headers: Authorization: Bearer <your token>, Content-Type:\
+                          \ application/json."
+                        - "Data: \"url\" (the item link), \"account_ids\" and \"create_post\"\
+                          : true."
+                      n8n_workflow: null
+                    last_verified: 2026-10-18
+                example-2:
+                  value:
+                    total: 3
+                    recipes:
+                    - slug: slack-approval
+                      title: Approve posts in Slack before they go out
+                      trigger: approval
+                      goal: "A new post request becomes a draft, Slack asks for approval,\
+                        \ and the post joins the queue only when someone approves\
+                        \ it."
+                      native: null
+                      api_operations:
+                      - operation_id: createPost
+                        docs_url: https://postboost.co/docs/api/create-post
+                      - operation_id: addPostToQueue
+                        docs_url: https://postboost.co/docs/api/add-post-to-queue
+                      - operation_id: deletePost
+                        docs_url: https://postboost.co/docs/api/delete-post
+                      steps:
+                        make:
+                        - "Trigger: the app where requests arrive (for example a form\
+                          \ or a Slack message)."
+                        - "Action: HTTP → Make a request (body type Raw, JSON, parse\
+                          \ response), method POST, URL https://postboost.co/app/api/{workspaceUuid}/posts."
+                        - "Headers: Authorization: Bearer <your token>, Content-Type:\
+                          \ application/json."
+                        - "Body (JSON): accounts, versions (the request text); no\
+                          \ \"queue\" or \"schedule\", so it stays a draft."
+                        - "Your approval step, then a Router: approved → HTTP POST\
+                          \ /{workspaceUuid}/posts/add-to-queue/{uuid}; declined →\
+                          \ HTTP DELETE /{workspaceUuid}/posts/{uuid} with \"trash\"\
+                          : true."
+                      n8n_workflow: null
+                    - slug: failed-post-alert
+                      title: Slack alert when a post fails to publish
+                      trigger: webhook
+                      goal: "PostBoost calls your workflow the moment a post fails\
+                        \ on an account, and your team sees the network's error in\
+                        \ Slack."
+                      native: null
+                      api_operations:
+                      - operation_id: createWebhookSubscription
+                        docs_url: https://postboost.co/docs/api/create-webhook-subscription
+                      steps:
+                        make:
+                        - "Trigger: Webhooks → Custom webhook. Copy the hook URL."
+                        - "Once: POST https://postboost.co/app/api/{workspaceUuid}/webhooks/subscriptions\
+                          \ with \"callback_url\" (the hook URL) and \"events\": [\"\
+                          post.publishing_failed\"]."
+                        - "Action: Slack → Create a Message with data.account.name,\
+                          \ data.account.provider and data.account.errors."
+                      n8n_workflow: null
+                    - slug: weekly-analytics-digest
+                      title: Weekly social analytics digest in Slack
+                      trigger: schedule
+                      goal: "Every Monday at 9:00 your channel gets last week's followers,\
+                        \ growth, posts, best account and the account that needs attention."
+                      native: null
+                      api_operations:
+                      - operation_id: getAnalyticsSummary
+                        docs_url: https://postboost.co/docs/api/get-analytics-summary
+                      steps:
+                        make:
+                        - "Schedule the scenario: every week, Monday 9:00."
+                        - "HTTP → Make a request: GET https://postboost.co/app/api/{workspaceUuid}/analytics?period=last_week,\
+                          \ header Authorization: Bearer <your token>, parse response."
+                        - Slack → Create a Message with the summary fields.
+                      n8n_workflow: null
+                    last_verified: 2026-10-18
+              schema:
+                $ref: '#/components/schemas/FreeToolFindAutomationRecipesResponse'
+          description: The tool output.
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "422":
+          $ref: '#/components/responses/ValidationError'
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: "Rate limit reached. Without a token: 30 calls per minute and\
+            \ 500 per UTC day per IP address (IPv6 per /64). With a token: 300 per\
+            \ minute per user; the Free plan also has 1,000 calls per UTC day, paid\
+            \ plans have no daily cap."
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            Retry-After:
+              description: Seconds until the limit resets.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+      security: []
+      summary: "Find n8n, Zapier and Make recipes that automate social media posting\
+        \ through the PostBoost API"
       tags:
       - Free Tools
       x-free-tool: true
@@ -12748,6 +15337,9 @@ components:
           nullable: true
           type: string
         url:
+          description: "Link shown as a preview card on LinkedIn, Bluesky and Facebook\
+            \ Pages (Facebook builds the card from the page's own Open Graph tags).\
+            \ If omitted and the item has no media, the first link in `body` is used."
           format: uri
           nullable: true
           type: string
@@ -20158,6 +22750,115 @@ components:
           description: "The scorecard as a Markdown report: overall score, top fixes\
             \ and every answer per network."
           type: string
+    FreeToolPickSocialMediaToolRequest:
+      example:
+        needs:
+        - team_dashboard
+        - team_dashboard
+        - team_dashboard
+        - team_dashboard
+        - team_dashboard
+        use_case: team_scheduling
+      properties:
+        needs:
+          description: "What you need: team_dashboard (Scheduling dashboard for a\
+            \ team), rest_openapi (REST API with a published OpenAPI spec), sdks (At\
+            \ least one official SDK), mcp (MCP server for AI agents), webhooks (Webhooks),\
+            \ free_tier (Free hosted plan), zapier (Native Zapier app), n8n (Native\
+            \ n8n node), make (Native Make app). Required unless use_case is set."
+          items:
+            enum:
+            - team_dashboard
+            - rest_openapi
+            - sdks
+            - mcp
+            - webhooks
+            - free_tier
+            - zapier
+            - n8n
+            - make
+            type: string
+          maxItems: 9
+          minItems: 1
+          type: array
+        use_case:
+          description: "A shortcut used when needs is left out: team_scheduling (team_dashboard,\
+            \ free_tier), build_app (rest_openapi, sdks, webhooks), ai_agent (mcp,\
+            \ rest_openapi)."
+          enum:
+          - team_scheduling
+          - build_app
+          - ai_agent
+          type: string
+    FreeToolPickSocialMediaToolResponse:
+      example:
+        needs:
+        - team_dashboard
+        - team_dashboard
+        checked_at: 2000-01-23
+        checked_label: checked_label
+        results:
+        - pick_if: pick_if
+          score: 0
+          checked_at: 2000-01-23
+          compare_url: compare_url
+          postboost_if: postboost_if
+          name: name
+          missing:
+          - team_dashboard
+          - team_dashboard
+          matched:
+          - team_dashboard
+          - team_dashboard
+          slug: slug
+          unknown:
+          - team_dashboard
+          - team_dashboard
+        - pick_if: pick_if
+          score: 0
+          checked_at: 2000-01-23
+          compare_url: compare_url
+          postboost_if: postboost_if
+          name: name
+          missing:
+          - team_dashboard
+          - team_dashboard
+          matched:
+          - team_dashboard
+          - team_dashboard
+          slug: slug
+          unknown:
+          - team_dashboard
+          - team_dashboard
+      properties:
+        needs:
+          description: "The needs matched, deduplicated, in a fixed order."
+          items:
+            enum:
+            - team_dashboard
+            - rest_openapi
+            - sdks
+            - mcp
+            - webhooks
+            - free_tier
+            - zapier
+            - n8n
+            - make
+            type: string
+          type: array
+        results:
+          description: "Every tool compared, PostBoost included: by score (highest\
+            \ first), then name."
+          items:
+            $ref: '#/components/schemas/FreeToolPickSocialMediaToolResponse_results_inner'
+          type: array
+        checked_at:
+          description: Date of the comparison data snapshot.
+          format: date
+          type: string
+        checked_label:
+          description: "The snapshot month, as shown on the page."
+          type: string
     FreeToolGenerateHashtagsRequest:
       example:
         workspace: workspace
@@ -20231,6 +22932,7 @@ components:
         emoji: true
         hashtags: false
         length: medium
+        format: caption
         text: text
         network: instagram
       properties:
@@ -20280,6 +22982,15 @@ components:
             \ your active workspace (a scoped API key: its own workspace)."
           maxLength: 64
           type: string
+        format:
+          default: caption
+          description: "caption: short captions (default). post: long-form posts of\
+            \ 300-600, 600-1,300 or 1,300-2,000 characters by `length`, with at most\
+            \ 3 hashtags; network linkedin only."
+          enum:
+          - caption
+          - post
+          type: string
       required:
       - text
     FreeToolGenerateCaptionResponse:
@@ -20292,7 +23003,8 @@ components:
       properties:
         captions:
           description: "Three different captions, each within the network's text limit\
-            \ (at most 2,200 characters). TikTok captions open with a short hook line."
+            \ (at most 2,200 characters). TikTok captions open with a short hook line.\
+            \ With format post: three long-form LinkedIn posts."
           items:
             type: string
           type: array
@@ -20553,6 +23265,955 @@ components:
         credits_spent:
           description: "AI credits this call took from the workspace: one per post."
           type: integer
+    FreeToolCalculateSmmPricingRequest:
+      example:
+        community_hours_per_week: 11.726503844023561
+        content_type: copy_design
+        hourly_rate: 2302.9056733460716
+        pricing_model: retainer
+        currency: USD
+        ad_hours_per_month: 90.19802650613326
+        networks: 1
+        posts_per_week: 30
+        reporting_hours_per_month: 95.39414266693092
+      properties:
+        networks:
+          description: Number of social networks managed.
+          maximum: 10
+          minimum: 1
+          type: integer
+        posts_per_week:
+          description: Posts per week on each network.
+          maximum: 50
+          minimum: 0
+          type: integer
+        content_type:
+          default: copy_design
+          description: "What goes into a post. Assumed minutes per post: copy 30,\
+            \ copy_design 60, copy_design_video 120."
+          enum:
+          - copy
+          - copy_design
+          - copy_design_video
+          type: string
+        community_hours_per_week:
+          default: 0
+          description: "Community management (replies, comments, DMs), hours per week."
+          maximum: 80
+          minimum: 0
+          type: number
+        reporting_hours_per_month:
+          default: 0
+          description: "Reporting, hours per month."
+          maximum: 160
+          minimum: 0
+          type: number
+        ad_hours_per_month:
+          default: 0
+          description: "Paid social ad management, hours per month."
+          maximum: 160
+          minimum: 0
+          type: number
+        hourly_rate:
+          default: 50
+          description: "Your hourly rate. The default 50 is a round placeholder, not\
+            \ a market rate."
+          maximum: 10000
+          minimum: 1
+          type: number
+        currency:
+          default: USD
+          description: Currency for formatting only; nothing is converted.
+          enum:
+          - USD
+          - EUR
+          - GBP
+          type: string
+        pricing_model:
+          default: retainer
+          description: "Which price leads the quote: hourly, monthly retainer or per\
+            \ post."
+          enum:
+          - hourly
+          - retainer
+          - per_post
+          type: string
+      required:
+      - networks
+      - posts_per_week
+    FreeToolCalculateSmmPricingResponse:
+      example:
+        per_post: 5.637376656633329
+        hourly_rate: 1.4658129805029452
+        monthly_retainer: 5.962133916683182
+        pricing_model: hourly
+        hours_per_month: 6.027456183070403
+        range:
+          high: 7.061401241503109
+          low: 2.3021358869347655
+        currency: currency
+        line_items:
+        - amount: 3.616076749251911
+          hours_per_month: 9.301444243932576
+          label: label
+          key: content
+        - amount: 3.616076749251911
+          hours_per_month: 9.301444243932576
+          label: label
+          key: content
+        posts_per_month: 0.8008281904610115
+        assumptions:
+        - assumptions
+        - assumptions
+      properties:
+        currency:
+          type: string
+        pricing_model:
+          enum:
+          - hourly
+          - retainer
+          - per_post
+          type: string
+        posts_per_month:
+          description: "Networks × posts per week × 52 ÷ 12, 1 decimal."
+          type: number
+        hours_per_month:
+          description: "Estimated working hours a month, 1 decimal."
+          type: number
+        hourly_rate:
+          type: number
+        monthly_retainer:
+          description: "Hours a month × hourly rate, whole currency units."
+          type: number
+        per_post:
+          description: "Monthly retainer ÷ posts a month, 2 decimals; null with no\
+            \ posts."
+          nullable: true
+          type: number
+        range:
+          $ref: '#/components/schemas/FreeToolCalculateSmmPricingResponse_range'
+        line_items:
+          description: Every task with hours above 0.
+          items:
+            $ref: '#/components/schemas/FreeToolCalculateSmmPricingResponse_line_items_inner'
+          type: array
+        assumptions:
+          items:
+            type: string
+          type: array
+    FreeToolVerifyWebhookSignatureRequest:
+      example:
+        signature: signature
+        prefix: ""
+        secret: secret
+        body: body
+        encoding: hex
+        algorithm: sha256
+      properties:
+        body:
+          description: "The raw request body exactly as received (up to 64 KB). Use\
+            \ a test payload, not production data."
+          maxLength: 65536
+          type: string
+        secret:
+          description: "The webhook secret. Use a test secret: never send a production\
+            \ secret to any third-party service."
+          maxLength: 512
+          minLength: 1
+          type: string
+        signature:
+          description: "The received signature header value, e.g. X-Signature."
+          maxLength: 1024
+          type: string
+        algorithm:
+          default: sha256
+          enum:
+          - sha256
+          - sha1
+          - sha512
+          type: string
+        encoding:
+          default: hex
+          enum:
+          - hex
+          - base64
+          type: string
+        prefix:
+          default: ""
+          description: "A prefix the sender puts before the signature, e.g. \"sha256=\"\
+            \ (GitHub)."
+          maxLength: 32
+          type: string
+      required:
+      - body
+      - secret
+      - signature
+    FreeToolVerifyWebhookSignatureResponse:
+      example:
+        valid: true
+        hints:
+        - hints
+        - hints
+        expected: expected
+      properties:
+        valid:
+          type: boolean
+        expected:
+          description: "The signature the body and secret give, with the prefix."
+          type: string
+        hints:
+          description: "When invalid: the usual mistakes that would make it valid,\
+            \ each checked."
+          items:
+            type: string
+          type: array
+    FreeToolGenerateBioRequest:
+      example:
+        cta: true
+        workspace: workspace
+        tone: friendly
+        emoji: true
+        text: text
+        network: instagram
+      properties:
+        text:
+          description: "What you or your brand do, and for whom."
+          maxLength: 300
+          minLength: 1
+          type: string
+        tone:
+          default: friendly
+          enum:
+          - friendly
+          - professional
+          - playful
+          - inspirational
+          - bold
+          type: string
+        emoji:
+          default: true
+          description: Use one or two fitting emoji.
+          type: boolean
+        cta:
+          default: true
+          description: "End with a short call to action, such as the link in bio."
+          type: boolean
+        network:
+          default: instagram
+          description: The network the bio is written for (Instagram for now).
+          enum:
+          - instagram
+          type: string
+        workspace:
+          description: "UUID of the workspace whose AI credits pay for the call. Default:\
+            \ your active workspace (a scoped API key: its own workspace)."
+          maxLength: 64
+          type: string
+      required:
+      - text
+    FreeToolGenerateBioResponse:
+      example:
+        credits_spent: 0
+        bios:
+        - bios
+        - bios
+        cached: true
+      properties:
+        bios:
+          description: "Three to five different bios, each at most 150 characters\
+            \ as the character counter counts them (most emoji count as 2)."
+          items:
+            type: string
+          type: array
+        credits_spent:
+          description: "AI credits this call took from the workspace: 1, or 0 for\
+            \ a cached result."
+          type: integer
+        cached:
+          description: True when the same request was answered before (free).
+          type: boolean
+    FreeToolGenerateYoutubeTitlesRequest:
+      example:
+        workspace: workspace
+        style: how-to
+        text: text
+      properties:
+        text:
+          description: What the video is about.
+          maxLength: 300
+          minLength: 1
+          type: string
+        style:
+          default: how-to
+          description: "how-to (\"How to ...\"), listicle (\"7 ways to ...\"), question,\
+            \ story (first person) or news."
+          enum:
+          - how-to
+          - listicle
+          - question
+          - story
+          - news
+          type: string
+        workspace:
+          description: "UUID of the workspace whose AI credits pay for the call. Default:\
+            \ your active workspace (a scoped API key: its own workspace)."
+          maxLength: 64
+          type: string
+      required:
+      - text
+    FreeToolGenerateYoutubeTitlesResponse:
+      example:
+        credits_spent: 0
+        cached: true
+        titles:
+        - titles
+        - titles
+      properties:
+        titles:
+          description: "Three to five different titles, each at most 100 characters,\
+            \ with the main keyword early, no `<` or `>` and not in capitals."
+          items:
+            type: string
+          type: array
+        credits_spent:
+          description: "AI credits this call took from the workspace: 1, or 0 for\
+            \ a cached result."
+          type: integer
+        cached:
+          description: True when the same request was answered before (free).
+          type: boolean
+    FreeToolGenerateLinkedInHeadlineRequest:
+      example:
+        skills: skills
+        audience: ""
+        workspace: workspace
+        role: role
+        tone: professional
+      properties:
+        role:
+          description: Your role or what you do.
+          maxLength: 100
+          minLength: 1
+          type: string
+        skills:
+          description: Your skills and the value you bring.
+          maxLength: 300
+          minLength: 1
+          type: string
+        audience:
+          default: ""
+          description: Who you help (optional).
+          maxLength: 100
+          type: string
+        tone:
+          default: professional
+          enum:
+          - professional
+          - bold
+          - friendly
+          type: string
+        workspace:
+          description: "UUID of the workspace whose AI credits pay for the call. Default:\
+            \ your active workspace (a scoped API key: its own workspace)."
+          maxLength: 64
+          type: string
+      required:
+      - role
+      - skills
+    FreeToolGenerateLinkedInHeadlineResponse:
+      example:
+        credits_spent: 0
+        headlines:
+        - headlines
+        - headlines
+        cached: true
+      properties:
+        headlines:
+          description: "Three to five different headlines, each at most 220 characters\
+            \ as the character counter counts them."
+          items:
+            type: string
+          type: array
+        credits_spent:
+          description: "AI credits this call took from the workspace: 1, or 0 for\
+            \ a cached result."
+          type: integer
+        cached:
+          description: True when the same request was answered before (free).
+          type: boolean
+    FreeToolGenerateYoutubeDescriptionRequest:
+      example:
+        cta: subscribe
+        chapter_lines:
+        - chapter_lines
+        - chapter_lines
+        - chapter_lines
+        - chapter_lines
+        - chapter_lines
+        workspace: workspace
+        keywords: keywords
+        chapters: false
+        text: text
+      properties:
+        text:
+          description: "What the video is about: a summary or the main points."
+          maxLength: 1000
+          minLength: 1
+          type: string
+        keywords:
+          description: "Optional search keywords to use naturally, comma separated."
+          maxLength: 200
+          type: string
+        chapters:
+          default: false
+          description: Add a chapters block after the first paragraph.
+          type: boolean
+        chapter_lines:
+          description: "Your chapters as `m:ss Title` lines, the first at 0:00. Used\
+            \ verbatim when `chapters` is true; without them the block has fill-in\
+            \ placeholders. Timestamps are never generated."
+          items:
+            maxLength: 100
+            type: string
+          maxItems: 50
+          type: array
+        cta:
+          default: subscribe
+          description: "The closing call to action: subscribe, link (a [link] placeholder)\
+            \ or none."
+          enum:
+          - subscribe
+          - link
+          - none
+          type: string
+        workspace:
+          description: "UUID of the workspace whose AI credits pay for the call. Default:\
+            \ your active workspace (a scoped API key: its own workspace)."
+          maxLength: 64
+          type: string
+      required:
+      - text
+    FreeToolGenerateYoutubeDescriptionResponse:
+      example:
+        credits_spent: 0
+        cached: true
+        descriptions:
+        - descriptions
+        - descriptions
+      properties:
+        descriptions:
+          description: "Two or three different descriptions, each under 5,000 UTF-8\
+            \ bytes (YouTube's limit) and without `<` or `>`. Links are `[link]` placeholders."
+          items:
+            type: string
+          type: array
+        credits_spent:
+          description: "AI credits this call took from the workspace: 1, or 0 for\
+            \ a cached result."
+          type: integer
+        cached:
+          description: True when the same request was answered before (free).
+          type: boolean
+    FreeToolGenerateUsernamesRequest:
+      example:
+        seed: 80082
+        name: name
+        numbers: false
+        style: clean
+        network: instagram
+      properties:
+        name:
+          description: "Your name, brand or a few keywords. Accents are dropped; only\
+            \ Latin letters and digits are used."
+          maxLength: 60
+          minLength: 1
+          type: string
+        network:
+          default: instagram
+          description: Whose username rules apply (Threads uses your Instagram username).
+          enum:
+          - instagram
+          - tiktok
+          - x
+          - youtube
+          - threads
+          type: string
+        style:
+          default: clean
+          description: Which word list to mix in.
+          enum:
+          - clean
+          - creative
+          - business
+          - gaming
+          type: string
+        numbers:
+          default: false
+          description: Allow a number at the end of some names.
+          type: boolean
+        seed:
+          default: 0
+          description: The same input and seed give the same list; change it for more
+            ideas.
+          maximum: 1000000
+          minimum: 0
+          type: integer
+      required:
+      - name
+    FreeToolGenerateUsernamesResponse:
+      example:
+        seed: 0
+        style: clean
+        usernames:
+        - profile_url: https://openapi-generator.tech
+          username: username
+        - profile_url: https://openapi-generator.tech
+          username: username
+        rules:
+          min_length: 6
+          separators:
+          - separators
+          - separators
+          max_length: 1
+        network: instagram
+      properties:
+        network:
+          enum:
+          - instagram
+          - tiktok
+          - x
+          - youtube
+          - threads
+          type: string
+        style:
+          enum:
+          - clean
+          - creative
+          - business
+          - gaming
+          type: string
+        seed:
+          type: integer
+        usernames:
+          description: "Up to 30 names, each valid for the network. Not checked for\
+            \ availability: open the profile URL to see whether a name is taken."
+          items:
+            $ref: '#/components/schemas/FreeToolGenerateUsernamesResponse_usernames_inner'
+          type: array
+        rules:
+          $ref: '#/components/schemas/FreeToolGenerateUsernamesResponse_rules'
+    FreeToolGetGlossaryResponse:
+      example:
+        total: 0
+        terms:
+        - learn_url: https://openapi-generator.tech
+          related:
+          - related
+          - related
+          term: term
+          definition: definition
+          feature_url: https://openapi-generator.tech
+          source: https://openapi-generator.tech
+          category: metrics
+          networks:
+          - networks
+          - networks
+          tool_url: https://openapi-generator.tech
+          slug: slug
+          url: https://openapi-generator.tech
+        - learn_url: https://openapi-generator.tech
+          related:
+          - related
+          - related
+          term: term
+          definition: definition
+          feature_url: https://openapi-generator.tech
+          source: https://openapi-generator.tech
+          category: metrics
+          networks:
+          - networks
+          - networks
+          tool_url: https://openapi-generator.tech
+          slug: slug
+          url: https://openapi-generator.tech
+        last_verified: 2000-01-23
+      properties:
+        total:
+          description: Number of terms returned.
+          type: integer
+        terms:
+          items:
+            $ref: '#/components/schemas/FreeToolGetGlossaryResponse_terms_inner'
+          type: array
+        last_verified:
+          description: When the definitions were last checked against their sources.
+          format: date
+          type: string
+    FreeToolGenerateAltTextRequest:
+      example:
+        workspace: workspace
+        image_base64: image_base64
+        image_url: image_url
+        context: context
+        length: short
+      properties:
+        image_base64:
+          description: "The image itself, base64-encoded without a `data:` prefix:\
+            \ JPEG, PNG, WebP or GIF (first frame), up to 5 MB. On the API you can\
+            \ upload the file as `image` in a multipart/form-data body instead. A\
+            \ request to the MCP server at /mcp/tools may be at most 1.5 MB, so send\
+            \ larger images as `image_url` there. Send this or `image_url`."
+          maxLength: 6990508
+          type: string
+        image_url:
+          description: "A public https URL of the image, up to 5 MB. Fetched once\
+            \ and never stored; each fetch also counts against the daily limit of\
+            \ the tools that load a URL. Send this or `image_base64`."
+          maxLength: 2000
+          pattern: ^https://
+          type: string
+        context:
+          description: "Optional: what the post is about, so the text describes what\
+            \ matters for it."
+          maxLength: 200
+          type: string
+        length:
+          default: short
+          description: short (up to 125 characters) or detailed (up to 250).
+          enum:
+          - short
+          - detailed
+          type: string
+        workspace:
+          description: "UUID of the workspace whose AI credits pay for the call. Default:\
+            \ your active workspace (a scoped API key: its own workspace)."
+          maxLength: 64
+          type: string
+    FreeToolGenerateAltTextResponse:
+      example:
+        credits_spent: 0
+        alt_text: alt_text
+        cached: true
+        short_alt_text: short_alt_text
+      properties:
+        alt_text:
+          description: "The alt text, within the chosen length."
+          type: string
+        short_alt_text:
+          description: A shorter alternative.
+          type: string
+        credits_spent:
+          description: "AI credits this call took from the workspace: 1, or 0 for\
+            \ a cached result."
+          type: integer
+        cached:
+          description: True when the same request was answered before (free).
+          type: boolean
+    FreeToolSummarizeReportRequest:
+      example:
+        rows:
+        - date: date
+          shares: 2147483647
+          comments: 2147483647
+          clicks: 2147483647
+          engagements: 2147483647
+          text: text
+          views: 2147483647
+          network: network
+          likes: 2147483647
+        - date: date
+          shares: 2147483647
+          comments: 2147483647
+          clicks: 2147483647
+          engagements: 2147483647
+          text: text
+          views: 2147483647
+          network: network
+          likes: 2147483647
+        - date: date
+          shares: 2147483647
+          comments: 2147483647
+          clicks: 2147483647
+          engagements: 2147483647
+          text: text
+          views: 2147483647
+          network: network
+          likes: 2147483647
+        - date: date
+          shares: 2147483647
+          comments: 2147483647
+          clicks: 2147483647
+          engagements: 2147483647
+          text: text
+          views: 2147483647
+          network: network
+          likes: 2147483647
+        - date: date
+          shares: 2147483647
+          comments: 2147483647
+          clicks: 2147483647
+          engagements: 2147483647
+          text: text
+          views: 2147483647
+          network: network
+          likes: 2147483647
+      properties:
+        rows:
+          description: "One object per post, already mapped to these fields. Leave\
+            \ out a count the export does not have."
+          items:
+            $ref: '#/components/schemas/FreeToolSummarizeReportRequest_rows_inner'
+          maxItems: 5000
+          minItems: 1
+          type: array
+      required:
+      - rows
+    FreeToolSummarizeReportResponse:
+      example:
+        date_range:
+          from: from
+          to: to
+        top_posts:
+        - date: date
+          engagements: 3
+          text: text
+          network: network
+        - date: date
+          engagements: 3
+          text: text
+          network: network
+        best_weekday: best_weekday
+        weekdays:
+        - average: 7.386281948385884
+          engagements: 4
+          day: day
+          posts: 2
+        - average: 7.386281948385884
+          engagements: 4
+          day: day
+          posts: 2
+        engagements: 1
+        engagement_rate: 5.962133916683182
+        networks:
+        - rate: 9.301444243932576
+          engagements: 7
+          posts: 5
+          views: 2
+          network: network
+        - rate: 9.301444243932576
+          engagements: 7
+          posts: 5
+          views: 2
+          network: network
+        posts: 0
+        views: 6
+        engagements_from:
+        - engagements_from
+        - engagements_from
+      properties:
+        posts:
+          type: integer
+        date_range:
+          $ref: '#/components/schemas/FreeToolSummarizeReportResponse_date_range'
+        views:
+          nullable: true
+          type: integer
+        engagements:
+          type: integer
+        engagement_rate:
+          description: "Percent, 2 decimals; null without views."
+          nullable: true
+          type: number
+        engagements_from:
+          description: The counts added up as engagements.
+          items:
+            type: string
+          type: array
+        networks:
+          items:
+            $ref: '#/components/schemas/FreeToolSummarizeReportResponse_networks_inner'
+          type: array
+        top_posts:
+          items:
+            $ref: '#/components/schemas/FreeToolSummarizeReportResponse_top_posts_inner'
+          type: array
+        weekdays:
+          items:
+            $ref: '#/components/schemas/FreeToolSummarizeReportResponse_weekdays_inner'
+          type: array
+        best_weekday:
+          description: The weekday with the highest average engagements per post.
+          nullable: true
+          type: string
+    FreeToolBuildHashtagGroupsRequest:
+      example:
+        group_size: 3
+        format: inline
+        text: text
+        case: keep
+        network: instagram
+      properties:
+        text:
+          description: "Hashtags or words, separated by spaces, commas or new lines.\
+            \ A missing # is added."
+          maxLength: 5000
+          type: string
+        network:
+          default: instagram
+          description: Network whose hashtag cap applies.
+          enum:
+          - instagram
+          - facebook
+          - tiktok
+          - linkedin
+          - x
+          - threads
+          - bluesky
+          - mastodon
+          - youtube
+          type: string
+        group_size:
+          description: "Hashtags per group. Default: the network's cap, or 5 when\
+            \ it has no hard cap."
+          maximum: 30
+          minimum: 1
+          type: integer
+        case:
+          default: keep
+          description: "keep the first spelling of each hashtag, or lower-case all\
+            \ of them."
+          enum:
+          - keep
+          - lower
+          type: string
+        format:
+          default: inline
+          description: "inline: one line of tags. first_comment: five \".\" lines,\
+            \ then the tags."
+          enum:
+          - inline
+          - first_comment
+          type: string
+      required:
+      - text
+    FreeToolBuildHashtagGroupsResponse:
+      example:
+        group_size: 6
+        cap: 0
+        hashtags:
+        - hashtags
+        - hashtags
+        removed:
+        - input: input
+          reason: duplicate
+        - input: input
+          reason: duplicate
+        groups:
+        - characters: 1
+          text: text
+          tags:
+          - tags
+          - tags
+        - characters: 1
+          text: text
+          tags:
+          - tags
+          - tags
+        over_cap: true
+      properties:
+        hashtags:
+          description: "Clean hashtags in input order, duplicates removed."
+          items:
+            type: string
+          type: array
+        removed:
+          description: "Entries that were dropped, with the reason."
+          items:
+            $ref: '#/components/schemas/FreeToolBuildHashtagGroupsResponse_removed_inner'
+          type: array
+        cap:
+          description: Hashtags PostBoost allows per post on the network; null = no
+            hard limit.
+          nullable: true
+          type: integer
+        group_size:
+          description: Hashtags per group that was used.
+          type: integer
+        groups:
+          items:
+            $ref: '#/components/schemas/FreeToolBuildHashtagGroupsResponse_groups_inner'
+          type: array
+        over_cap:
+          description: A group holds more hashtags than the cap.
+          type: boolean
+    FreeToolFindAutomationRecipesResponse:
+      example:
+        recipes:
+        - n8n_workflow:
+            key: ""
+          goal: goal
+          native:
+            docs_url: https://openapi-generator.tech
+            feature: feature
+            text: text
+          api_operations:
+          - docs_url: https://openapi-generator.tech
+            operation_id: operation_id
+          - docs_url: https://openapi-generator.tech
+            operation_id: operation_id
+          trigger: rss
+          title: title
+          steps:
+            n8n:
+            - n8n
+            - n8n
+            zapier:
+            - zapier
+            - zapier
+            make:
+            - make
+            - make
+          slug: slug
+        - n8n_workflow:
+            key: ""
+          goal: goal
+          native:
+            docs_url: https://openapi-generator.tech
+            feature: feature
+            text: text
+          api_operations:
+          - docs_url: https://openapi-generator.tech
+            operation_id: operation_id
+          - docs_url: https://openapi-generator.tech
+            operation_id: operation_id
+          trigger: rss
+          title: title
+          steps:
+            n8n:
+            - n8n
+            - n8n
+            zapier:
+            - zapier
+            - zapier
+            make:
+            - make
+            - make
+          slug: slug
+        total: 0
+        last_verified: 2000-01-23
+      properties:
+        total:
+          description: Number of recipes returned.
+          type: integer
+        recipes:
+          items:
+            $ref: '#/components/schemas/FreeToolFindAutomationRecipesResponse_recipes_inner'
+          type: array
+        last_verified:
+          description: When the recipes were last checked against the API and the
+            platforms.
+          format: date
+          type: string
     listMyWorkspaces_200_response:
       example:
         data:
@@ -20770,14 +24431,50 @@ components:
           type: string
       required:
       - url
-    initiateRemoteUpload_201_response_oneOf:
+    initiateRemoteUpload_200_response:
+      example:
+        media:
+          thumb_url: https://openapi-generator.tech
+          created_at: 2026-10-16 05:30:00
+          type: image
+          uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          url: https://openapi-generator.tech
+          duration_ms: 3
+          is_video: true
+          folder:
+            name: name
+            uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          size: 2
+          mime_type: image/jpeg
+          alt_text: alt_text
+          name: name
+          width: 7
+          id: "42"
+          is_processing: true
+          height: 9
+        error: error
+        download_id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        status: pending
       properties:
-        download_id:
+        status:
+          description: '`completed` and `failed` are final; `pending` means the file
+            downloads in the background.'
+          enum:
+          - pending
+          - completed
+          - failed
           type: string
-    initiateRemoteUpload_201_response:
-      oneOf:
-      - $ref: '#/components/schemas/Media'
-      - $ref: '#/components/schemas/initiateRemoteUpload_201_response_oneOf'
+        media:
+          $ref: '#/components/schemas/Media'
+        error:
+          description: Why the download failed. Present when `status` is `failed`.
+          type: string
+        download_id:
+          description: Present when `status` is `pending`. Pass it to `getRemoteUploadStatus`.
+          format: uuid
+          type: string
+      required:
+      - status
     uploadChunk_request:
       properties:
         chunk:
@@ -20810,6 +24507,7 @@ components:
           type: string
     getRemoteUploadStatus_200_response:
       example:
+        progress: 8
         media:
           thumb_url: https://openapi-generator.tech
           created_at: 2026-10-16 05:30:00
@@ -20829,17 +24527,45 @@ components:
           id: "42"
           is_processing: true
           height: 9
+        error: error
         status: pending
       properties:
         status:
           enum:
           - pending
           - downloading
-          - complete
+          - processing
+          - completed
           - failed
           type: string
+        progress:
+          description: "Percent done. It stays `0` until the file is stored and is\
+            \ `100` once `status` is `completed`, so poll on `status`."
+          maximum: 100
+          minimum: 0
+          type: integer
         media:
           $ref: '#/components/schemas/Media'
+        error:
+          description: Why the download failed. Present when `status` is `failed`.
+          type: string
+      required:
+      - progress
+      - status
+    getRemoteUploadStatus_404_response:
+      example:
+        error: error
+        status: failed
+      properties:
+        status:
+          enum:
+          - failed
+          type: string
+        error:
+          type: string
+      required:
+      - error
+      - status
     listMediaFolders_200_response:
       example:
         data:
@@ -23627,6 +27353,36 @@ components:
           $ref: '#/components/schemas/ResellerClient'
       required:
       - data
+    generateAltText_request:
+      properties:
+        image:
+          description: "The file itself instead of `image_base64`, with the same rules."
+          format: binary
+          type: string
+        image_url:
+          description: "A public https URL of the image, up to 5 MB. Fetched once\
+            \ and never stored; each fetch also counts against the daily limit of\
+            \ the tools that load a URL. Send this or `image_base64`."
+          maxLength: 2000
+          pattern: ^https://
+          type: string
+        context:
+          description: "Optional: what the post is about, so the text describes what\
+            \ matters for it."
+          maxLength: 200
+          type: string
+        length:
+          default: short
+          description: short (up to 125 characters) or detailed (up to 250).
+          enum:
+          - short
+          - detailed
+          type: string
+        workspace:
+          description: "UUID of the workspace whose AI credits pay for the call. Default:\
+            \ your active workspace (a scoped API key: its own workspace)."
+          maxLength: 64
+          type: string
     AccountHealth_daily_cap:
       example:
         limit: 5
@@ -25533,6 +29289,93 @@ components:
           items:
             type: string
           type: array
+    FreeToolPickSocialMediaToolResponse_results_inner:
+      example:
+        pick_if: pick_if
+        score: 0
+        checked_at: 2000-01-23
+        compare_url: compare_url
+        postboost_if: postboost_if
+        name: name
+        missing:
+        - team_dashboard
+        - team_dashboard
+        matched:
+        - team_dashboard
+        - team_dashboard
+        slug: slug
+        unknown:
+        - team_dashboard
+        - team_dashboard
+      properties:
+        slug:
+          type: string
+        name:
+          type: string
+        score:
+          description: How many of your needs the tool meets.
+          minimum: 0
+          type: integer
+        matched:
+          items:
+            enum:
+            - team_dashboard
+            - rest_openapi
+            - sdks
+            - mcp
+            - webhooks
+            - free_tier
+            - zapier
+            - n8n
+            - make
+            type: string
+          type: array
+        missing:
+          items:
+            enum:
+            - team_dashboard
+            - rest_openapi
+            - sdks
+            - mcp
+            - webhooks
+            - free_tier
+            - zapier
+            - n8n
+            - make
+            type: string
+          type: array
+        unknown:
+          description: Needs the tool's public docs did not show either way ("not
+            documented").
+          items:
+            enum:
+            - team_dashboard
+            - rest_openapi
+            - sdks
+            - mcp
+            - webhooks
+            - free_tier
+            - zapier
+            - n8n
+            - make
+            type: string
+          type: array
+        compare_url:
+          description: Path of the full PostBoost comparison page; null for PostBoost.
+          nullable: true
+          type: string
+        checked_at:
+          description: When the tool's data was last checked.
+          format: date
+          type: string
+        pick_if:
+          description: When this tool is the better choice; null for PostBoost.
+          nullable: true
+          type: string
+        postboost_if:
+          description: When PostBoost is the better choice; null for PostBoost.
+          nullable: true
+          type: string
     FreeToolGenerateHooksResponse_hooks_inner:
       example:
         text: text
@@ -25659,6 +29502,399 @@ components:
           items:
             type: string
           type: array
+    FreeToolCalculateSmmPricingResponse_range:
+      description: "The retainer −20% and +20%, whole currency units."
+      example:
+        high: 7.061401241503109
+        low: 2.3021358869347655
+      properties:
+        low:
+          type: number
+        high:
+          type: number
+    FreeToolCalculateSmmPricingResponse_line_items_inner:
+      example:
+        amount: 3.616076749251911
+        hours_per_month: 9.301444243932576
+        label: label
+        key: content
+      properties:
+        key:
+          enum:
+          - content
+          - community
+          - reporting
+          - ads
+          type: string
+        label:
+          type: string
+        hours_per_month:
+          type: number
+        amount:
+          type: number
+    FreeToolGenerateUsernamesResponse_usernames_inner:
+      example:
+        profile_url: https://openapi-generator.tech
+        username: username
+      properties:
+        username:
+          type: string
+        profile_url:
+          format: uri
+          type: string
+    FreeToolGenerateUsernamesResponse_rules:
+      description: The network's rules every name follows.
+      example:
+        min_length: 6
+        separators:
+        - separators
+        - separators
+        max_length: 1
+      properties:
+        min_length:
+          type: integer
+        max_length:
+          type: integer
+        separators:
+          items:
+            type: string
+          type: array
+    FreeToolGetGlossaryResponse_terms_inner:
+      example:
+        learn_url: https://openapi-generator.tech
+        related:
+        - related
+        - related
+        term: term
+        definition: definition
+        feature_url: https://openapi-generator.tech
+        source: https://openapi-generator.tech
+        category: metrics
+        networks:
+        - networks
+        - networks
+        tool_url: https://openapi-generator.tech
+        slug: slug
+        url: https://openapi-generator.tech
+      properties:
+        term:
+          description: The term.
+          type: string
+        slug:
+          description: "Stable key of the term, also its anchor on the page."
+          type: string
+        category:
+          description: Category.
+          enum:
+          - metrics
+          - content
+          - ads
+          - platforms
+          - developer
+          - strategy
+          type: string
+        definition:
+          description: Plain-language definition in one to three sentences.
+          type: string
+        networks:
+          description: Networks the term is specific to (provider keys); empty when
+            it applies to all.
+          items:
+            type: string
+          type: array
+        related:
+          description: Slugs of related terms.
+          items:
+            type: string
+          type: array
+        url:
+          description: The term on the glossary page.
+          format: uri
+          type: string
+        learn_url:
+          description: "A PostBoost guide that goes deeper, or null."
+          format: uri
+          nullable: true
+          type: string
+        tool_url:
+          description: "A free tool for the job, or null."
+          format: uri
+          nullable: true
+          type: string
+        feature_url:
+          description: "The PostBoost feature page, or null."
+          format: uri
+          nullable: true
+          type: string
+        source:
+          description: "Where a platform rule or number in the definition comes from,\
+            \ or null."
+          format: uri
+          nullable: true
+          type: string
+    FreeToolSummarizeReportRequest_rows_inner:
+      example:
+        date: date
+        shares: 2147483647
+        comments: 2147483647
+        clicks: 2147483647
+        engagements: 2147483647
+        text: text
+        views: 2147483647
+        network: network
+        likes: 2147483647
+      properties:
+        date:
+          description: Publish date; only a leading YYYY-MM-DD is read.
+          maxLength: 40
+          type: string
+        network:
+          maxLength: 60
+          type: string
+        text:
+          description: "The post text, a full caption is fine; the top posts show\
+            \ its first 80 characters."
+          maxLength: 5000
+          type: string
+        views:
+          maximum: 100000000000
+          minimum: 0
+          type: integer
+        likes:
+          maximum: 100000000000
+          minimum: 0
+          type: integer
+        comments:
+          maximum: 100000000000
+          minimum: 0
+          type: integer
+        shares:
+          maximum: 100000000000
+          minimum: 0
+          type: integer
+        clicks:
+          maximum: 100000000000
+          minimum: 0
+          type: integer
+        engagements:
+          maximum: 100000000000
+          minimum: 0
+          type: integer
+    FreeToolSummarizeReportResponse_date_range:
+      example:
+        from: from
+        to: to
+      properties:
+        from:
+          nullable: true
+          type: string
+        to:
+          nullable: true
+          type: string
+    FreeToolSummarizeReportResponse_networks_inner:
+      example:
+        rate: 9.301444243932576
+        engagements: 7
+        posts: 5
+        views: 2
+        network: network
+      properties:
+        network:
+          type: string
+        posts:
+          type: integer
+        views:
+          nullable: true
+          type: integer
+        engagements:
+          type: integer
+        rate:
+          description: "Percent, 2 decimals; null without views."
+          nullable: true
+          type: number
+    FreeToolSummarizeReportResponse_top_posts_inner:
+      example:
+        date: date
+        engagements: 3
+        text: text
+        network: network
+      properties:
+        date:
+          nullable: true
+          type: string
+        network:
+          type: string
+        text:
+          type: string
+        engagements:
+          type: integer
+    FreeToolSummarizeReportResponse_weekdays_inner:
+      example:
+        average: 7.386281948385884
+        engagements: 4
+        day: day
+        posts: 2
+      properties:
+        day:
+          type: string
+        posts:
+          type: integer
+        engagements:
+          type: integer
+        average:
+          nullable: true
+          type: number
+    FreeToolBuildHashtagGroupsResponse_removed_inner:
+      example:
+        input: input
+        reason: duplicate
+      properties:
+        input:
+          type: string
+        reason:
+          enum:
+          - duplicate
+          - digits_only
+          - empty
+          - too_long
+          type: string
+    FreeToolBuildHashtagGroupsResponse_groups_inner:
+      example:
+        characters: 1
+        text: text
+        tags:
+        - tags
+        - tags
+      properties:
+        tags:
+          items:
+            type: string
+          type: array
+        text:
+          description: Ready to paste.
+          type: string
+        characters:
+          description: "Characters of text, counted like the PostBoost composer."
+          type: integer
+    FreeToolFindAutomationRecipesResponse_recipes_inner_native:
+      description: "Set when PostBoost does this on its own, with no automation tool;\
+        \ null otherwise."
+      example:
+        docs_url: https://openapi-generator.tech
+        feature: feature
+        text: text
+      properties:
+        feature:
+          description: The built-in feature.
+          type: string
+        text:
+          description: How to use it.
+          type: string
+        docs_url:
+          description: Its documentation.
+          format: uri
+          type: string
+    FreeToolFindAutomationRecipesResponse_recipes_inner_api_operations_inner:
+      example:
+        docs_url: https://openapi-generator.tech
+        operation_id: operation_id
+      properties:
+        operation_id:
+          description: operationId in the OpenAPI spec.
+          type: string
+        docs_url:
+          description: Its API reference page.
+          format: uri
+          type: string
+    FreeToolFindAutomationRecipesResponse_recipes_inner_steps:
+      description: "Steps per platform, naming its generic HTTP module; only the requested\
+        \ platform when `platform` is set."
+      example:
+        n8n:
+        - n8n
+        - n8n
+        zapier:
+        - zapier
+        - zapier
+        make:
+        - make
+        - make
+      properties:
+        n8n:
+          items:
+            type: string
+          type: array
+        zapier:
+          items:
+            type: string
+          type: array
+        make:
+          items:
+            type: string
+          type: array
+    FreeToolFindAutomationRecipesResponse_recipes_inner:
+      example:
+        n8n_workflow:
+          key: ""
+        goal: goal
+        native:
+          docs_url: https://openapi-generator.tech
+          feature: feature
+          text: text
+        api_operations:
+        - docs_url: https://openapi-generator.tech
+          operation_id: operation_id
+        - docs_url: https://openapi-generator.tech
+          operation_id: operation_id
+        trigger: rss
+        title: title
+        steps:
+          n8n:
+          - n8n
+          - n8n
+          zapier:
+          - zapier
+          - zapier
+          make:
+          - make
+          - make
+        slug: slug
+      properties:
+        slug:
+          description: "Stable key of the recipe, also its anchor on the page."
+          type: string
+        title:
+          description: What the recipe does.
+          type: string
+        trigger:
+          description: What starts it.
+          enum:
+          - rss
+          - spreadsheet
+          - file
+          - approval
+          - webhook
+          - schedule
+          type: string
+        goal:
+          description: The result in one or two sentences.
+          type: string
+        native:
+          $ref: '#/components/schemas/FreeToolFindAutomationRecipesResponse_recipes_inner_native'
+        api_operations:
+          description: The PostBoost API operations the recipe calls.
+          items:
+            $ref: '#/components/schemas/FreeToolFindAutomationRecipesResponse_recipes_inner_api_operations_inner'
+          type: array
+        steps:
+          $ref: '#/components/schemas/FreeToolFindAutomationRecipesResponse_recipes_inner_steps'
+        n8n_workflow:
+          additionalProperties: true
+          description: Importable n8n workflow (core nodes only; add a Header Auth
+            credential named "PostBoost API token") when `platform` is `n8n`; null
+            otherwise.
+          nullable: true
+          type: object
   securitySchemes:
     bearerAuth:
       description: |
