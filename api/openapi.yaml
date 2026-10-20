@@ -48,7 +48,7 @@ info:
     name: Commercial
     url: https://postboost.co/pages/terms
   title: PostBoost API
-  version: 1.57.7
+  version: 1.57.8
 servers:
 - description: Production
   url: https://postboost.co/app/api
