@@ -48,7 +48,7 @@ info:
     name: Commercial
     url: https://postboost.co/pages/terms
   title: PostBoost API
-  version: 1.57.4
+  version: 1.57.6
 servers:
 - description: Production
   url: https://postboost.co/app/api
@@ -6130,8 +6130,8 @@ paths:
                           \ publish."
                       warnings:
                       - code: link_not_clickable
-                        message: Links in the text are not clickable here; put the
-                          link in a comment or your bio.
+                        message: Links in the text are not clickable here; point people
+                          to the link in your bio or a Story link sticker.
                 example-2:
                   value:
                     networks:
