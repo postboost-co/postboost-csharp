@@ -48,7 +48,7 @@ info:
     name: Commercial
     url: https://postboost.co/pages/terms
   title: PostBoost API
-  version: 1.57.8
+  version: 1.61.0
 servers:
 - description: Production
   url: https://postboost.co/app/api
@@ -1284,7 +1284,10 @@ paths:
         ```
 
         The comment is posted right after the post goes live. If the comment fails, the post
-        stays published and the account's entry on the post reports the error.
+        stays published and the account's entry on the post reports the error. LinkedIn posts
+        the comment only when first comments are enabled for LinkedIn on this server; otherwise
+        only item 0 is published and the response carries a `linkedin_first_comment_unavailable`
+        warning.
       operationId: createPost
       parameters:
       - $ref: '#/components/parameters/workspaceUuid'
@@ -2653,9 +2656,9 @@ paths:
         whether or not the post is scheduled, and the guardrails (duplicate content, daily caps,
         account health). Always answers `200`; read `valid`. `warnings` lists what create-post
         would return as warnings: what the network will reject or ignore at publish (for example
-        a Threads post over 500 characters as Threads counts them). `valid` stays true for them;
-        fix them before scheduling. Any workspace member, including viewers, may call it.
-        Recommended agent loop: account health, validate, then create.
+        a Threads post over 500 characters as Threads counts them, or with more than 5 links).
+        `valid` stays true for them; fix them before scheduling. Any workspace member, including
+        viewers, may call it. Recommended agent loop: account health, validate, then create.
       operationId: validatePost
       parameters:
       - $ref: '#/components/parameters/workspaceUuid'
@@ -14036,6 +14039,349 @@ paths:
       tags:
       - Free Tools
       x-free-tool: true
+  /tools/cross-post-formatter:
+    post:
+      description: "Format one post for X, Threads, Bluesky, Mastodon and LinkedIn.\
+        \ The same logic as the free web tool at https://postboost.co/tools/cross-post-formatter.\
+        \ No account needed: call it without a token, or with any API token."
+      operationId: formatCrossPost
+      requestBody:
+        content:
+          application/json:
+            examples:
+              example-1:
+                value:
+                  text: "Our spring menu is live, thanks @alice for the photos: https://example.com/menu"
+                  networks:
+                  - x
+                  - mastodon
+                  - linkedin
+              example-2:
+                value:
+                  text: "Scheduling posts ahead keeps a brand visible without daily\
+                    \ effort. Write once, check every network, then queue it. A post\
+                    \ that fits Bluesky and Threads can still be too long for X, so\
+                    \ the formatter splits it into a thread at sentence ends and never\
+                    \ cuts a word or a link in half. Then schedule it."
+                  networks:
+                  - x
+                  - bluesky
+                  numbering: true
+              example-3:
+                value:
+                  text: ""
+                  networks:
+                  - threads
+                  - linkedin
+            schema:
+              $ref: '#/components/schemas/FreeToolFormatCrossPostRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                example-1:
+                  value:
+                    networks:
+                    - key: x
+                      label: X (Twitter) post
+                      limit: 280
+                      count: 78
+                      fits: true
+                      over_by: 0
+                      links: 1
+                      warnings:
+                      - code: mentions_not_portable
+                        message: "@handles are per network: check each one exists\
+                          \ on X (Twitter)."
+                      thread: null
+                    - key: mastodon
+                      label: Mastodon post
+                      limit: 500
+                      count: 78
+                      fits: true
+                      over_by: 0
+                      links: 1
+                      warnings:
+                      - code: mentions_not_portable
+                        message: "@handles are per network: check each one exists\
+                          \ on Mastodon. Use @user@server for people on other servers."
+                      thread: null
+                    - key: linkedin
+                      label: LinkedIn post
+                      limit: 3000
+                      count: 79
+                      fits: true
+                      over_by: 0
+                      links: 1
+                      warnings:
+                      - code: mentions_not_portable
+                        message: "@handles are per network: check each one exists\
+                          \ on LinkedIn."
+                      thread: null
+                example-2:
+                  value:
+                    networks:
+                    - key: x
+                      label: X (Twitter) post
+                      limit: 280
+                      count: 297
+                      fits: false
+                      over_by: 17
+                      links: 0
+                      warnings: []
+                      thread:
+                      - text: "Scheduling posts ahead keeps a brand visible without\
+                          \ daily effort. Write once, check every network, then queue\
+                          \ it. 1/2"
+                        count: 118
+                      - text: "A post that fits Bluesky and Threads can still be too\
+                          \ long for X, so the formatter splits it into a thread at\
+                          \ sentence ends and never cuts a word or a link in half.\
+                          \ Then schedule it. 2/2"
+                        count: 186
+                    - key: bluesky
+                      label: Bluesky post
+                      limit: 300
+                      count: 297
+                      fits: true
+                      over_by: 0
+                      links: 0
+                      warnings: []
+                      thread: null
+                example-3:
+                  value:
+                    networks:
+                    - key: threads
+                      label: Threads post
+                      limit: 500
+                      count: 0
+                      fits: true
+                      over_by: 0
+                      links: 0
+                      warnings: []
+                      thread: null
+                    - key: linkedin
+                      label: LinkedIn post
+                      limit: 3000
+                      count: 0
+                      fits: true
+                      over_by: 0
+                      links: 0
+                      warnings: []
+                      thread: null
+              schema:
+                $ref: '#/components/schemas/FreeToolFormatCrossPostResponse'
+          description: The tool output.
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "413":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: The request body is larger than 128 KB.
+        "422":
+          $ref: '#/components/responses/ValidationError'
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: "Rate limit reached. Without a token: 30 calls per minute and\
+            \ 500 per UTC day per IP address (IPv6 per /64). With a token: 300 per\
+            \ minute per user; the Free plan also has 1,000 calls per UTC day, paid\
+            \ plans have no daily cap."
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            Retry-After:
+              description: Seconds until the limit resets.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+      security: []
+      summary: "Format one post for X, Threads, Bluesky, Mastodon and LinkedIn"
+      tags:
+      - Free Tools
+      x-free-tool: true
+  /tools/giveaway-comment-picker:
+    post:
+      description: "Pick giveaway winners with a draw anyone can verify. The same\
+        \ logic as the free web tool at https://postboost.co/tools/giveaway-comment-picker.\
+        \ No account needed: call it without a token, or with any API token."
+      operationId: pickGiveawayWinners
+      requestBody:
+        content:
+          application/json:
+            examples:
+              example-1:
+                value:
+                  entrants:
+                  - username: '@Bob'
+                    comment: c
+                  - username: alice
+                    comment: x
+                  - username: bob
+                    comment: again
+                  - username: carol
+                  seed: 000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f
+                  winners: 2
+                  alternates: 1
+              example-2:
+                value:
+                  entrants:
+                  - username: '@sunny.days'
+                    comment: Count me in to WIN! @mia @leo
+                  - username: mia
+                    comment: win win @sunny.days
+                  - username: '@Leo'
+                    comment: Love it @mia @tom.k
+                  - username: cafe_host
+                    comment: "Winners on Friday, tag @a @b"
+                  - username: tom.k
+                    comment: Hope I win @mia @leo
+                  - username: nora_b
+                    comment: I would love to win this @mia @tom.k
+                  - username: Sunny.Days
+                    comment: win again @x @y
+                  seed: 9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08
+                  keywords:
+                  - win
+                  min_mentions: 2
+                  exclude:
+                  - '@cafe_host'
+                  winners: 1
+                  alternates: 1
+            schema:
+              $ref: '#/components/schemas/FreeToolPickGiveawayWinnersRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                example-1:
+                  value:
+                    winners:
+                    - alice
+                    - bob
+                    alternates:
+                    - carol
+                    entrants_before: 4
+                    entrants_after: 3
+                    entrant_list:
+                    - alice
+                    - bob
+                    - carol
+                    entrants_hash: 180fb4068fd5af9e707e2cd14ea439ac159703e1baef83af87e8cf2f1868d10f
+                    fingerprint: 630dcd2966c4336691125448bbb25b4ff412a49c732db2c8abc1b8581bd710dd
+                    seed: 000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f
+                    pre_committed: true
+                    algorithm: pb-draw-v1
+                    warnings: []
+                example-2:
+                  value:
+                    winners:
+                    - sunny.days
+                    alternates:
+                    - tom.k
+                    entrants_before: 7
+                    entrants_after: 3
+                    entrant_list:
+                    - nora_b
+                    - sunny.days
+                    - tom.k
+                    entrants_hash: 1bd00531d68e3ddc0860bed87c7315e7d8c0127c24f418571c03080b3c643741
+                    fingerprint: 954d5a49fd70d9b8bcdb35d252267829957f7ef7fa6c74f88419bdc5e82209f4
+                    seed: 9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08
+                    pre_committed: true
+                    algorithm: pb-draw-v1
+                    warnings: []
+              schema:
+                $ref: '#/components/schemas/FreeToolPickGiveawayWinnersResponse'
+          description: The tool output.
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "413":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: The request body is larger than 128 KB.
+        "422":
+          $ref: '#/components/responses/ValidationError'
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: "Rate limit reached. Without a token: 30 calls per minute and\
+            \ 500 per UTC day per IP address (IPv6 per /64). With a token: 300 per\
+            \ minute per user; the Free plan also has 1,000 calls per UTC day, paid\
+            \ plans have no daily cap."
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            Retry-After:
+              description: Seconds until the limit resets.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+      security: []
+      summary: Pick giveaway winners with a draw anyone can verify
+      tags:
+      - Free Tools
+      x-free-tool: true
 components:
   headers:
     IdempotentReplayed:
@@ -14342,6 +14688,8 @@ components:
           `ai_generated` is `false`, so no network AI label is applied.
         - `meta_first_comment_unavailable`: a Facebook Page or Instagram first comment cannot
           be published yet (Meta is reviewing our access); the post itself publishes.
+        - `linkedin_first_comment_unavailable`: LinkedIn first comments are not enabled on this
+          server, so only the first content item is posted; the post itself publishes.
         - `youtube_description_too_long`: the YouTube description is over 5,000 bytes (UTF-8;
           emoji and non-Latin letters take 2 to 4 bytes each), so YouTube will reject the upload.
         - `youtube_forbidden_characters`: the YouTube title or description contains `<` or `>`,
@@ -14350,20 +14698,28 @@ components:
           (each emoji counts as its UTF-8 bytes, most as 4), so Threads will reject it.
         - `instagram_image_ratio`: an image in an Instagram feed post is outside 4:5 to 1.91:1
           (for example a 3:4 phone photo), so Instagram will reject it. Crop it to 4:5.
+        - `threads_too_many_links`: a Threads post has more than 5 different `http(s)://` links,
+          so Threads will reject it. Each post of a reply chain is checked on its own.
+
+        New codes are added as new checks ship: treat a code you do not know as a warning and log it.
       example:
-        code: ai_media_without_disclosure
+        code: code
         account_id: 6
         message: message
       properties:
         code:
-          enum:
+          description: "One of the codes above. The list grows over time (`x-extensible-enum`),\
+            \ so accept unknown values."
+          type: string
+          x-extensible-enum:
           - ai_media_without_disclosure
           - meta_first_comment_unavailable
           - youtube_description_too_long
           - youtube_forbidden_characters
           - threads_too_long
           - instagram_image_ratio
-          type: string
+          - threads_too_many_links
+          - linkedin_first_comment_unavailable
         account_id:
           description: The account the warning is about; null when it is about the
             whole post.
@@ -14480,10 +14836,10 @@ components:
       example:
         valid: true
         warnings:
-        - code: ai_media_without_disclosure
+        - code: code
           account_id: 6
           message: message
-        - code: ai_media_without_disclosure
+        - code: code
           account_id: 6
           message: message
         accounts:
@@ -15318,6 +15674,9 @@ components:
         - **Facebook Page, Instagram, LinkedIn** (profile and page): the second item's `body` is
           published as the **first comment** under the post, right after the post goes live.
           Only one comment is supported; further items are ignored. Facebook Stories take no comment.
+          LinkedIn posts it only when first comments are enabled for LinkedIn on this server;
+          otherwise the second item is ignored and the response carries a
+          `linkedin_first_comment_unavailable` warning.
         - **X, Threads, Bluesky, Mastodon, Pixelfed**: every additional item is published as the
           next post of a **thread**, in order.
         - **All other networks** (YouTube, TikTok, Pinterest, Google Business Profile): only the
@@ -15431,8 +15790,9 @@ components:
         content:
           description: |
             Ordered content items. Item 0 is the post. Item 1 is the first comment on
-            Facebook Page, Instagram and LinkedIn, or the next thread post on X, Threads,
-            Bluesky, Mastodon and Pixelfed. See `PostContent`.
+            Facebook Page, Instagram and LinkedIn (LinkedIn only when first comments are enabled
+            on this server), or the next thread post on X, Threads, Bluesky, Mastodon and
+            Pixelfed. See `PostContent`.
           items:
             $ref: '#/components/schemas/PostContent'
           minItems: 1
@@ -24215,6 +24575,243 @@ components:
             platforms.
           format: date
           type: string
+    FreeToolFormatCrossPostRequest:
+      example:
+        numbering: false
+        text: ""
+        networks:
+        - x
+        - x
+        - x
+        - x
+        - x
+      properties:
+        text:
+          default: ""
+          description: "The post text, up to 10,000 characters."
+          maxLength: 10000
+          type: string
+        networks:
+          default:
+          - x
+          - threads
+          - bluesky
+          - mastodon
+          - linkedin
+          description: "The networks to format for, in the order the result lists\
+            \ them."
+          items:
+            enum:
+            - x
+            - threads
+            - bluesky
+            - mastodon
+            - linkedin
+            type: string
+          maxItems: 5
+          minItems: 1
+          type: array
+          uniqueItems: true
+        numbering:
+          default: false
+          description: End each post of a thread with " k/n".
+          type: boolean
+    FreeToolFormatCrossPostResponse:
+      example:
+        networks:
+        - over_by: 1
+          warnings:
+          - code: code
+            message: message
+          - code: code
+            message: message
+          limit: 0
+          count: 6
+          links: 5
+          label: label
+          thread:
+          - count: 5
+            text: text
+          - count: 5
+            text: text
+          fits: true
+          key: x
+        - over_by: 1
+          warnings:
+          - code: code
+            message: message
+          - code: code
+            message: message
+          limit: 0
+          count: 6
+          links: 5
+          label: label
+          thread:
+          - count: 5
+            text: text
+          - count: 5
+            text: text
+          fits: true
+          key: x
+      properties:
+        networks:
+          items:
+            $ref: '#/components/schemas/FreeToolFormatCrossPostResponse_networks_inner'
+          type: array
+    FreeToolPickGiveawayWinnersRequest:
+      example:
+        winners: 60
+        seed: seed
+        keywords:
+        - keywords
+        - keywords
+        - keywords
+        - keywords
+        - keywords
+        min_mentions: 0
+        one_per_person: true
+        entrants:
+        - comment: ""
+          username: username
+        - comment: ""
+          username: username
+        - comment: ""
+          username: username
+        - comment: ""
+          username: username
+        - comment: ""
+          username: username
+        exclude:
+        - exclude
+        - exclude
+        - exclude
+        - exclude
+        - exclude
+        alternates: 2
+      properties:
+        entrants:
+          description: "The comments, one item each. The request body is capped at\
+            \ 128 KB."
+          items:
+            $ref: '#/components/schemas/FreeToolPickGiveawayWinnersRequest_entrants_inner'
+          maxItems: 50000
+          type: array
+        seed:
+          description: "The secret seed, 64 hex characters (32 bytes), whose fingerprint\
+            \ you published before the entries closed. Without it, a seed is generated\
+            \ and pre_committed is false. The steps of the draw (pb-draw-v1) and a\
+            \ test vector are on the web tool page."
+          pattern: "^[0-9a-fA-F]{64}$"
+          type: string
+        one_per_person:
+          default: true
+          description: "Count each username once. Off: every comment is an entry,\
+            \ so one person can win more than once."
+          type: boolean
+        keywords:
+          default: []
+          description: "Keep only comments that contain at least one of these, case-insensitive."
+          items:
+            maxLength: 100
+            type: string
+          maxItems: 20
+          type: array
+        min_mentions:
+          default: 0
+          description: Keep only comments that tag at least this many other @handles.
+          maximum: 10
+          minimum: 0
+          type: integer
+        exclude:
+          default: []
+          description: "Usernames to leave out of the draw, such as the host account."
+          items:
+            maxLength: 200
+            type: string
+          maxItems: 100
+          type: array
+        winners:
+          default: 1
+          maximum: 100
+          minimum: 1
+          type: integer
+        alternates:
+          default: 0
+          description: "Runners-up drawn after the winners, in order."
+          maximum: 20
+          minimum: 0
+          type: integer
+      required:
+      - entrants
+    FreeToolPickGiveawayWinnersResponse:
+      example:
+        winners:
+        - winners
+        - winners
+        seed: seed
+        entrants_after: 6
+        entrant_list:
+        - entrant_list
+        - entrant_list
+        warnings:
+        - code: code
+          message: message
+        - code: code
+          message: message
+        fingerprint: fingerprint
+        pre_committed: true
+        entrants_before: 0
+        entrants_hash: entrants_hash
+        alternates:
+        - alternates
+        - alternates
+        algorithm: pb-draw-v1
+      properties:
+        winners:
+          description: Entrant keys in the drawn order.
+          items:
+            type: string
+          type: array
+        alternates:
+          description: "Entrant keys drawn after the winners, in order."
+          items:
+            type: string
+          type: array
+        entrants_before:
+          description: Comments received.
+          type: integer
+        entrants_after:
+          description: "Entries left after the filters: the length of entrant_list."
+          type: integer
+        entrant_list:
+          description: "The canonical entrant list to publish: keys sorted by UTF-8\
+            \ bytes. Joined with \"\\n\" it is what entrants_hash hashes."
+          items:
+            type: string
+          type: array
+        entrants_hash:
+          description: SHA-256 (hex) of the canonical entrant list.
+          type: string
+        fingerprint:
+          description: "SHA-256 (hex) of the seed bytes: what to publish before the\
+            \ entries close."
+          type: string
+        seed:
+          description: "The seed used, lowercase hex. Publish it after the draw."
+          type: string
+        pre_committed:
+          description: "False when the seed was generated for this draw, so no fingerprint\
+            \ could be published before it."
+          type: boolean
+        algorithm:
+          enum:
+          - pb-draw-v1
+          type: string
+        warnings:
+          description: "Codes: not_enough_entrants, not_pre_committed."
+          items:
+            $ref: '#/components/schemas/FreeToolCheckPostResponse_networks_inner_errors_inner'
+          type: array
     listMyWorkspaces_200_response:
       example:
         data:
@@ -25170,10 +25767,10 @@ components:
             body: body
             url: https://openapi-generator.tech
         warnings:
-        - code: ai_media_without_disclosure
+        - code: code
           account_id: 6
           message: message
-        - code: ai_media_without_disclosure
+        - code: code
           account_id: 6
           message: message
         scheduled_at: 2026-10-16 10:00:00
@@ -25253,10 +25850,10 @@ components:
       example:
         success: true
         warnings:
-        - code: ai_media_without_disclosure
+        - code: code
           account_id: 6
           message: message
-        - code: ai_media_without_disclosure
+        - code: code
           account_id: 6
           message: message
     deletePost_request:
@@ -29896,6 +30493,87 @@ components:
             otherwise.
           nullable: true
           type: object
+    FreeToolFormatCrossPostResponse_networks_inner_thread_inner:
+      example:
+        count: 5
+        text: text
+      properties:
+        text:
+          type: string
+        count:
+          type: integer
+    FreeToolFormatCrossPostResponse_networks_inner:
+      example:
+        over_by: 1
+        warnings:
+        - code: code
+          message: message
+        - code: code
+          message: message
+        limit: 0
+        count: 6
+        links: 5
+        label: label
+        thread:
+        - count: 5
+          text: text
+        - count: 5
+          text: text
+        fits: true
+        key: x
+      properties:
+        key:
+          enum:
+          - x
+          - threads
+          - bluesky
+          - mastodon
+          - linkedin
+          type: string
+        label:
+          type: string
+        limit:
+          type: integer
+        count:
+          description: Length as the network counts it.
+          type: integer
+        fits:
+          type: boolean
+        over_by:
+          description: Characters over the limit; 0 when it fits.
+          type: integer
+        links:
+          description: "Unique http(s) links in the text (trailing punctuation trimmed),\
+            \ as Threads counts them."
+          type: integer
+        warnings:
+          description: "Codes: threads_too_many_links, cut_by_fold, mentions_not_portable."
+          items:
+            $ref: '#/components/schemas/FreeToolCheckPostResponse_networks_inner_errors_inner'
+          type: array
+        thread:
+          description: "The thread for a text that does not fit (X, Threads, Bluesky,\
+            \ Mastodon); null when it fits or on LinkedIn."
+          items:
+            $ref: '#/components/schemas/FreeToolFormatCrossPostResponse_networks_inner_thread_inner'
+          nullable: true
+          type: array
+    FreeToolPickGiveawayWinnersRequest_entrants_inner:
+      example:
+        comment: ""
+        username: username
+      properties:
+        username:
+          description: "The commenter, with or without the leading @."
+          maxLength: 200
+          type: string
+        comment:
+          default: ""
+          description: The comment text the filters read.
+          maxLength: 5000
+          type: string
+      required:
+      - username
   securitySchemes:
     bearerAuth:
       description: |
