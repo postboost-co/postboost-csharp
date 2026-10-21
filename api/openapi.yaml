@@ -48,7 +48,7 @@ info:
     name: Commercial
     url: https://postboost.co/pages/terms
   title: PostBoost API
-  version: 1.61.1
+  version: 1.62.0
 servers:
 - description: Production
   url: https://postboost.co/app/api
@@ -9094,6 +9094,201 @@ paths:
       security: []
       summary: "Get the TikTok, Instagram Reels or YouTube Shorts safe zones for a\
         \ vertical frame"
+      tags:
+      - Free Tools
+      x-free-tool: true
+  /tools/social-media-agent-skill-builder:
+    post:
+      description: "Build a SKILL.md, AGENTS.md or system prompt for a social media\
+        \ agent. The same logic as the free web tool at https://postboost.co/tools/social-media-agent-skill-builder.\
+        \ No account needed: call it without a token, or with any API token."
+      operationId: buildAgentSkill
+      requestBody:
+        content:
+          application/json:
+            examples:
+              example-1:
+                value:
+                  brand: Acme Bakery
+                  tasks:
+                  - draft_posts
+                  networks:
+                  - instagram
+                  daily_cap: 3
+              example-2:
+                value:
+                  format: system_prompt
+                  tasks:
+                  - analytics
+                  brand_voice: false
+                  daily_cap: 0
+                  connection: api_token
+                  autonomy: approve_then_schedule
+            schema:
+              $ref: '#/components/schemas/FreeToolBuildAgentSkillRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                example-1:
+                  value:
+                    format: skill_md
+                    filename: SKILL.md
+                    content: |
+                      ---
+                      name: postboost-social-media
+                      description: "Runs social media for Acme Bakery through PostBoost: Draft posts. Use when the user asks to draft, schedule or report on social posts."
+                      compatibility: Requires the PostBoost MCP server
+                      ---
+
+                      # PostBoost social media agent for Acme Bakery
+
+                      You run social media for Acme Bakery through PostBoost. Your tasks: Draft posts. Follow the guardrails below on every request.
+
+                      ## Setup
+
+                      - Connect the PostBoost connector at https://postboost.co/mcp (OAuth). Setup per client: https://postboost.co/tools/mcp-config-generator
+
+                      ## Guardrails
+
+                      - Save every post as a draft with `create-post` and never pass `schedule`. Never schedule, queue or retry a post. A person schedules in PostBoost.
+                      - Run `validate-post` before any write.
+                      - Never call `delete-post` with `permanent: true`.
+                      - Never pass `allow_duplicate: true` unless the user asks for a repeat post.
+                      - Pass a fresh UUID as `idempotency_key` to `create-post` and reuse it when you retry, so a retry never creates a second post.
+                      - If PostBoost refuses a write (a guardrail such as a duplicate or the daily cap), stop and tell the user the refusal code.
+                      - Create at most 3 posts per day. PostBoost also enforces the workspace's own daily caps.
+                      - Call `get-brand-voice` before writing any caption.
+
+                      ## Draft posts
+
+                      1. `list-workspaces`: Get the workspace uuid: every other call needs it.
+                      2. `list-accounts`: Get the numeric ids of the accounts to write for.
+                      3. `get-brand-voice`: Read the brand voice before writing any caption.
+                      4. `count-characters` / `check-post`: Check the length on each network, plus hashtags and media.
+                      5. `validate-post`: Validate the post with the same arguments you will create it with.
+                      6. `create-post`: Save it as a draft: do not pass `schedule`.
+                      7. `get-post`: Read the draft back and show it to the user.
+
+                      ## Network rules
+
+                      - Instagram caption: 2,200 characters. PostBoost allows up to 5 hashtags per Instagram post.
+
+                      ## Example prompts
+
+                      - "Draft 3 LinkedIn posts about our product launch and show them to me before saving."
+                      - "Write a post for X and Bluesky about our new opening hours and save it as a draft."
+                    install:
+                    - Save as ~/.claude/skills/postboost-social-media/SKILL.md (the
+                      folder name must match name)
+                    - Or put it in .claude/skills/postboost-social-media/SKILL.md
+                      in a project
+                    tools_used:
+                    - create-post
+                    - validate-post
+                    - delete-post
+                    - get-brand-voice
+                    - list-workspaces
+                    - list-accounts
+                    - count-characters
+                    - check-post
+                    - get-post
+                    lines: 43
+                    warnings: []
+                example-2:
+                  value:
+                    format: system_prompt
+                    filename: system-prompt.md
+                    content: |
+                      You run social media through PostBoost. Your tasks: Report on results. Follow the guardrails below on every request.
+
+                      ## Setup
+
+                      - Use the advanced MCP server https://postboost.co/mcp/postboost with an API key.
+                      - Its tools are named after the API operations: use the matching API operations (see https://postboost.co/docs).
+
+                      ## Guardrails
+
+                      - Show the user each post (text, accounts, time) and wait for an explicit yes before you schedule it or add it to the queue.
+                      - Validate every post before any write.
+                      - Never delete a post permanently.
+                      - Never pass `allow_duplicate: true` unless the user asks for a repeat post.
+                      - Pass a fresh UUID as `idempotency_key` when you create a post and reuse it when you retry, so a retry never creates a second post.
+                      - If PostBoost refuses a write (a guardrail such as a duplicate or the daily cap), stop and tell the user the refusal code.
+
+                      ## Report on results
+
+                      1. Get the workspace-wide picture for the period.
+                      2. Drill into one account or one published post.
+                      3. Build a CSV or PDF report and share the download link.
+
+                      ## Example prompts
+
+                      - "How did our posts do last month? Summarise the top 3."
+                      - "Build a PDF report of last month's results."
+                    install:
+                    - Paste into your assistant's custom instructions or system prompt
+                    tools_used: []
+                    lines: 26
+                    warnings: []
+              schema:
+                $ref: '#/components/schemas/FreeToolBuildAgentSkillResponse'
+          description: The tool output.
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "413":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: The request body is larger than 128 KB.
+        "422":
+          $ref: '#/components/responses/ValidationError'
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: "Rate limit reached. Without a token: 30 calls per minute and\
+            \ 500 per UTC day per IP address (IPv6 per /64). With a token: 300 per\
+            \ minute per user; the Free plan also has 1,000 calls per UTC day, paid\
+            \ plans have no daily cap."
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            Retry-After:
+              description: Seconds until the limit resets.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+      security: []
+      summary: "Build a SKILL.md, AGENTS.md or system prompt for a social media agent"
       tags:
       - Free Tools
       x-free-tool: true
@@ -22516,6 +22711,180 @@ components:
           description: "Set when the frame is not 9:16, so the boxes are stretched."
           items:
             type: string
+          type: array
+    FreeToolBuildAgentSkillRequest:
+      example:
+        daily_cap: 4
+        autonomy: drafts_only
+        brand_voice: true
+        format: skill_md
+        name: postboost-social-media
+        connection: connector
+        rules:
+        - rules
+        - rules
+        - rules
+        - rules
+        - rules
+        networks:
+        - x
+        - x
+        - x
+        - x
+        - x
+        brand: ""
+        tasks:
+        - draft_posts
+        - draft_posts
+        - draft_posts
+        - draft_posts
+        - draft_posts
+      properties:
+        format:
+          default: skill_md
+          description: "skill_md (an Agent Skills SKILL.md), agents_md (AGENTS.md)\
+            \ or system_prompt."
+          enum:
+          - skill_md
+          - agents_md
+          - system_prompt
+          type: string
+        name:
+          default: postboost-social-media
+          description: "The skill name, normalised to lowercase letters, digits and\
+            \ hyphens and cut to 64 characters."
+          maxLength: 128
+          type: string
+        brand:
+          default: ""
+          description: The brand the agent works for; omitted when empty.
+          maxLength: 80
+          type: string
+        tasks:
+          default:
+          - draft_posts
+          - schedule_posts
+          description: What the agent does; the output keeps this enum's order.
+          items:
+            enum:
+            - draft_posts
+            - schedule_posts
+            - repurpose
+            - analytics
+            - failed_posts
+            - automations
+            - agent_proposals
+            type: string
+          maxItems: 7
+          minItems: 1
+          type: array
+          uniqueItems: true
+        networks:
+          default: []
+          description: Networks to add character-limit rules for; none leaves the
+            section out.
+          items:
+            enum:
+            - x
+            - threads
+            - bluesky
+            - mastodon
+            - linkedin
+            - instagram
+            - facebook
+            - tiktok
+            - pinterest
+            - youtube
+            - gbp
+            type: string
+          maxItems: 11
+          type: array
+          uniqueItems: true
+        autonomy:
+          default: drafts_only
+          description: How much the agent may do without asking.
+          enum:
+          - drafts_only
+          - approve_then_schedule
+          - queue_without_asking
+          type: string
+        daily_cap:
+          default: 5
+          description: Posts per day the agent may create; 0 adds no cap line.
+          maximum: 50
+          minimum: 0
+          type: integer
+        brand_voice:
+          default: true
+          description: Read the workspace brand voice before writing captions.
+          type: boolean
+        connection:
+          default: connector
+          description: connector (the OAuth MCP connector) or api_token (the advanced
+            MCP server with an API key).
+          enum:
+          - connector
+          - api_token
+          type: string
+        rules:
+          default: []
+          description: "Your own do's and don'ts, one per item."
+          items:
+            maxLength: 200
+            type: string
+          maxItems: 10
+          type: array
+    FreeToolBuildAgentSkillResponse:
+      example:
+        filename: SKILL.md
+        tools_used:
+        - tools_used
+        - tools_used
+        install:
+        - install
+        - install
+        warnings:
+        - code: code
+          message: message
+        - code: code
+          message: message
+        format: skill_md
+        lines: 0
+        content: content
+      properties:
+        format:
+          enum:
+          - skill_md
+          - agents_md
+          - system_prompt
+          type: string
+        filename:
+          enum:
+          - SKILL.md
+          - AGENTS.md
+          - system-prompt.md
+          type: string
+        content:
+          description: "The file, in Markdown."
+          type: string
+        install:
+          description: Where to put the file.
+          items:
+            type: string
+          type: array
+        tools_used:
+          description: "The connector tool names the content names, in first-appearance\
+            \ order; empty with api_token."
+          items:
+            type: string
+          type: array
+        lines:
+          type: integer
+        warnings:
+          description: "Codes: name_normalized, task_limited_by_autonomy, autonomy_high,\
+            \ too_long."
+          items:
+            $ref: '#/components/schemas/FreeToolCheckPostResponse_networks_inner_errors_inner'
           type: array
     FreeToolCalculateXApiCostRequest:
       example:

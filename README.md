@@ -13,7 +13,7 @@ dotnet add package PostBoost.Client
 | **NuGet** | [nuget.org/packages/PostBoost.Client](https://www.nuget.org/packages/PostBoost.Client/) |
 | **GitHub** | [postboost-co/postboost-csharp](https://github.com/postboost-co/postboost-csharp) |
 | **Docs** | [postboost.co/docs/api](https://postboost.co/docs/api) |
-| **Version** | v1.61.1 |
+| **Version** | v1.62.0 |
 
 ## Quick start
 
@@ -87,6 +87,7 @@ Class | Method | HTTP request | Description
 *CompetitorsApi* | [**DeleteCompetitor**](docs/CompetitorsApi.md#deletecompetitor) | **DELETE** /{workspaceUuid}/competitors/{competitorId} | Stop tracking a competitor
 *CompetitorsApi* | [**GetCompetitor**](docs/CompetitorsApi.md#getcompetitor) | **GET** /{workspaceUuid}/competitors/{competitorId} | Get a competitor
 *CompetitorsApi* | [**ListCompetitors**](docs/CompetitorsApi.md#listcompetitors) | **GET** /{workspaceUuid}/competitors | List competitors
+*FreeToolsApi* | [**BuildAgentSkill**](docs/FreeToolsApi.md#buildagentskill) | **POST** /tools/social-media-agent-skill-builder | Build a SKILL.md, AGENTS.md or system prompt for a social media agent
 *FreeToolsApi* | [**BuildHashtagGroups**](docs/FreeToolsApi.md#buildhashtaggroups) | **POST** /tools/hashtag-group-builder | Clean, dedupe and split hashtags into groups that fit a network's hashtag cap
 *FreeToolsApi* | [**BuildUtmUrl**](docs/FreeToolsApi.md#buildutmurl) | **POST** /tools/utm-builder | Build a UTM-tagged campaign URL
 *FreeToolsApi* | [**CalculateAspectRatio**](docs/FreeToolsApi.md#calculateaspectratio) | **POST** /tools/aspect-ratio-calculator | Calculate an aspect ratio, or the missing side of an image at a given ratio

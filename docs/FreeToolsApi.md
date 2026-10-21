@@ -4,6 +4,7 @@ All URIs are relative to *https://postboost.co/app/api*
 
 | Method | HTTP request | Description |
 |--------|--------------|-------------|
+| [**BuildAgentSkill**](FreeToolsApi.md#buildagentskill) | **POST** /tools/social-media-agent-skill-builder | Build a SKILL.md, AGENTS.md or system prompt for a social media agent |
 | [**BuildHashtagGroups**](FreeToolsApi.md#buildhashtaggroups) | **POST** /tools/hashtag-group-builder | Clean, dedupe and split hashtags into groups that fit a network&#39;s hashtag cap |
 | [**BuildUtmUrl**](FreeToolsApi.md#buildutmurl) | **POST** /tools/utm-builder | Build a UTM-tagged campaign URL |
 | [**CalculateAspectRatio**](FreeToolsApi.md#calculateaspectratio) | **POST** /tools/aspect-ratio-calculator | Calculate an aspect ratio, or the missing side of an image at a given ratio |
@@ -54,6 +55,101 @@ All URIs are relative to *https://postboost.co/app/api*
 | [**SplitThread**](FreeToolsApi.md#splitthread) | **POST** /tools/x-thread-maker | Split long text into a thread |
 | [**SummarizeReport**](FreeToolsApi.md#summarizereport) | **POST** /tools/social-media-report-generator | Summarize social media post metrics into a report |
 | [**VerifyWebhookSignature**](FreeToolsApi.md#verifywebhooksignature) | **POST** /tools/webhook-signature-verifier | Verify an HMAC webhook signature |
+
+<a id="buildagentskill"></a>
+# **BuildAgentSkill**
+> FreeToolBuildAgentSkillResponse BuildAgentSkill (FreeToolBuildAgentSkillRequest freeToolBuildAgentSkillRequest)
+
+Build a SKILL.md, AGENTS.md or system prompt for a social media agent
+
+Build a SKILL.md, AGENTS.md or system prompt for a social media agent. The same logic as the free web tool at https://postboost.co/tools/social-media-agent-skill-builder. No account needed: call it without a token, or with any API token.
+
+### Example
+```csharp
+using System.Collections.Generic;
+using System.Diagnostics;
+using PostBoost.Client.Api;
+using PostBoost.Client.Client;
+using PostBoost.Client.Model;
+
+namespace Example
+{
+    public class BuildAgentSkillExample
+    {
+        public static void Main()
+        {
+            Configuration config = new Configuration();
+            config.BasePath = "https://postboost.co/app/api";
+            var apiInstance = new FreeToolsApi(config);
+            var freeToolBuildAgentSkillRequest = new FreeToolBuildAgentSkillRequest(); // FreeToolBuildAgentSkillRequest | 
+
+            try
+            {
+                // Build a SKILL.md, AGENTS.md or system prompt for a social media agent
+                FreeToolBuildAgentSkillResponse result = apiInstance.BuildAgentSkill(freeToolBuildAgentSkillRequest);
+                Debug.WriteLine(result);
+            }
+            catch (ApiException  e)
+            {
+                Debug.Print("Exception when calling FreeToolsApi.BuildAgentSkill: " + e.Message);
+                Debug.Print("Status Code: " + e.ErrorCode);
+                Debug.Print(e.StackTrace);
+            }
+        }
+    }
+}
+```
+
+#### Using the BuildAgentSkillWithHttpInfo variant
+This returns an ApiResponse object which contains the response data, status code and headers.
+
+```csharp
+try
+{
+    // Build a SKILL.md, AGENTS.md or system prompt for a social media agent
+    ApiResponse<FreeToolBuildAgentSkillResponse> response = apiInstance.BuildAgentSkillWithHttpInfo(freeToolBuildAgentSkillRequest);
+    Debug.Write("Status Code: " + response.StatusCode);
+    Debug.Write("Response Headers: " + response.Headers);
+    Debug.Write("Response Body: " + response.Data);
+}
+catch (ApiException e)
+{
+    Debug.Print("Exception when calling FreeToolsApi.BuildAgentSkillWithHttpInfo: " + e.Message);
+    Debug.Print("Status Code: " + e.ErrorCode);
+    Debug.Print(e.StackTrace);
+}
+```
+
+### Parameters
+
+| Name | Type | Description | Notes |
+|------|------|-------------|-------|
+| **freeToolBuildAgentSkillRequest** | [**FreeToolBuildAgentSkillRequest**](FreeToolBuildAgentSkillRequest.md) |  |  |
+
+### Return type
+
+[**FreeToolBuildAgentSkillResponse**](FreeToolBuildAgentSkillResponse.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | The tool output. |  * X-RateLimit-Limit - Calls allowed in the limit window closest to running out. <br>  * X-RateLimit-Remaining - Calls left in that window. <br>  |
+| **401** |  |  -  |
+| **413** | The request body is larger than 128 KB. |  -  |
+| **422** |  |  -  |
+| **429** | Rate limit reached. Without a token: 30 calls per minute and 500 per UTC day per IP address (IPv6 per /64). With a token: 300 per minute per user; the Free plan also has 1,000 calls per UTC day, paid plans have no daily cap. |  * X-RateLimit-Limit - Calls allowed in the limit window closest to running out. <br>  * X-RateLimit-Remaining - Calls left in that window. <br>  * Retry-After - Seconds until the limit resets. <br>  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 <a id="buildhashtaggroups"></a>
 # **BuildHashtagGroups**
