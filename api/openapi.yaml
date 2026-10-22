@@ -48,7 +48,7 @@ info:
     name: Commercial
     url: https://postboost.co/pages/terms
   title: PostBoost API
-  version: 1.62.0
+  version: 1.64.1
 servers:
 - description: Production
   url: https://postboost.co/app/api
@@ -6503,7 +6503,7 @@ paths:
                       over: false
                       preview: "New feature: schedule a month of posts in one sitting."
                       folded: false
-                      min_ratio: 4:5
+                      min_ratio: 3:4
                       max_ratio: 2:1
                     - key: linkedin
                       count: 54
@@ -6546,7 +6546,7 @@ paths:
                         New address inside
                         See you there
                       folded: false
-                      min_ratio: 4:5
+                      min_ratio: 3:4
                       max_ratio: 2:1
                       display_ratio: 1.78
                       cropped: false
@@ -8901,6 +8901,168 @@ paths:
               style: simple
       security: []
       summary: Split a wide image into seamless Instagram carousel slides
+      tags:
+      - Free Tools
+      x-free-tool: true
+  /tools/linkedin-carousel-maker:
+    post:
+      description: "Turn text into LinkedIn carousel (PDF document) slides. The same\
+        \ logic as the free web tool at https://postboost.co/tools/linkedin-carousel-maker.\
+        \ No account needed: call it without a token, or with any API token."
+      operationId: buildLinkedinCarousel
+      requestBody:
+        content:
+          application/json:
+            examples:
+              example-1:
+                value:
+                  text: |-
+                    # 5 hooks that work
+
+                    One.
+
+                    Two
+              example-2:
+                value:
+                  text: |-
+                    # How we cut churn by 30%
+
+                    What changed
+                    - Weekly check-ins
+                    - A clear onboarding path
+
+                    The three steps
+                    1. Measure
+                    2. Ask
+                    3. Fix
+                  size: 1:1
+                  cta: Follow for more
+            schema:
+              $ref: '#/components/schemas/FreeToolBuildLinkedinCarouselRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                example-1:
+                  value:
+                    page:
+                      width: 1080
+                      height: 1350
+                    slides:
+                    - "n": 1
+                      kind: cover
+                      heading: 5 hooks that work
+                      body: []
+                    - "n": 2
+                      kind: content
+                      heading: null
+                      body:
+                      - One.
+                    - "n": 3
+                      kind: content
+                      heading: null
+                      body:
+                      - Two
+                    warnings: []
+                    limits:
+                      max_slides: 20
+                      heading_max: 80
+                      body_max: 280
+                      linkedin_max_pages: 300
+                      linkedin_max_mb: 100
+                example-2:
+                  value:
+                    page:
+                      width: 1080
+                      height: 1080
+                    slides:
+                    - "n": 1
+                      kind: cover
+                      heading: How we cut churn by 30%
+                      body: []
+                    - "n": 2
+                      kind: content
+                      heading: What changed
+                      body:
+                      - • Weekly check-ins
+                      - • A clear onboarding path
+                    - "n": 3
+                      kind: content
+                      heading: The three steps
+                      body:
+                      - 1. Measure
+                      - 2. Ask
+                      - 3. Fix
+                    - "n": 4
+                      kind: cta
+                      heading: null
+                      body:
+                      - Follow for more
+                    warnings: []
+                    limits:
+                      max_slides: 20
+                      heading_max: 80
+                      body_max: 280
+                      linkedin_max_pages: 300
+                      linkedin_max_mb: 100
+              schema:
+                $ref: '#/components/schemas/FreeToolBuildLinkedinCarouselResponse'
+          description: The tool output.
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "413":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: The request body is larger than 128 KB.
+        "422":
+          $ref: '#/components/responses/ValidationError'
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: "Rate limit reached. Without a token: 30 calls per minute and\
+            \ 500 per UTC day per IP address (IPv6 per /64). With a token: 300 per\
+            \ minute per user; the Free plan also has 1,000 calls per UTC day, paid\
+            \ plans have no daily cap."
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            Retry-After:
+              description: Seconds until the limit resets.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+      security: []
+      summary: Turn text into LinkedIn carousel (PDF document) slides
       tags:
       - Free Tools
       x-free-tool: true
@@ -12350,6 +12512,196 @@ paths:
               style: simple
       security: []
       summary: Estimate social media manager pricing
+      tags:
+      - Free Tools
+      x-free-tool: true
+  /tools/youtube-to-social-posts:
+    post:
+      description: "Turn a YouTube video's captions into an X thread and social captions\
+        \ with AI (needs a token, spends AI credits). The same logic as the free web\
+        \ tool at https://postboost.co/tools/youtube-to-social-posts. Needs an API\
+        \ token (a scoped key needs the `ai` ability and pays with its own workspace).\
+        \ A new generation spends 1 AI credit of the workspace you name (or your active\
+        \ workspace); a repeated identical request is answered from the cache for\
+        \ free."
+      operationId: generateSocialPostsFromVideo
+      requestBody:
+        content:
+          application/json:
+            examples:
+              example-1:
+                value:
+                  text: |-
+                    1
+                    00:00:00,000 --> 00:00:04,000
+                    [Music]
+
+                    2
+                    00:00:04,000 --> 00:00:09,000
+                    Today I'm showing you how I plan a week of social posts in about twenty minutes.
+
+                    3
+                    00:00:09,000 --> 00:00:15,000
+                    First I write down three things I want people to know, then I turn each one into a short post.
+                  video_url: https://youtu.be/dQw4w9WgXcQ?si=share
+                  outputs:
+                  - x_thread
+                  - linkedin
+              example-2:
+                value:
+                  text: |-
+                    WEBVTT
+
+                    00:00:00.000 --> 00:00:03.500
+                    Three hooks that stop the scroll on short videos.
+
+                    00:00:03.500 --> 00:00:08.000
+                    One: open with the result, not with hello. Two: ask the question your viewer is already asking.
+
+                    00:00:08.000 --> 00:00:12.000
+                    Three: show the before and after in the first second. [Laughter]
+                  video_url: https://www.youtube.com/shorts/dQw4w9WgXcQ
+                  outputs:
+                  - instagram
+                  - threads
+                  tone: playful
+            schema:
+              $ref: '#/components/schemas/FreeToolGenerateSocialPostsFromVideoRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                example-1:
+                  value:
+                    outputs:
+                      x_thread:
+                      - 'I plan a full week of social posts in about 20 minutes. Here
+                        is the routine:'
+                      - "Step 1: write down three things you want people to know this\
+                        \ week. Just three."
+                      - |-
+                        Step 2: turn each one into a short post. The full walkthrough:
+
+                        https://www.youtube.com/watch?v=dQw4w9WgXcQ
+                      linkedin: |-
+                        Planning a week of social posts doesn't have to take an afternoon.
+
+                        My routine takes about 20 minutes: I write down three things I want people to know, then turn each one into a short post.
+
+                        I walk through it in this video: https://www.youtube.com/watch?v=dQw4w9WgXcQ
+                    outputs_skipped: []
+                    warnings: []
+                    video_url: https://www.youtube.com/watch?v=dQw4w9WgXcQ
+                    cleaned_chars: 175
+                    removed_timestamps: true
+                    credits_spent: 1
+                    cached: false
+                example-2:
+                  value:
+                    outputs:
+                      instagram: |-
+                        Three hooks that stop the scroll 👇
+
+                        1. Open with the result, not with hello.
+                        2. Ask the question your viewer is already asking.
+                        3. Show the before and after in the first second.
+
+                        Watch the Short: https://www.youtube.com/shorts/dQw4w9WgXcQ
+                      threads: "Your first second decides everything. Three hooks\
+                        \ that work: lead with the result, ask their question, show\
+                        \ the before and after. https://www.youtube.com/shorts/dQw4w9WgXcQ"
+                    outputs_skipped: []
+                    warnings: []
+                    video_url: https://www.youtube.com/shorts/dQw4w9WgXcQ
+                    cleaned_chars: 199
+                    removed_timestamps: true
+                    credits_spent: 1
+                    cached: false
+              schema:
+                $ref: '#/components/schemas/FreeToolGenerateSocialPostsFromVideoResponse'
+          description: The tool output.
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: "No API token, or an invalid one. The body has `register_url`\
+            \ to create a free account."
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: "`workspace` is not a workspace you belong to, or your account\
+            \ has no workspace, or a scoped API key lacks the `ai` ability or is bound\
+            \ to another workspace (`code: insufficient_scope`)."
+        "413":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: The request body is larger than 128 KB.
+        "422":
+          $ref: '#/components/responses/ValidationError'
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: "The workspace has no AI credits left this billing cycle (`code:\
+            \ ai_credits_exhausted`, `upgrade_url`), or the per-minute limit was reached.\
+            \ Rate limit reached. Without a token: 30 calls per minute and 500 per\
+            \ UTC day per IP address (IPv6 per /64). With a token: 300 per minute\
+            \ per user; the Free plan also has 1,000 calls per UTC day, paid plans\
+            \ have no daily cap."
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            Retry-After:
+              description: Seconds until the limit resets.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+        "502":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: The AI provider failed or timed out. No credit was spent.
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: AI tools are switched off right now.
+      summary: "Turn a YouTube video's captions into an X thread and social captions\
+        \ with AI (needs a token, spends AI credits)"
       tags:
       - Free Tools
       x-free-tool: true
@@ -22614,6 +22966,89 @@ components:
           items:
             type: string
           type: array
+    FreeToolBuildLinkedinCarouselRequest:
+      example:
+        cover: true
+        cta: cta
+        size: 4:5
+        text: text
+        max_slides: 4
+      properties:
+        text:
+          description: "The post or outline. Blank lines separate slides; a first\
+            \ line starting with # (or a short first line without closing punctuation\
+            \ that is not a list item) is the slide heading; - * • lines become bullets."
+          maxLength: 20000
+          minLength: 1
+          type: string
+        max_slides:
+          default: 10
+          description: "Most slides to return, 3 to 20. The cover and the CTA slide\
+            \ are always kept."
+          maximum: 20
+          minimum: 3
+          type: integer
+        size:
+          default: 4:5
+          description: "Slide shape: `4:5` (1080 × 1350) or `1:1` (1080 × 1080). Every\
+            \ page of a LinkedIn document has the same size."
+          enum:
+          - 4:5
+          - 1:1
+          type: string
+        cover:
+          default: true
+          description: "Start with a cover slide: the first heading, or the first\
+            \ line of the text."
+          type: boolean
+        cta:
+          description: Text of a closing call-to-action slide.
+          maxLength: 120
+          type: string
+      required:
+      - text
+    FreeToolBuildLinkedinCarouselResponse:
+      example:
+        slides:
+        - heading: heading
+          kind: cover
+          body:
+          - body
+          - body
+          "n": 1
+        - heading: heading
+          kind: cover
+          body:
+          - body
+          - body
+          "n": 1
+        warnings:
+        - code: too_many_slides
+          message: message
+        - code: too_many_slides
+          message: message
+        page:
+          width: 0
+          height: 6
+        limits:
+          linkedin_max_mb: 9
+          heading_max: 5
+          body_max: 2
+          linkedin_max_pages: 7
+          max_slides: 5
+      properties:
+        page:
+          $ref: '#/components/schemas/FreeToolBuildLinkedinCarouselResponse_page'
+        slides:
+          items:
+            $ref: '#/components/schemas/FreeToolBuildLinkedinCarouselResponse_slides_inner'
+          type: array
+        warnings:
+          items:
+            $ref: '#/components/schemas/FreeToolBuildLinkedinCarouselResponse_warnings_inner'
+          type: array
+        limits:
+          $ref: '#/components/schemas/FreeToolBuildLinkedinCarouselResponse_limits'
     FreeToolGetSafeZonesRequest:
       example:
         width: 801
@@ -24131,6 +24566,128 @@ components:
           items:
             type: string
           type: array
+    FreeToolGenerateSocialPostsFromVideoRequest:
+      example:
+        outputs:
+        - x_thread
+        - x_thread
+        - x_thread
+        - x_thread
+        workspace: workspace
+        video_url: video_url
+        tone: friendly
+        text: text
+        title: title
+      properties:
+        text:
+          description: "The captions of your video: an .srt or .vtt file's text, or\
+            \ the text of YouTube's \"Show transcript\" panel. Timestamps, cue numbers\
+            \ and sound tags like [Music] are removed; 100 to 24,000 characters must\
+            \ remain."
+          maxLength: 40000
+          minLength: 1
+          type: string
+        video_url:
+          description: "The video's YouTube link (watch, youtu.be, Shorts or live).\
+            \ Each output links it once, the X thread in its last post; without it\
+            \ the posts have no link."
+          maxLength: 2000
+          type: string
+        title:
+          description: "The video's title, as context for the posts."
+          maxLength: 100
+          type: string
+        outputs:
+          default:
+          - x_thread
+          - linkedin
+          - instagram
+          description: "What to write, 1 to 4 different keys."
+          items:
+            enum:
+            - x_thread
+            - linkedin
+            - instagram
+            - facebook
+            - threads
+            - bluesky
+            - mastodon
+            type: string
+          maxItems: 4
+          minItems: 1
+          type: array
+        tone:
+          default: friendly
+          enum:
+          - friendly
+          - professional
+          - playful
+          - inspirational
+          - bold
+          type: string
+        workspace:
+          description: "UUID of the workspace whose AI credits pay for the call. Default:\
+            \ your active workspace (a scoped API key: its own workspace)."
+          maxLength: 64
+          type: string
+      required:
+      - text
+    FreeToolGenerateSocialPostsFromVideoResponse:
+      example:
+        outputs:
+          facebook: facebook
+          threads: threads
+          bluesky: bluesky
+          mastodon: mastodon
+          linkedin: linkedin
+          instagram: instagram
+          x_thread:
+          - x_thread
+          - x_thread
+        outputs_skipped:
+        - outputs_skipped
+        - outputs_skipped
+        video_url: video_url
+        credits_spent: 6
+        warnings:
+        - warnings
+        - warnings
+        cached: true
+        removed_timestamps: true
+        cleaned_chars: 0
+      properties:
+        outputs:
+          $ref: '#/components/schemas/FreeToolGenerateSocialPostsFromVideoResponse_outputs'
+        outputs_skipped:
+          description: "Requested outputs that came back empty: generate again to\
+            \ get them."
+          items:
+            type: string
+          type: array
+        warnings:
+          description: "What to know before posting, in plain words."
+          items:
+            type: string
+          type: array
+        video_url:
+          description: "The normalised video link the posts use, or null."
+          nullable: true
+          type: string
+        cleaned_chars:
+          description: Characters of caption text left after cleaning; the model read
+            these.
+          type: integer
+        removed_timestamps:
+          description: "True when timestamps, cue numbers, tags or repeated caption\
+            \ lines were removed."
+          type: boolean
+        credits_spent:
+          description: "AI credits this call took from the workspace: 1, or 0 for\
+            \ a cached result."
+          type: integer
+        cached:
+          description: True when the same request was answered before (free).
+          type: boolean
     FreeToolVerifyWebhookSignatureRequest:
       example:
         signature: signature
@@ -29618,6 +30175,73 @@ components:
           type: integer
         height:
           type: integer
+    FreeToolBuildLinkedinCarouselResponse_page:
+      description: Slide size in pixels.
+      example:
+        width: 0
+        height: 6
+      properties:
+        width:
+          type: integer
+        height:
+          type: integer
+    FreeToolBuildLinkedinCarouselResponse_slides_inner:
+      example:
+        heading: heading
+        kind: cover
+        body:
+        - body
+        - body
+        "n": 1
+      properties:
+        "n":
+          description: "Slide number, 1 to N."
+          type: integer
+        kind:
+          enum:
+          - cover
+          - content
+          - cta
+          type: string
+        heading:
+          nullable: true
+          type: string
+        body:
+          description: "Lines; bullets start with \"• \", numbered lines keep their\
+            \ number."
+          items:
+            type: string
+          type: array
+    FreeToolBuildLinkedinCarouselResponse_warnings_inner:
+      example:
+        code: too_many_slides
+        message: message
+      properties:
+        code:
+          enum:
+          - too_many_slides
+          - split_block
+          type: string
+        message:
+          type: string
+    FreeToolBuildLinkedinCarouselResponse_limits:
+      example:
+        linkedin_max_mb: 9
+        heading_max: 5
+        body_max: 2
+        linkedin_max_pages: 7
+        max_slides: 5
+      properties:
+        max_slides:
+          type: integer
+        heading_max:
+          type: integer
+        body_max:
+          type: integer
+        linkedin_max_pages:
+          type: integer
+        linkedin_max_mb:
+          type: integer
     FreeToolGetSafeZonesResponse_unsafe_areas_inner:
       example:
         w: 5
@@ -30499,6 +31123,43 @@ components:
           type: number
         amount:
           type: number
+    FreeToolGenerateSocialPostsFromVideoResponse_outputs:
+      description: One entry per requested output that came back usable.
+      example:
+        facebook: facebook
+        threads: threads
+        bluesky: bluesky
+        mastodon: mastodon
+        linkedin: linkedin
+        instagram: instagram
+        x_thread:
+        - x_thread
+        - x_thread
+      properties:
+        x_thread:
+          description: "The thread's posts in order, each within X's 280 weighted\
+            \ characters; the link is in the last one."
+          items:
+            type: string
+          type: array
+        linkedin:
+          description: A LinkedIn caption within the network's character limit.
+          type: string
+        instagram:
+          description: A Instagram caption within the network's character limit.
+          type: string
+        facebook:
+          description: A Facebook caption within the network's character limit.
+          type: string
+        threads:
+          description: A Threads caption within the network's character limit.
+          type: string
+        bluesky:
+          description: A Bluesky caption within the network's character limit.
+          type: string
+        mastodon:
+          description: A Mastodon caption within the network's character limit.
+          type: string
     FreeToolGenerateUsernamesResponse_usernames_inner:
       example:
         profile_url: https://openapi-generator.tech

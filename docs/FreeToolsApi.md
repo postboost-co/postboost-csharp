@@ -6,6 +6,7 @@ All URIs are relative to *https://postboost.co/app/api*
 |--------|--------------|-------------|
 | [**BuildAgentSkill**](FreeToolsApi.md#buildagentskill) | **POST** /tools/social-media-agent-skill-builder | Build a SKILL.md, AGENTS.md or system prompt for a social media agent |
 | [**BuildHashtagGroups**](FreeToolsApi.md#buildhashtaggroups) | **POST** /tools/hashtag-group-builder | Clean, dedupe and split hashtags into groups that fit a network&#39;s hashtag cap |
+| [**BuildLinkedinCarousel**](FreeToolsApi.md#buildlinkedincarousel) | **POST** /tools/linkedin-carousel-maker | Turn text into LinkedIn carousel (PDF document) slides |
 | [**BuildUtmUrl**](FreeToolsApi.md#buildutmurl) | **POST** /tools/utm-builder | Build a UTM-tagged campaign URL |
 | [**CalculateAspectRatio**](FreeToolsApi.md#calculateaspectratio) | **POST** /tools/aspect-ratio-calculator | Calculate an aspect ratio, or the missing side of an image at a given ratio |
 | [**CalculateCarouselSlices**](FreeToolsApi.md#calculatecarouselslices) | **POST** /tools/instagram-carousel-splitter | Split a wide image into seamless Instagram carousel slides |
@@ -34,6 +35,7 @@ All URIs are relative to *https://postboost.co/app/api*
 | [**GenerateLinkedInHeadline**](FreeToolsApi.md#generatelinkedinheadline) | **POST** /tools/linkedin-headline-generator | Write five LinkedIn profile headlines with AI (needs a token, spends AI credits) |
 | [**GenerateQrCode**](FreeToolsApi.md#generateqrcode) | **POST** /tools/qr-code-generator | Generate a QR code (SVG) for a link or text, with optional UTM tags |
 | [**GenerateSocialPostsFromBlog**](FreeToolsApi.md#generatesocialpostsfromblog) | **POST** /tools/blog-to-social-media | Turn a blog post (URL or text) into one social post per network with AI (needs a token, spends AI credits) |
+| [**GenerateSocialPostsFromVideo**](FreeToolsApi.md#generatesocialpostsfromvideo) | **POST** /tools/youtube-to-social-posts | Turn a YouTube video&#39;s captions into an X thread and social captions with AI (needs a token, spends AI credits) |
 | [**GenerateUsernames**](FreeToolsApi.md#generateusernames) | **POST** /tools/social-media-username-generator | Generate social media usernames |
 | [**GenerateYoutubeDescription**](FreeToolsApi.md#generateyoutubedescription) | **POST** /tools/youtube-description-generator | Write three YouTube video descriptions with AI (needs a token, spends AI credits) |
 | [**GenerateYoutubeTitles**](FreeToolsApi.md#generateyoutubetitles) | **POST** /tools/youtube-title-generator | Write five YouTube video titles with AI (needs a token, spends AI credits) |
@@ -224,6 +226,101 @@ catch (ApiException e)
 ### Return type
 
 [**FreeToolBuildHashtagGroupsResponse**](FreeToolBuildHashtagGroupsResponse.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | The tool output. |  * X-RateLimit-Limit - Calls allowed in the limit window closest to running out. <br>  * X-RateLimit-Remaining - Calls left in that window. <br>  |
+| **401** |  |  -  |
+| **413** | The request body is larger than 128 KB. |  -  |
+| **422** |  |  -  |
+| **429** | Rate limit reached. Without a token: 30 calls per minute and 500 per UTC day per IP address (IPv6 per /64). With a token: 300 per minute per user; the Free plan also has 1,000 calls per UTC day, paid plans have no daily cap. |  * X-RateLimit-Limit - Calls allowed in the limit window closest to running out. <br>  * X-RateLimit-Remaining - Calls left in that window. <br>  * Retry-After - Seconds until the limit resets. <br>  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+<a id="buildlinkedincarousel"></a>
+# **BuildLinkedinCarousel**
+> FreeToolBuildLinkedinCarouselResponse BuildLinkedinCarousel (FreeToolBuildLinkedinCarouselRequest freeToolBuildLinkedinCarouselRequest)
+
+Turn text into LinkedIn carousel (PDF document) slides
+
+Turn text into LinkedIn carousel (PDF document) slides. The same logic as the free web tool at https://postboost.co/tools/linkedin-carousel-maker. No account needed: call it without a token, or with any API token.
+
+### Example
+```csharp
+using System.Collections.Generic;
+using System.Diagnostics;
+using PostBoost.Client.Api;
+using PostBoost.Client.Client;
+using PostBoost.Client.Model;
+
+namespace Example
+{
+    public class BuildLinkedinCarouselExample
+    {
+        public static void Main()
+        {
+            Configuration config = new Configuration();
+            config.BasePath = "https://postboost.co/app/api";
+            var apiInstance = new FreeToolsApi(config);
+            var freeToolBuildLinkedinCarouselRequest = new FreeToolBuildLinkedinCarouselRequest(); // FreeToolBuildLinkedinCarouselRequest | 
+
+            try
+            {
+                // Turn text into LinkedIn carousel (PDF document) slides
+                FreeToolBuildLinkedinCarouselResponse result = apiInstance.BuildLinkedinCarousel(freeToolBuildLinkedinCarouselRequest);
+                Debug.WriteLine(result);
+            }
+            catch (ApiException  e)
+            {
+                Debug.Print("Exception when calling FreeToolsApi.BuildLinkedinCarousel: " + e.Message);
+                Debug.Print("Status Code: " + e.ErrorCode);
+                Debug.Print(e.StackTrace);
+            }
+        }
+    }
+}
+```
+
+#### Using the BuildLinkedinCarouselWithHttpInfo variant
+This returns an ApiResponse object which contains the response data, status code and headers.
+
+```csharp
+try
+{
+    // Turn text into LinkedIn carousel (PDF document) slides
+    ApiResponse<FreeToolBuildLinkedinCarouselResponse> response = apiInstance.BuildLinkedinCarouselWithHttpInfo(freeToolBuildLinkedinCarouselRequest);
+    Debug.Write("Status Code: " + response.StatusCode);
+    Debug.Write("Response Headers: " + response.Headers);
+    Debug.Write("Response Body: " + response.Data);
+}
+catch (ApiException e)
+{
+    Debug.Print("Exception when calling FreeToolsApi.BuildLinkedinCarouselWithHttpInfo: " + e.Message);
+    Debug.Print("Status Code: " + e.ErrorCode);
+    Debug.Print(e.StackTrace);
+}
+```
+
+### Parameters
+
+| Name | Type | Description | Notes |
+|------|------|-------------|-------|
+| **freeToolBuildLinkedinCarouselRequest** | [**FreeToolBuildLinkedinCarouselRequest**](FreeToolBuildLinkedinCarouselRequest.md) |  |  |
+
+### Return type
+
+[**FreeToolBuildLinkedinCarouselResponse**](FreeToolBuildLinkedinCarouselResponse.md)
 
 ### Authorization
 
@@ -2927,6 +3024,107 @@ catch (ApiException e)
 ### Return type
 
 [**FreeToolGenerateSocialPostsFromBlogResponse**](FreeToolGenerateSocialPostsFromBlogResponse.md)
+
+### Authorization
+
+[bearerAuth](../README.md#bearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | The tool output. |  * X-RateLimit-Limit - Calls allowed in the limit window closest to running out. <br>  * X-RateLimit-Remaining - Calls left in that window. <br>  |
+| **401** | No API token, or an invalid one. The body has &#x60;register_url&#x60; to create a free account. |  -  |
+| **403** | &#x60;workspace&#x60; is not a workspace you belong to, or your account has no workspace, or a scoped API key lacks the &#x60;ai&#x60; ability or is bound to another workspace (&#x60;code: insufficient_scope&#x60;). |  -  |
+| **413** | The request body is larger than 128 KB. |  -  |
+| **422** |  |  -  |
+| **429** | The workspace has no AI credits left this billing cycle (&#x60;code: ai_credits_exhausted&#x60;, &#x60;upgrade_url&#x60;), or the per-minute limit was reached. Rate limit reached. Without a token: 30 calls per minute and 500 per UTC day per IP address (IPv6 per /64). With a token: 300 per minute per user; the Free plan also has 1,000 calls per UTC day, paid plans have no daily cap. |  * X-RateLimit-Limit - Calls allowed in the limit window closest to running out. <br>  * X-RateLimit-Remaining - Calls left in that window. <br>  * Retry-After - Seconds until the limit resets. <br>  |
+| **502** | The AI provider failed or timed out. No credit was spent. |  -  |
+| **503** | AI tools are switched off right now. |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+<a id="generatesocialpostsfromvideo"></a>
+# **GenerateSocialPostsFromVideo**
+> FreeToolGenerateSocialPostsFromVideoResponse GenerateSocialPostsFromVideo (FreeToolGenerateSocialPostsFromVideoRequest freeToolGenerateSocialPostsFromVideoRequest)
+
+Turn a YouTube video's captions into an X thread and social captions with AI (needs a token, spends AI credits)
+
+Turn a YouTube video's captions into an X thread and social captions with AI (needs a token, spends AI credits). The same logic as the free web tool at https://postboost.co/tools/youtube-to-social-posts. Needs an API token (a scoped key needs the `ai` ability and pays with its own workspace). A new generation spends 1 AI credit of the workspace you name (or your active workspace); a repeated identical request is answered from the cache for free.
+
+### Example
+```csharp
+using System.Collections.Generic;
+using System.Diagnostics;
+using PostBoost.Client.Api;
+using PostBoost.Client.Client;
+using PostBoost.Client.Model;
+
+namespace Example
+{
+    public class GenerateSocialPostsFromVideoExample
+    {
+        public static void Main()
+        {
+            Configuration config = new Configuration();
+            config.BasePath = "https://postboost.co/app/api";
+            // Configure Bearer token for authorization: bearerAuth
+            config.AccessToken = "YOUR_BEARER_TOKEN";
+
+            var apiInstance = new FreeToolsApi(config);
+            var freeToolGenerateSocialPostsFromVideoRequest = new FreeToolGenerateSocialPostsFromVideoRequest(); // FreeToolGenerateSocialPostsFromVideoRequest | 
+
+            try
+            {
+                // Turn a YouTube video's captions into an X thread and social captions with AI (needs a token, spends AI credits)
+                FreeToolGenerateSocialPostsFromVideoResponse result = apiInstance.GenerateSocialPostsFromVideo(freeToolGenerateSocialPostsFromVideoRequest);
+                Debug.WriteLine(result);
+            }
+            catch (ApiException  e)
+            {
+                Debug.Print("Exception when calling FreeToolsApi.GenerateSocialPostsFromVideo: " + e.Message);
+                Debug.Print("Status Code: " + e.ErrorCode);
+                Debug.Print(e.StackTrace);
+            }
+        }
+    }
+}
+```
+
+#### Using the GenerateSocialPostsFromVideoWithHttpInfo variant
+This returns an ApiResponse object which contains the response data, status code and headers.
+
+```csharp
+try
+{
+    // Turn a YouTube video's captions into an X thread and social captions with AI (needs a token, spends AI credits)
+    ApiResponse<FreeToolGenerateSocialPostsFromVideoResponse> response = apiInstance.GenerateSocialPostsFromVideoWithHttpInfo(freeToolGenerateSocialPostsFromVideoRequest);
+    Debug.Write("Status Code: " + response.StatusCode);
+    Debug.Write("Response Headers: " + response.Headers);
+    Debug.Write("Response Body: " + response.Data);
+}
+catch (ApiException e)
+{
+    Debug.Print("Exception when calling FreeToolsApi.GenerateSocialPostsFromVideoWithHttpInfo: " + e.Message);
+    Debug.Print("Status Code: " + e.ErrorCode);
+    Debug.Print(e.StackTrace);
+}
+```
+
+### Parameters
+
+| Name | Type | Description | Notes |
+|------|------|-------------|-------|
+| **freeToolGenerateSocialPostsFromVideoRequest** | [**FreeToolGenerateSocialPostsFromVideoRequest**](FreeToolGenerateSocialPostsFromVideoRequest.md) |  |  |
+
+### Return type
+
+[**FreeToolGenerateSocialPostsFromVideoResponse**](FreeToolGenerateSocialPostsFromVideoResponse.md)
 
 ### Authorization
 

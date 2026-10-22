@@ -2,7 +2,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 VisualStudioVersion = 12.0.0.0
 MinimumVisualStudioVersion = 10.0.0.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PostBoost.Client", "src\PostBoost.Client\PostBoost.Client.csproj", "{48C1E9D4-58DC-4B58-B6B4-B491427317FB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PostBoost.Client", "src\PostBoost.Client\PostBoost.Client.csproj", "{517A8EA2-2494-4FB4-9BCE-DA7219734489}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PostBoost.Client.Test", "src\PostBoost.Client.Test\PostBoost.Client.Test.csproj", "{19F1DEBC-DE5E-4517-8062-F000CD499087}"
 EndProject
@@ -12,10 +12,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{48C1E9D4-58DC-4B58-B6B4-B491427317FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{48C1E9D4-58DC-4B58-B6B4-B491427317FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{48C1E9D4-58DC-4B58-B6B4-B491427317FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{48C1E9D4-58DC-4B58-B6B4-B491427317FB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{517A8EA2-2494-4FB4-9BCE-DA7219734489}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{517A8EA2-2494-4FB4-9BCE-DA7219734489}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{517A8EA2-2494-4FB4-9BCE-DA7219734489}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{517A8EA2-2494-4FB4-9BCE-DA7219734489}.Release|Any CPU.Build.0 = Release|Any CPU
 		{19F1DEBC-DE5E-4517-8062-F000CD499087}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{19F1DEBC-DE5E-4517-8062-F000CD499087}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{19F1DEBC-DE5E-4517-8062-F000CD499087}.Release|Any CPU.ActiveCfg = Release|Any CPU
