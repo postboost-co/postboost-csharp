@@ -323,7 +323,7 @@ catch (ApiException e)
 
 Delete media (bulk)
 
-Delete one or more media items by their numeric IDs or UUIDs (both may be mixed, up to 500 per request).
+Delete one or more media items by their numeric IDs or UUIDs (both may be mixed, up to 500 per request). Deleting a media item also removes it from every post that uses it, including scheduled posts; those posts publish without it (or fail where the network requires media).
 
 ### Example
 ```csharp
@@ -422,7 +422,7 @@ catch (ApiException e)
 
 Delete media folder
 
-Deletes a folder. By default its media and sub-folders move up to the folder's parent; with `delete_media` set to true every media item below the folder is deleted as well.
+Deletes a folder. By default its media and sub-folders move up to the folder's parent; with `delete_media` set to true every media item below the folder is deleted as well. Deleting a media item also removes it from every post that uses it, including scheduled posts; those posts publish without it (or fail where the network requires media).
 
 ### Example
 ```csharp

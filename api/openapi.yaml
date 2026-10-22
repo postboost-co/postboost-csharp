@@ -48,7 +48,7 @@ info:
     name: Commercial
     url: https://postboost.co/pages/terms
   title: PostBoost API
-  version: 1.64.1
+  version: 1.64.2
 servers:
 - description: Production
   url: https://postboost.co/app/api
@@ -393,7 +393,9 @@ paths:
   /{workspaceUuid}/media:
     delete:
       description: "Delete one or more media items by their numeric IDs or UUIDs (both\
-        \ may be mixed, up to 500 per request)."
+        \ may be mixed, up to 500 per request). Deleting a media item also removes\
+        \ it from every post that uses it, including scheduled posts; those posts\
+        \ publish without it (or fail where the network requires media)."
       operationId: deleteMediaBulk
       parameters:
       - $ref: '#/components/parameters/workspaceUuid'
@@ -868,9 +870,11 @@ paths:
       - Media
   /{workspaceUuid}/media/folders/{folderUuid}:
     delete:
-      description: Deletes a folder. By default its media and sub-folders move up
-        to the folder's parent; with `delete_media` set to true every media item below
-        the folder is deleted as well.
+      description: "Deletes a folder. By default its media and sub-folders move up\
+        \ to the folder's parent; with `delete_media` set to true every media item\
+        \ below the folder is deleted as well. Deleting a media item also removes\
+        \ it from every post that uses it, including scheduled posts; those posts\
+        \ publish without it (or fail where the network requires media)."
       operationId: deleteMediaFolder
       parameters:
       - $ref: '#/components/parameters/workspaceUuid'
