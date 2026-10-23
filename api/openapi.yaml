@@ -48,7 +48,7 @@ info:
     name: Commercial
     url: https://postboost.co/pages/terms
   title: PostBoost API
-  version: 1.66.1
+  version: 1.66.3
 servers:
 - description: Production
   url: https://postboost.co/app/api
@@ -25039,10 +25039,10 @@ components:
         title: title
       properties:
         text:
-          description: "The captions of your video: an .srt or .vtt file's text, or\
-            \ the text of YouTube's \"Show transcript\" panel. Timestamps, cue numbers\
-            \ and sound tags like [Music] are removed; 100 to 24,000 characters must\
-            \ remain."
+          description: "The captions of your video: an .srt, .vtt or .sbv file's text,\
+            \ or the text of YouTube's \"Show transcript\" panel. Timestamps, cue\
+            \ numbers and sound tags like [Music] are removed; 100 to 24,000 characters\
+            \ must remain."
           maxLength: 40000
           minLength: 1
           type: string
@@ -25404,9 +25404,9 @@ components:
           maxLength: 64
           type: string
         transcript:
-          description: "Optional: your video's captions (.srt, .vtt or the Show transcript\
-            \ text) as context; timestamps are removed and the first 6,000 characters\
-            \ are used."
+          description: "Optional: your video's captions (.srt, .vtt, .sbv or the Show\
+            \ transcript text) as context; timestamps are removed and the first 6,000\
+            \ characters are used."
           maxLength: 40000
           type: string
       required:
@@ -25543,9 +25543,9 @@ components:
           maxLength: 64
           type: string
         transcript:
-          description: "Optional: your video's captions (.srt, .vtt or the Show transcript\
-            \ text) as context; timestamps are removed and the first 6,000 characters\
-            \ are used."
+          description: "Optional: your video's captions (.srt, .vtt, .sbv or the Show\
+            \ transcript text) as context; timestamps are removed and the first 6,000\
+            \ characters are used."
           maxLength: 40000
           type: string
       required:
