@@ -28,6 +28,7 @@ All URIs are relative to *https://postboost.co/app/api*
 | [**FormatLinkedInPost**](FreeToolsApi.md#formatlinkedinpost) | **POST** /tools/linkedin-post-formatter | Format a LinkedIn post with bold, italic and lists |
 | [**GenerateAltText**](FreeToolsApi.md#generatealttext) | **POST** /tools/alt-text-generator | Write alt text for an image with AI (needs a token, spends AI credits) |
 | [**GenerateBio**](FreeToolsApi.md#generatebio) | **POST** /tools/instagram-bio-generator | Write five profile bios with AI (needs a token, spends AI credits) |
+| [**GenerateBrandVoice**](FreeToolsApi.md#generatebrandvoice) | **POST** /tools/brand-voice-generator | Derive a brand voice from 3 to 10 of your posts with AI: traits with quoted evidence, a guide, an AI system prompt and PostBoost brand voice JSON (needs a token, spends AI credits) |
 | [**GenerateCaption**](FreeToolsApi.md#generatecaption) | **POST** /tools/instagram-caption-generator | Write three post captions for a topic with AI (needs a token, spends AI credits) |
 | [**GenerateFancyText**](FreeToolsApi.md#generatefancytext) | **POST** /tools/fancy-text-generator | Convert text to fancy Unicode styles |
 | [**GenerateHashtags**](FreeToolsApi.md#generatehashtags) | **POST** /tools/instagram-hashtag-generator | Generate hashtags for a post topic with AI (needs a token, spends AI credits) |
@@ -2329,6 +2330,107 @@ catch (ApiException e)
 ### Return type
 
 [**FreeToolGenerateBioResponse**](FreeToolGenerateBioResponse.md)
+
+### Authorization
+
+[bearerAuth](../README.md#bearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | The tool output. |  * X-RateLimit-Limit - Calls allowed in the limit window closest to running out. <br>  * X-RateLimit-Remaining - Calls left in that window. <br>  |
+| **401** | No API token, or an invalid one. The body has &#x60;register_url&#x60; to create a free account. |  -  |
+| **403** | &#x60;workspace&#x60; is not a workspace you belong to, or your account has no workspace, or a scoped API key lacks the &#x60;ai&#x60; ability or is bound to another workspace (&#x60;code: insufficient_scope&#x60;). |  -  |
+| **413** | The request body is larger than 128 KB. |  -  |
+| **422** |  |  -  |
+| **429** | The workspace has no AI credits left this billing cycle (&#x60;code: ai_credits_exhausted&#x60;, &#x60;upgrade_url&#x60;), or the per-minute limit was reached. Rate limit reached. Without a token: 30 calls per minute and 500 per UTC day per IP address (IPv6 per /64). With a token: 300 per minute per user; the Free plan also has 1,000 calls per UTC day, paid plans have no daily cap. |  * X-RateLimit-Limit - Calls allowed in the limit window closest to running out. <br>  * X-RateLimit-Remaining - Calls left in that window. <br>  * Retry-After - Seconds until the limit resets. <br>  |
+| **502** | The AI provider failed or timed out. No credit was spent. |  -  |
+| **503** | AI tools are switched off right now. |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+<a id="generatebrandvoice"></a>
+# **GenerateBrandVoice**
+> FreeToolGenerateBrandVoiceResponse GenerateBrandVoice (FreeToolGenerateBrandVoiceRequest freeToolGenerateBrandVoiceRequest)
+
+Derive a brand voice from 3 to 10 of your posts with AI: traits with quoted evidence, a guide, an AI system prompt and PostBoost brand voice JSON (needs a token, spends AI credits)
+
+Derive a brand voice from 3 to 10 of your posts with AI: traits with quoted evidence, a guide, an AI system prompt and PostBoost brand voice JSON (needs a token, spends AI credits). The same logic as the free web tool at https://postboost.co/tools/brand-voice-generator. Needs an API token (a scoped key needs the `ai` ability and pays with its own workspace). A new generation spends 1 AI credit of the workspace you name (or your active workspace); a repeated identical request is answered from the cache for free.
+
+### Example
+```csharp
+using System.Collections.Generic;
+using System.Diagnostics;
+using PostBoost.Client.Api;
+using PostBoost.Client.Client;
+using PostBoost.Client.Model;
+
+namespace Example
+{
+    public class GenerateBrandVoiceExample
+    {
+        public static void Main()
+        {
+            Configuration config = new Configuration();
+            config.BasePath = "https://postboost.co/app/api";
+            // Configure Bearer token for authorization: bearerAuth
+            config.AccessToken = "YOUR_BEARER_TOKEN";
+
+            var apiInstance = new FreeToolsApi(config);
+            var freeToolGenerateBrandVoiceRequest = new FreeToolGenerateBrandVoiceRequest(); // FreeToolGenerateBrandVoiceRequest | 
+
+            try
+            {
+                // Derive a brand voice from 3 to 10 of your posts with AI: traits with quoted evidence, a guide, an AI system prompt and PostBoost brand voice JSON (needs a token, spends AI credits)
+                FreeToolGenerateBrandVoiceResponse result = apiInstance.GenerateBrandVoice(freeToolGenerateBrandVoiceRequest);
+                Debug.WriteLine(result);
+            }
+            catch (ApiException  e)
+            {
+                Debug.Print("Exception when calling FreeToolsApi.GenerateBrandVoice: " + e.Message);
+                Debug.Print("Status Code: " + e.ErrorCode);
+                Debug.Print(e.StackTrace);
+            }
+        }
+    }
+}
+```
+
+#### Using the GenerateBrandVoiceWithHttpInfo variant
+This returns an ApiResponse object which contains the response data, status code and headers.
+
+```csharp
+try
+{
+    // Derive a brand voice from 3 to 10 of your posts with AI: traits with quoted evidence, a guide, an AI system prompt and PostBoost brand voice JSON (needs a token, spends AI credits)
+    ApiResponse<FreeToolGenerateBrandVoiceResponse> response = apiInstance.GenerateBrandVoiceWithHttpInfo(freeToolGenerateBrandVoiceRequest);
+    Debug.Write("Status Code: " + response.StatusCode);
+    Debug.Write("Response Headers: " + response.Headers);
+    Debug.Write("Response Body: " + response.Data);
+}
+catch (ApiException e)
+{
+    Debug.Print("Exception when calling FreeToolsApi.GenerateBrandVoiceWithHttpInfo: " + e.Message);
+    Debug.Print("Status Code: " + e.ErrorCode);
+    Debug.Print(e.StackTrace);
+}
+```
+
+### Parameters
+
+| Name | Type | Description | Notes |
+|------|------|-------------|-------|
+| **freeToolGenerateBrandVoiceRequest** | [**FreeToolGenerateBrandVoiceRequest**](FreeToolGenerateBrandVoiceRequest.md) |  |  |
+
+### Return type
+
+[**FreeToolGenerateBrandVoiceResponse**](FreeToolGenerateBrandVoiceResponse.md)
 
 ### Authorization
 

@@ -48,7 +48,7 @@ info:
     name: Commercial
     url: https://postboost.co/pages/terms
   title: PostBoost API
-  version: 1.64.2
+  version: 1.66.1
 servers:
 - description: Production
   url: https://postboost.co/app/api
@@ -9381,7 +9381,7 @@ paths:
                       - Validate every post before any write.
                       - Never delete a post permanently.
                       - Never pass `allow_duplicate: true` unless the user asks for a repeat post.
-                      - Pass a fresh UUID as `idempotency_key` when you create a post and reuse it when you retry, so a retry never creates a second post.
+                      - The advanced server has no idempotency key: if a create may have gone through, list the workspace's posts before you retry. A `duplicate_post` refusal means the post already exists: do not create it again.
                       - If PostBoost refuses a write (a guardrail such as a duplicate or the daily cap), stop and tell the user the refusal code.
 
                       ## Report on results
@@ -12706,6 +12706,461 @@ paths:
           description: AI tools are switched off right now.
       summary: "Turn a YouTube video's captions into an X thread and social captions\
         \ with AI (needs a token, spends AI credits)"
+      tags:
+      - Free Tools
+      x-free-tool: true
+  /tools/brand-voice-generator:
+    post:
+      description: "Derive a brand voice from 3 to 10 of your posts with AI: traits\
+        \ with quoted evidence, a guide, an AI system prompt and PostBoost brand voice\
+        \ JSON (needs a token, spends AI credits). The same logic as the free web\
+        \ tool at https://postboost.co/tools/brand-voice-generator. Needs an API token\
+        \ (a scoped key needs the `ai` ability and pays with its own workspace). A\
+        \ new generation spends 1 AI credit of the workspace you name (or your active\
+        \ workspace); a repeated identical request is answered from the cache for\
+        \ free."
+      operationId: generateBrandVoice
+      requestBody:
+        content:
+          application/json:
+            examples:
+              example-1:
+                value:
+                  posts:
+                  - |-
+                    Monday fact: a cooled espresso shot loses most of its aroma in 3 minutes. Drink it while it's warm ☕
+
+                    What's your go-to morning order?
+                  - "New on the shelf: our Ethiopia Guji, washed process. Think peach,\
+                    \ black tea and a clean finish. Roasted on Tuesday, shipped on\
+                    \ Wednesday."
+                  - We don't do flavoured syrups. Good beans don't need them. Ask
+                    us for a recommendation instead ☕
+                  - |-
+                    Brew guide, part 3: grind for the V60 should look like coarse sand. Too fine and it drips forever, too coarse and it tastes thin.
+
+                    Save this for your next pour-over.
+                  - Thank you for 5 years on Mill Street! Coffee is on us this Saturday
+                    from 8 to 10. Bring a friend.
+                  business_name: Mill Street Roasters
+              example-2:
+                value:
+                  posts:
+                  - "Shipped: webhooks now retry 5 times with exponential backoff.\
+                    \ No config needed. #DevTools"
+                  - "Your API keys can now be read-only. Least privilege by default,\
+                    \ because a leaked key should not be able to post. #DevTools"
+                  - "We read every support ticket. This week's top request was CSV\
+                    \ export for reports. It's live today. #BuildInPublic"
+                  industry: Developer tools
+            schema:
+              $ref: '#/components/schemas/FreeToolGenerateBrandVoiceRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                example-1:
+                  value:
+                    voice:
+                      business_name: Mill Street Roasters
+                      mission: null
+                      industry: null
+                      personality: "A friendly neighbourhood roaster that teaches\
+                        \ as it sells: short, warm and practical, proud of good beans\
+                        \ and plain about brewing."
+                      audience:
+                      - Home brewers
+                      - Local coffee drinkers
+                      topics_preferred:
+                      - Brew guides
+                      - New single-origin coffees
+                      - Community events
+                      topics_avoided:
+                      - Flavoured syrups
+                      tone_formal: 2
+                      tone_playful: 3
+                      tone_technical: 3
+                      emoji_style: rare
+                      hashtag_strategy: none
+                      avoid_words: []
+                      preferred_cta:
+                      - Ask us for a recommendation
+                      - Save this for your next pour-over
+                      example_posts:
+                      - |-
+                        Brew guide, part 3: grind for the V60 should look like coarse sand. Too fine and it drips forever, too coarse and it tastes thin.
+
+                        Save this for your next pour-over.
+                      - "New on the shelf: our Ethiopia Guji, washed process. Think\
+                        \ peach, black tea and a clean finish. Roasted on Tuesday,\
+                        \ shipped on Wednesday."
+                    evidence:
+                      personality:
+                      - Good beans don't need them.
+                      - Coffee is on us this Saturday
+                      mission: []
+                      audience:
+                      - Save this for your next pour-over.
+                      tone_formal:
+                      - Drink it while it's warm
+                      tone_playful: []
+                      tone_technical: []
+                      emoji_style:
+                      - Drink it while it's warm ☕
+                      hashtag_strategy: []
+                      topics_preferred: []
+                      topics_avoided:
+                      - We don't do flavoured syrups.
+                      avoid_words: []
+                      preferred_cta: []
+                    system_prompt: |-
+                      Use the following brand voice guidelines when generating content:
+
+                      Brand Identity:
+                      - Business: Mill Street Roasters
+                      - Personality: A friendly neighbourhood roaster that teaches as it sells: short, warm and practical, proud of good beans and plain about brewing.
+
+                      Audience & Topics:
+                      - Target audience: Home brewers, Local coffee drinkers
+                      - Preferred topics: Brew guides, New single-origin coffees, Community events
+                      - Topics to avoid: Flavoured syrups
+
+                      Tone:
+                      - Use a casual tone.
+
+                      Style:
+                      - Do not use any hashtags unless the user explicitly asks for them.
+                      - Use these calls-to-action when appropriate: Ask us for a recommendation, Save this for your next pour-over
+
+                      Example Posts:
+                      1. Brew guide, part 3: grind for the V60 should look like coarse sand. Too fine and it drips forever, too coarse and it tastes thin.
+
+                      Save this for your next pour-over.
+                      2. New on the shelf: our Ethiopia Guji, washed process. Think peach, black tea and a clean finish. Roasted on Tuesday, shipped on Wednesday.
+                    markdown: |
+                      # Brand voice: Mill Street Roasters
+
+                      ## Personality
+
+                      A friendly neighbourhood roaster that teaches as it sells: short, warm and practical, proud of good beans and plain about brewing.
+
+                      - Business: Mill Street Roasters
+
+                      > Good beans don't need them.
+
+                      > Coffee is on us this Saturday
+
+                      ## Audience
+
+                      - Home brewers
+                      - Local coffee drinkers
+
+                      > Save this for your next pour-over.
+
+                      ## Tone
+
+                      - Formality: 2 of 5 (casual)
+                      - Playfulness: 3 of 5 (neutral)
+                      - Technical language: 3 of 5 (neutral)
+
+                      > Drink it while it's warm
+
+                      ## Emoji
+
+                      Rare
+
+                      > Drink it while it's warm ☕
+
+                      ## Hashtags
+
+                      None
+
+                      ## Topics
+
+                      Preferred:
+
+                      - Brew guides
+                      - New single-origin coffees
+                      - Community events
+
+                      Avoided:
+
+                      - Flavoured syrups
+
+                      > We don't do flavoured syrups.
+
+                      ## CTAs
+
+                      - Ask us for a recommendation
+                      - Save this for your next pour-over
+
+                      ## Examples
+
+                      > Brew guide, part 3: grind for the V60 should look like coarse sand. Too fine and it drips forever, too coarse and it tastes thin.
+                      >
+                      > Save this for your next pour-over.
+
+                      > New on the shelf: our Ethiopia Guji, washed process. Think peach, black tea and a clean finish. Roasted on Tuesday, shipped on Wednesday.
+
+                      ## System prompt
+
+                      ```text
+                      Use the following brand voice guidelines when generating content:
+
+                      Brand Identity:
+                      - Business: Mill Street Roasters
+                      - Personality: A friendly neighbourhood roaster that teaches as it sells: short, warm and practical, proud of good beans and plain about brewing.
+
+                      Audience & Topics:
+                      - Target audience: Home brewers, Local coffee drinkers
+                      - Preferred topics: Brew guides, New single-origin coffees, Community events
+                      - Topics to avoid: Flavoured syrups
+
+                      Tone:
+                      - Use a casual tone.
+
+                      Style:
+                      - Do not use any hashtags unless the user explicitly asks for them.
+                      - Use these calls-to-action when appropriate: Ask us for a recommendation, Save this for your next pour-over
+
+                      Example Posts:
+                      1. Brew guide, part 3: grind for the V60 should look like coarse sand. Too fine and it drips forever, too coarse and it tastes thin.
+
+                      Save this for your next pour-over.
+                      2. New on the shelf: our Ethiopia Guji, washed process. Think peach, black tea and a clean finish. Roasted on Tuesday, shipped on Wednesday.
+                      ```
+                    credits_spent: 1
+                    cached: false
+                example-2:
+                  value:
+                    voice:
+                      business_name: null
+                      mission: null
+                      industry: Developer tools
+                      personality: "A plain-spoken developer tool that ships small,\
+                        \ useful changes and explains each in one or two direct sentences."
+                      audience:
+                      - Developers
+                      - Technical founders
+                      topics_preferred:
+                      - Product updates
+                      - API security
+                      - Customer requests
+                      topics_avoided: []
+                      tone_formal: 3
+                      tone_playful: 1
+                      tone_technical: 4
+                      emoji_style: none
+                      hashtag_strategy: niche
+                      avoid_words: []
+                      preferred_cta: []
+                      example_posts:
+                      - "Your API keys can now be read-only. Least privilege by default,\
+                        \ because a leaked key should not be able to post. #DevTools"
+                      - "Shipped: webhooks now retry 5 times with exponential backoff.\
+                        \ No config needed. #DevTools"
+                    evidence:
+                      personality:
+                      - No config needed.
+                      mission: []
+                      audience: []
+                      tone_formal: []
+                      tone_playful: []
+                      tone_technical:
+                      - exponential backoff
+                      emoji_style: []
+                      hashtag_strategy:
+                      - '#DevTools'
+                      topics_preferred:
+                      - We read every support ticket.
+                      topics_avoided: []
+                      avoid_words: []
+                      preferred_cta: []
+                    system_prompt: |-
+                      Use the following brand voice guidelines when generating content:
+
+                      Brand Identity:
+                      - Industry: Developer tools
+                      - Personality: A plain-spoken developer tool that ships small, useful changes and explains each in one or two direct sentences.
+
+                      Audience & Topics:
+                      - Target audience: Developers, Technical founders
+                      - Preferred topics: Product updates, API security, Customer requests
+
+                      Tone:
+                      - Be strictly serious. Avoid any humor or playfulness.
+                      - Use technical language and industry-specific terms when relevant.
+
+                      Style:
+                      - Do not use any emojis unless the user explicitly asks for them.
+                      - Use niche, industry-specific hashtags.
+
+                      Example Posts:
+                      1. Your API keys can now be read-only. Least privilege by default, because a leaked key should not be able to post. #DevTools
+                      2. Shipped: webhooks now retry 5 times with exponential backoff. No config needed. #DevTools
+                    markdown: |
+                      # Brand voice
+
+                      ## Personality
+
+                      A plain-spoken developer tool that ships small, useful changes and explains each in one or two direct sentences.
+
+                      - Industry: Developer tools
+
+                      > No config needed.
+
+                      ## Audience
+
+                      - Developers
+                      - Technical founders
+
+                      ## Tone
+
+                      - Formality: 3 of 5 (neutral)
+                      - Playfulness: 1 of 5 (serious)
+                      - Technical language: 4 of 5 (technical)
+
+                      > exponential backoff
+
+                      ## Emoji
+
+                      None
+
+                      ## Hashtags
+
+                      Niche
+
+                      > #DevTools
+
+                      ## Topics
+
+                      Preferred:
+
+                      - Product updates
+                      - API security
+                      - Customer requests
+
+                      > We read every support ticket.
+
+                      ## Examples
+
+                      > Your API keys can now be read-only. Least privilege by default, because a leaked key should not be able to post. #DevTools
+
+                      > Shipped: webhooks now retry 5 times with exponential backoff. No config needed. #DevTools
+
+                      ## System prompt
+
+                      ```text
+                      Use the following brand voice guidelines when generating content:
+
+                      Brand Identity:
+                      - Industry: Developer tools
+                      - Personality: A plain-spoken developer tool that ships small, useful changes and explains each in one or two direct sentences.
+
+                      Audience & Topics:
+                      - Target audience: Developers, Technical founders
+                      - Preferred topics: Product updates, API security, Customer requests
+
+                      Tone:
+                      - Be strictly serious. Avoid any humor or playfulness.
+                      - Use technical language and industry-specific terms when relevant.
+
+                      Style:
+                      - Do not use any emojis unless the user explicitly asks for them.
+                      - Use niche, industry-specific hashtags.
+
+                      Example Posts:
+                      1. Your API keys can now be read-only. Least privilege by default, because a leaked key should not be able to post. #DevTools
+                      2. Shipped: webhooks now retry 5 times with exponential backoff. No config needed. #DevTools
+                      ```
+                    credits_spent: 1
+                    cached: false
+              schema:
+                $ref: '#/components/schemas/FreeToolGenerateBrandVoiceResponse'
+          description: The tool output.
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: "No API token, or an invalid one. The body has `register_url`\
+            \ to create a free account."
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: "`workspace` is not a workspace you belong to, or your account\
+            \ has no workspace, or a scoped API key lacks the `ai` ability or is bound\
+            \ to another workspace (`code: insufficient_scope`)."
+        "413":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: The request body is larger than 128 KB.
+        "422":
+          $ref: '#/components/responses/ValidationError'
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: "The workspace has no AI credits left this billing cycle (`code:\
+            \ ai_credits_exhausted`, `upgrade_url`), or the per-minute limit was reached.\
+            \ Rate limit reached. Without a token: 30 calls per minute and 500 per\
+            \ UTC day per IP address (IPv6 per /64). With a token: 300 per minute\
+            \ per user; the Free plan also has 1,000 calls per UTC day, paid plans\
+            \ have no daily cap."
+          headers:
+            X-RateLimit-Limit:
+              description: Calls allowed in the limit window closest to running out.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Calls left in that window.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            Retry-After:
+              description: Seconds until the limit resets.
+              explode: false
+              schema:
+                type: integer
+              style: simple
+        "502":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: The AI provider failed or timed out. No credit was spent.
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeToolError'
+          description: AI tools are switched off right now.
+      summary: "Derive a brand voice from 3 to 10 of your posts with AI: traits with\
+        \ quoted evidence, a guide, an AI system prompt and PostBoost brand voice\
+        \ JSON (needs a token, spends AI credits)"
       tags:
       - Free Tools
       x-free-tool: true
@@ -24692,6 +25147,103 @@ components:
         cached:
           description: True when the same request was answered before (free).
           type: boolean
+    FreeToolGenerateBrandVoiceRequest:
+      example:
+        business_name: business_name
+        workspace: workspace
+        industry: industry
+        posts:
+        - posts
+        - posts
+        - posts
+        - posts
+        - posts
+      properties:
+        posts:
+          description: "Your own posts, one per item: 3 to 10 different posts of 20\
+            \ to 3,200 characters, 20,000 in total. An exact copy counts once."
+          items:
+            type: string
+          maxItems: 10
+          minItems: 3
+          type: array
+        business_name:
+          description: "Your business name, used as given (never generated)."
+          maxLength: 255
+          type: string
+        industry:
+          description: "Your industry, used as given (never generated)."
+          maxLength: 255
+          type: string
+        workspace:
+          description: "UUID of the workspace whose AI credits pay for the call. Default:\
+            \ your active workspace (a scoped API key: its own workspace)."
+          maxLength: 64
+          type: string
+      required:
+      - posts
+    FreeToolGenerateBrandVoiceResponse:
+      example:
+        voice:
+          business_name: business_name
+          audience:
+          - audience
+          - audience
+          emoji_style: none
+          tone_playful: 3
+          tone_technical: 1
+          avoid_words:
+          - avoid_words
+          - avoid_words
+          industry: industry
+          preferred_cta:
+          - preferred_cta
+          - preferred_cta
+          hashtag_strategy: none
+          mission: mission
+          personality: personality
+          topics_preferred:
+          - topics_preferred
+          - topics_preferred
+          topics_avoided:
+          - topics_avoided
+          - topics_avoided
+          tone_formal: 1
+          example_posts:
+          - example_posts
+          - example_posts
+        evidence:
+          key:
+          - evidence
+          - evidence
+        credits_spent: 5
+        cached: true
+        markdown: markdown
+        system_prompt: system_prompt
+      properties:
+        voice:
+          $ref: '#/components/schemas/FreeToolGenerateBrandVoiceResponse_voice'
+        evidence:
+          additionalProperties:
+            items:
+              type: string
+          description: "Per trait key, up to 2 quotes from your posts that show it;\
+            \ only quotes found in your posts are kept, so a list can be empty."
+        system_prompt:
+          description: "The system prompt PostBoost's AI uses for this voice; paste\
+            \ it into ChatGPT, Claude or your agent."
+          type: string
+        markdown:
+          description: "The voice as a Markdown guide with its quotes, ending with\
+            \ the system prompt."
+          type: string
+        credits_spent:
+          description: "AI credits this call took from the workspace: 1, or 0 for\
+            \ a cached result."
+          type: integer
+        cached:
+          description: True when the same request was answered before (free).
+          type: boolean
     FreeToolVerifyWebhookSignatureRequest:
       example:
         signature: signature
@@ -24826,6 +25378,7 @@ components:
     FreeToolGenerateYoutubeTitlesRequest:
       example:
         workspace: workspace
+        transcript: transcript
         style: how-to
         text: text
       properties:
@@ -24849,6 +25402,12 @@ components:
           description: "UUID of the workspace whose AI credits pay for the call. Default:\
             \ your active workspace (a scoped API key: its own workspace)."
           maxLength: 64
+          type: string
+        transcript:
+          description: "Optional: your video's captions (.srt, .vtt or the Show transcript\
+            \ text) as context; timestamps are removed and the first 6,000 characters\
+            \ are used."
+          maxLength: 40000
           type: string
       required:
       - text
@@ -24942,6 +25501,7 @@ components:
         - chapter_lines
         - chapter_lines
         workspace: workspace
+        transcript: transcript
         keywords: keywords
         chapters: false
         text: text
@@ -24981,6 +25541,12 @@ components:
           description: "UUID of the workspace whose AI credits pay for the call. Default:\
             \ your active workspace (a scoped API key: its own workspace)."
           maxLength: 64
+          type: string
+        transcript:
+          description: "Optional: your video's captions (.srt, .vtt or the Show transcript\
+            \ text) as context; timestamps are removed and the first 6,000 characters\
+            \ are used."
+          maxLength: 40000
           type: string
       required:
       - text
@@ -31164,6 +31730,115 @@ components:
         mastodon:
           description: A Mastodon caption within the network's character limit.
           type: string
+    FreeToolGenerateBrandVoiceResponse_voice:
+      description: The voice in PostBoost's brand voice format (the workspace brand
+        voice fields).
+      example:
+        business_name: business_name
+        audience:
+        - audience
+        - audience
+        emoji_style: none
+        tone_playful: 3
+        tone_technical: 1
+        avoid_words:
+        - avoid_words
+        - avoid_words
+        industry: industry
+        preferred_cta:
+        - preferred_cta
+        - preferred_cta
+        hashtag_strategy: none
+        mission: mission
+        personality: personality
+        topics_preferred:
+        - topics_preferred
+        - topics_preferred
+        topics_avoided:
+        - topics_avoided
+        - topics_avoided
+        tone_formal: 1
+        example_posts:
+        - example_posts
+        - example_posts
+      properties:
+        business_name:
+          description: "Your input, or null."
+          nullable: true
+          type: string
+        mission:
+          description: "Only when the posts state it, else null."
+          nullable: true
+          type: string
+        industry:
+          description: "Your input, or null."
+          nullable: true
+          type: string
+        personality:
+          description: How the brand sounds.
+          type: string
+        audience:
+          description: Who the posts speak to. At most 8 items.
+          items:
+            type: string
+          type: array
+        topics_preferred:
+          description: Topics the posts come back to. At most 8 items.
+          items:
+            type: string
+          type: array
+        topics_avoided:
+          description: Topics the posts clearly steer away from; often empty. At most
+            8 items.
+          items:
+            type: string
+          type: array
+        tone_formal:
+          description: "1 very casual to 5 very formal, 3 neutral."
+          maximum: 5
+          minimum: 1
+          type: integer
+        tone_playful:
+          description: "1 very serious to 5 very playful, 3 neutral."
+          maximum: 5
+          minimum: 1
+          type: integer
+        tone_technical:
+          description: "1 very simple to 5 very technical, 3 neutral."
+          maximum: 5
+          minimum: 1
+          type: integer
+        emoji_style:
+          enum:
+          - none
+          - rare
+          - moderate
+          - abundant
+          type: string
+        hashtag_strategy:
+          enum:
+          - none
+          - generic
+          - niche
+          - branded
+          - mix
+          type: string
+        avoid_words:
+          description: Words the posts clearly avoid; often empty. At most 8 items.
+          items:
+            type: string
+          type: array
+        preferred_cta:
+          description: Calls to action the posts use. At most 8 items.
+          items:
+            type: string
+          type: array
+        example_posts:
+          description: "Up to 5 of your posts that sound most typical, exactly as\
+            \ given."
+          items:
+            type: string
+          type: array
     FreeToolGenerateUsernamesResponse_usernames_inner:
       example:
         profile_url: https://openapi-generator.tech
